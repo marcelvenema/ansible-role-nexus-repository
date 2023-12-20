@@ -1,0 +1,167 @@
+---
+
+#########################################################
+## Sonatype Nexus artifacts module                     ##
+#########################################################
+
+# Validate global variables
+- name: Validate global variables for Sonaytype Nexus artifacts module.
+  ansible.builtin.assert:
+    that: "{{ varitem }} is defined"
+    fail_msg: "Required variable '{{ varitem }}' has not been provided."
+    quiet: true
+  loop_control:
+    loop_var: varitem
+  loop: 
+    - nexus_repository_address
+    - nexus_repository_username
+    - nexus_repository_password
+
+#########################################################
+## Sonatype Nexus artifacts import                     ##
+#########################################################
+- name: Import artifacts
+  when: action == "import_artifacts"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository import_artifacts action.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop: 
+        - nexus_firstname
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+#########################################################
+## Sonatype Nexus artifacts export                     ##
+#########################################################
+
+- name: Export artifacts
+  when: action == "export_artifacts"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository export_artifacts action.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop: 
+        - nexus_repository_name
+        - nexus_repository_artifact
+        - destination_folder
+
+    # Test if repository address is valid. 
+    - name: Test if repository address is valid.
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/status/check"  
+        method: GET
+        status_code: 200, 401
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json 
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: nexus_repository_status
+
+    # Show custom error message if repository address is not valid.
+    - name: Show information message.
+      ansible.builtin.fail:
+        msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
+      when: nexus_repository_status.status != 200
+
+    # Test if repository name is valid.
+    - name: Test if repository name is valid.
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/{{ nexus_repository_name }}"  
+        method: GET
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json 
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: nexus_repository_status
+ 
+    # Show custom error message if repository address is not valid.
+    - name: Show information message.
+      ansible.builtin.fail:
+        msg: "Cannot find {{ nexus_repository_name }} on '{{ nexus_repository_address }}'..."
+      when: nexus_repository_status.status != 200
+
+    # Declare continuationtoken variable.
+    - name: Define continuationtoken variable.
+      ansible.builtin.set_fact:
+        continuationtoken: "start"
+
+    # Get list of assets from repository.
+
+
+    # Get list of assets from repository, 
+    - name: Get list of assets
+      ansible.builtin.include_tasks: artifacts_get_assets.yml
+      vars:
+        nexus_asset_repository_address: "{{ nexus_repository_address }}"
+        nexus_asset_repository_username: "{{ nexus_repository_username }}"
+        nexus_asset_repository_password: "{{ nexus_repository_password }}"
+        nexus_asset_repository_name: "{{ nexus_repository_name }}"
+        nexus_asset_repository_artifact: "{{ nexus_repository_artifact }}"
+        #nexus_asset_continuationtoken: "{{ continuationtoken }}"
+      loop: 
+        - continuationtoken != ""
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+#########################################################
+## Sonatype Nexus artifacts sync                       ##
+#########################################################
+
+- name: Sync artifacts
+  when: action == "sync_artifacts"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository sync_artifacts action.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop: 
+        - nexus_firstname
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play

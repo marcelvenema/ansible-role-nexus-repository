@@ -1,0 +1,14 @@
+---
+
+# Import Nexus Repository files to folder
+- name: Import files from Nexus Repository
+  hosts: localhost
+  roles:
+   - role: nexus
+     vars:
+      action : import_artifacts
+      nexus_repository_url : "https://nexus.example.com/repository/os_template_factory/"
+      nexus_repository_username : "admin"
+      nexus_repository_password : "admin123"
+      repository_name : "os_template_factory"
+      foldername : "/tmp/repo"

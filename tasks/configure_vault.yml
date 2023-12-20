@@ -1,0 +1,26 @@
+---
+
+#########################################################
+## Vault module                                        ##
+#########################################################
+
+# Store usernames and passwords in Hashicorp Vault.
+- name: Store Nexus usernames and passwords in Vault
+  ansible.builtin.include_role: 
+    name: vault
+    tasks_from: secrets.yml
+  vars:
+    action: create_secret
+    vault_name: "{{ ansible_fqdn | replace('.', '-') }}"
+    secret_name: "SonatypeNexusRepository"
+    secret_keyvalue: "{ 'admin_password': '{{ nexus_admin_password }}', 'automation_username':'{{ automation_username }}', 'automation_password':'{{ nexus_automation_password }}', 'automation_address': '{{ nexus_hostname }}' }"
+
+# Create Vault policy for Nexus
+# TODO
+
+# Create Vault AppRole for Nexus
+# TODO
+
+# Generate RoleID and SecretID for Nexus
+# TODO
+

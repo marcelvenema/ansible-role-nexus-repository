@@ -1,0 +1,65 @@
+---
+
+actions:
+  - install
+  - install_description: "Installatie van laatste versie van Sonatype Nexus Repository. Basis configuratie."
+  - install_icon: "media/icon_nexus_repository.png"
+
+  - uninstall
+  - uninstall_description: "De-installatie van Sonatype Nexus Repository. Verwijderd de container, bestanden, gebruikers en groepen."
+  - uninstall_icon: "media/icon_nexus_repository.png"
+
+  - configure
+  - configure_description: "Configureer Nexus Repository."
+  - configure_icon: "media/icon_nexus_repository.png"
+
+  - update
+  - update_description: "Update van Sonatype Nexus Repository naar laatste versie."
+  - update_icon: "media/icon_nexus_repository.png"
+
+  # ----------------------------------------
+  # get user
+  - get_user
+  # create user
+  - create_user
+  # destroy user
+  - destroy_user
+  # ----------------------------------------
+  # get repository
+  - get_repository
+  # create repository
+  - create_repository
+  # destroy repository
+  - destroy_repository
+  # ----------------------------------------
+  # import artifacts
+  - import_artifacts
+  # export artifacts
+  - export_artifacts
+  # sync artifacts
+  - sync_artifacts
+# ----------------------------------------
+
+install_properties:
+  - repository_url
+  - repository_url_description : ""
+  - repository_url_required : true
+  - repository_tag
+  - repository_tag_description : "Release of versienummer van het image. Standaard is 'latest'."
+  - data_dir
+  - data_dir_description : "Folder waarin de data van Vault wordt opgeslagen."
+  - platform
+  - platform_description : "installeer op specifiek platform, bijvoorbeeld podman, kubernetes, linux. Standaard is autodetect."
+  - uninstall
+  - uninstall_description : "Start de-installatie voordat de installatie wordt gestart. true/false. Standaard is 'true'."
+  - vault_address
+  - vault_address_description : "Adres van Vault server."
+  - vault_token
+  - vault_token_description : "Token van Vault server."
+
+
+
+rolevars:
+  - nexus_repository_address
+  - nexus_repository_username
+  - nexus_repository_password
