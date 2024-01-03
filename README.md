@@ -7,7 +7,8 @@ Ansible role voor installatie en configuratie van Sonatype Nexus Repository OSS.
 Afhankelijk van de infrastructuur wordt deze als Podman pod (docker container), kubernetes container of direct op het besturingssysteem geinstalleerd.<br/>
 Vooralsnog is alleen installatie en configuratie als Podman pod beschikbaar.<br/>
 <br/>
-<br/>
+
+Website leverancier: `https://www.sonatype.com/products/sonatype-nexus-repository`<br/>
 
 
 ***
@@ -114,7 +115,36 @@ variablen:<br/>
 <kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.
 
 
+Voorbeeld:
+```
+
+- hosts: lab_server
+  vars:
+  roles:
+    - role: nexus_repository
+      vars:
+        action        : install
+        vault_address : "http://localhost:8200"
+        vault_token   : "hvs.9MGoUtPEGZWRgLX3dxZYkqxV"
+
+
+```
+
 ***
+
+- **changelog**<br/>
+  Wijzigingen logboek.<br/>
+  Zie [changelog](CHANGELOG.md)<br/>
+
+
+
+- **roadmap**<br/>
+  Visie en toekomstige ontwikkelingen.<br/>
+  Zie [roadmap](ROADMAP.md)<br/>
+
+
+***
+
 
 ## Voorbereidingen
 (geen).<br/>
@@ -126,12 +156,12 @@ variablen:<br/>
 
 ## Installatie
 Installatie via action 'install'.<br/>
-Voorbeeld voor installatie Nexus Repository OSSL:
+Voorbeeld voor installatie Nexus Repository OSS:
 
 ```
 ---
 
-- hosts: lab_server
+- hosts: localhost
   vars:
   roles:
     - role: nexus_repository
@@ -151,10 +181,10 @@ Voorbeeld voor installatie Nexus Repository OSSL:
 
 **Globale variabelen**
 Onderstaande variabelen kunnen door de nexus_repository role worden gebruikt:<br/>
-<kbd>automation_address</kbd> Hostname van server.<br/>
-<kbd>automation_username</kbd> Hostname van server.<br/>
-<kbd>automation_password</kbd> Hostname van server.<br/>
-<kbd>automation_email</kbd> Hostname van server.<br/>
+<kbd>automation_address</kbd> .<br/>
+<kbd>automation_username</kbd> .<br/>
+<kbd>automation_password</kbd> .<br/>
+<kbd>automation_email</kbd> .<br/>
 
 
 ## Licentie
