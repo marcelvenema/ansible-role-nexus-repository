@@ -1,17 +1,17 @@
 # Sonatype Nexus Repository OSS
 
-***
-
-<img src="media/icon_nexus.png" align="left" height="128" width="128" />
-Ansible role voor installatie en configuratie van Sonatype Nexus Repository OSS.<br/>
-Afhankelijk van de infrastructuur wordt deze als Podman pod (docker container), kubernetes container of direct op het besturingssysteem geinstalleerd.<br/>
-Vooralsnog is alleen installatie en configuratie als Podman pod beschikbaar.<br/>
-<br/>
-
-Website leverancier: `https://www.sonatype.com/products/sonatype-nexus-repository`<br/>
-
-
-***
+<table border="0">
+  <tr>
+    <td width="160px"><img src="media/icon_nexus.png" align="left" height="128" width="128" /></td>
+    <td>Ansible role voor installatie en configuratie van Sonatype Nexus Repository OSS.<br/>
+        Afhankelijk van de infrastructuur wordt deze als Podman pod (docker container), kubernetes container of direct op het besturingssysteem geinstalleerd.<br/>
+        Vooralsnog is alleen installatie en configuratie als Podman pod beschikbaar.<br/>
+        <br/>
+        Website leverancier: `https://www.sonatype.com/products/sonatype-nexus-repository` <br/>
+        <br/>
+    </td>
+  </tr>
+</table>
 
 # Diensten:
 
