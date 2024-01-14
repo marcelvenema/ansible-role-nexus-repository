@@ -2,7 +2,7 @@
 
 <table border="0">
   <tr>
-    <td width="160px"><img src="media/icon_nexus.png" align="left" height="128" width="128" /></td>
+    <td width="160px" valign="top"><img src="media/icon_nexus.png" align="left" height="128" width="128" /></td>
     <td>Ansible role voor installatie en configuratie van Sonatype Nexus Repository OSS.<br/>
         Afhankelijk van de infrastructuur wordt deze als Podman pod (docker container), kubernetes container of direct op het besturingssysteem geinstalleerd.<br/>
         Vooralsnog is alleen installatie en configuratie als Podman pod beschikbaar.<br/>
