@@ -33,7 +33,7 @@ variablen:<br/>
 
 
 action: **update**<br/>
-Update naar laatste Sonatype Nexus Repository OSS versie. (backlog).
+Update naar laatste Sonatype Nexus Repository OSS versie. (backlog).<br/>
 variablen:<br/>
 <kbd>(geen)</kbd> : Geen variabelen benodigd.<br/>
 
@@ -45,11 +45,11 @@ action: **create_repository**<br/>
 Aanmaken repository in Nexus.<br/>
 variablen:<br/>
 <kbd>nexus_repository_name</kbd> : Naam voor repository.<br/>
-<kbd>nexus_repository_type</kbd> : Type repository, bijvoorbeeld raw.
+<kbd>nexus_repository_type</kbd> : Type repository, bijvoorbeeld raw.<br/>
 
 
 action: **destroy_repository**<br/>
-Verwijderen repository in Nexus. (backlog).
+Verwijderen repository in Nexus. (backlog).<br/>
 variablen:<br/>
 <kbd>nexus_repository_name</kbd> :  Naam voor repository.<br/>
 
@@ -58,7 +58,7 @@ variablen:<br/>
 
 
 action: **create_user**<br/>
-Aanmaken lokale gebruiker in Nexus Repository.
+Aanmaken lokale gebruiker in Nexus Repository.<br/>
 variablen:<br/>
 <kbd>nexus_username</kbd>  : Gebruikersnaam.<br/>
 <kbd>nexus_firstname</kbd> : Voornaam van gebruiker.<br/>
@@ -69,13 +69,13 @@ variablen:<br/>
 
 
 action: **destroy_user**<br/>
-Verwijderen gebruiker in Nexus. (backlog).
+Verwijderen gebruiker in Nexus. (backlog).<br/>
 variablen:<br/>
 <kbd>nexus_username</kbd> :  Gebruikersnaam.<br/>
 
 
 action: **set_password**<br/>
-Wijzigen van wachtwoord van een gebruiker in Nexus. (backlog).
+Wijzigen van wachtwoord van een gebruiker in Nexus. (backlog).<br/>
 variablen:<br/>
 <kbd>nexus_username</kbd> :  Gebruikersnaam.<br/>
 <kbd>nexus_password</kbd> :  Wachtwoord.<br/>
@@ -85,34 +85,34 @@ variablen:<br/>
 
 
 action: **import_artifacts**<br/>
-Importeer artifacts in folderstructuur naar Nexus repository. (backlog).
+Importeer artifacts in folderstructuur naar Nexus repository. (backlog).<br/>
 variablen:<br/>
-<kbd>nexus_repository_name</kbd>     :  
-<kbd>nexus_repository_folder</kbd>   : 
-<kbd>data_folder</kbd>               : 
-<kbd>nexus_repository_address</kbd>  : URL van repository, bijvoorbeeld `https://localhost:8081`.
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang repository.
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.
+<kbd>nexus_repository_name</kbd>     :  <br/>
+<kbd>nexus_repository_folder</kbd>   :  <br/>
+<kbd>data_folder</kbd>               :  <br/>
+<kbd>nexus_repository_address</kbd>  : URL van repository, bijvoorbeeld `https://localhost:8081`.<br/>
+<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang repository.<br/>
+<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.<br/>
 
 
 action: **export_artifacts**<br/>
-Export artifacts uit repository naar folderstructuur. (backlog).
+Export artifacts uit repository naar folderstructuur. (backlog).<br/>
 variablen:<br/>
-<kbd>nexus_repository_name</kbd>     :  
-<kbd>nexus_repository_folder</kbd>   : 
-<kbd>data_folder</kbd>               : 
-<kbd>nexus_repository_address</kbd>  : URL van repository, bijvoorbeeld `https://localhost:8081`.
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang repository. 
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.
+<kbd>nexus_repository_name</kbd>     :  <br/>
+<kbd>nexus_repository_folder</kbd>   :  <br/>
+<kbd>data_folder</kbd>               :  <br/>
+<kbd>nexus_repository_address</kbd>  : URL van repository, bijvoorbeeld `https://localhost:8081`.<br/>
+<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang repository.<br/>
+<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.<br/>
 
 
 action: **sync_artifacts**<br/>
-Synchroniseer via .json bestand artifacts van extern naar repository. (backlog).
+Synchroniseer via .json bestand artifacts van extern naar repository. (backlog).<br/>
 variablen:<br/>
-<kbd>config_file</kbd>               : Configuratie file met synchronisatie items. 
-<kbd>nexus_repository_address</kbd>  : URL van repository, bijvoorbeeld `https://localhost:8081`.
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang repository.
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.
+<kbd>config_file</kbd>               : Configuratie file met synchronisatie items.<br/> 
+<kbd>nexus_repository_address</kbd>  : URL van repository, bijvoorbeeld `https://localhost:8081`.<br/>
+<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang repository.<br/>
+<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang repository.<br/>
 
 
 Voorbeeld:
@@ -151,7 +151,7 @@ Voorbeeld:
 
 
 ## Afhankelijkheden
-Afhankelijkheden zijn benoemd in het **requirements.yml** bestand. Gebruik `ansible-galaxy install ./requirements.yml --force` voor installatie.<br/>
+Afhankelijkheden zijn benoemd in het **requirements.yml** bestand. Gebruik `ansible-galaxy install -r requirements.yml --force` voor installatie.<br/>
 
 Indien deze role in andere playbooks of Ansible projecten wordt gebruikt, dient de URL van deze rol te worden toegevoegd aan het `requirements.yml` bestand. Via bovenstaand command wordt de rol dan in de juiste folderstructuur geplaatst.<br/>
 <br/>
