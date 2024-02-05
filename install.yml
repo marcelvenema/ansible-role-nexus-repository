@@ -1,0 +1,10 @@
+- name: Install and configure Nexus Repository OSS (no roles)
+  hosts: lab
+  become: true
+  tasks:
+
+    - name: Install Nexus Repository OSS
+      ansible.builtin.include_tasks:
+        file: tasks/install.yml
+      vars:
+        repository_url: "docker.io/sonatype/nexus3"

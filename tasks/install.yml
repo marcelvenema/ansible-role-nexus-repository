@@ -57,11 +57,18 @@
 ## Pre-installation uninstall                          ##
 #########################################################
 
+# Set uninstall to false if not defined
+- name: Set uninstall variable if set
+  ansible.builtin.set_fact:
+    uninstall: false
+  when: uninstall is not defined
+
 # Run uninstall if uninstall is set
 - name: Run uninstall playbook if set
   ansible.builtin.include_tasks: uninstall.yml
   ignore_errors: true
-  when: uninstall == true
+  when: 
+    - uninstall == true
 
 #########################################################
 ## Pre-installation folders                            ##
