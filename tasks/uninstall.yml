@@ -4,18 +4,14 @@
 ## Uninstall configuration                             ##
 #########################################################
 
-# Check if data_dir exists, else set default
-- name: Check data_dir folder, set default
-  ansible.builtin.set_fact:
-    data_dir: "/data/nexus"
-  when: data_dir is not defined or data_dir == "" or data_dir == none
-
-# Remove Sonatype Nexus folder
-- name: Remove Sonatype Nexus folder
+# Create folders from first part of container_volumes
+- name: Delete data folders...
   ansible.builtin.file:
-    path: "{{ data_dir }}/nexus-data"
+    path: "{{ item.split(':')[0] }}"
     state: absent
-
+  with_items: "{{ container_volumes }}"
+  when: platform == "podman"
+  
 #########################################################
 ## Uninstall via podman                                ##
 #########################################################
@@ -27,14 +23,14 @@
     # Check if Nexus pod is present
     - name: Check if Nexus Repository container is present
       containers.podman.podman_container_info:
-        name: nexus
+        name: "{{ container_name }}"
       register: nexus_pod_info
       ignore_errors: true
 
     # Remove Sonatype Nexus pod
     - name: Remove Sonatype Nexus pod
       containers.podman.podman_container:
-        name: nexus
+        name: "{{ container_name }}"
         state: absent
       when: nexus_pod_info is defined
       

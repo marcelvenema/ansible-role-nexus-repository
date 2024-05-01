@@ -28,7 +28,7 @@
 
 # Get Nexus admin password from podman
 - name: Get Nexus admin password
-  ansible.builtin.command: podman exec -it nexus cat /nexus-data/admin.password
+  ansible.builtin.command: "podman exec -it {{ container_name }} cat /nexus-data/admin.password"
   register: set_admin_password
   no_log: true
   when: platform == "podman"
@@ -73,6 +73,7 @@
     nexus_lastname : "{{ automation_username | default('automation') }}"
     nexus_email    : "{{ automation_email | default('automation@localhost') }}"
     nexus_roles    : "nx-admin"
+  ignore_errors: true
 
 # Get hostname for Nexus Repository
 - name: Get hostname for Nexus Repository

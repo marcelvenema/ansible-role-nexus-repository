@@ -17,6 +17,10 @@ actions:
   - update_description: "Update van Sonatype Nexus Repository naar laatste versie."
   - update_icon: "media/icon_nexus_repository.png"
 
+  - start
+
+  - stop
+
   # ----------------------------------------
   # get user
   - get_user
@@ -56,8 +60,6 @@ install_properties:
   - vault_address_description : "Adres van Vault server."
   - vault_token
   - vault_token_description : "Token van Vault server."
-
-
 
 rolevars:
   - nexus_repository_address

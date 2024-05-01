@@ -1,9 +1,9 @@
 --- 
 
-- name: Set wait
-  ansible.builtin.set_fact:
-    wait: false
-  when: wait is not defined
+# If action variable is not defined, gather status of the service and set action variable  
+- name: Determine action variable status
+  ansible.builtin.include_tasks: get_status.yml
+  when: action is not defined
 
 - name: Verify variable input
   ansible.builtin.assert:
@@ -27,8 +27,18 @@
   when: action == "configure"
 
 - name: Update
-  ansible.builtin.include_tasks: configure.yml
-  when: action == "configure"
+  ansible.builtin.include_tasks: update.yml
+  when: action == "update"
+
+# -------------------------------------------------------
+ # Start, stop
+- name: Start
+  ansible.builtin.include_tasks: start.yml
+  when: action == "start"
+
+- name: Stop
+  ansible.builtin.include_tasks: stop.yml
+  when: action == "stop"
 
 # -------------------------------------------------------
   # users
@@ -53,6 +63,7 @@
 - name: Create repository
   ansible.builtin.include_tasks: repositories.yml
   when: action == "create_repository"
+
 
 - name: Destroy user
   ansible.builtin.include_tasks: repositories.yml

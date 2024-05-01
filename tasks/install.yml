@@ -11,6 +11,7 @@
     fail_msg: "Required variable '{{ item }}' has not been provided."
     quiet: true
   with_items: 
+    # should be defined in defaults/main.yml
     - repository_url
 
 #########################################################
@@ -56,8 +57,7 @@
 - name: Set platform to host if no Podman or Kubernetes is detected
   ansible.builtin.set_fact:
     platform: "host"
-  when:
-    - platform_check == true
+  when: platform_check == true
 
 # Clear variable
 - name: Clear platform_check variable
@@ -78,8 +78,7 @@
 - name: Run uninstall playbook if set
   ansible.builtin.include_tasks: uninstall.yml
   ignore_errors: true
-  when: 
-    - uninstall == true
+  when: uninstall == true
 
 #########################################################
 ## Installation                                        ##
@@ -89,7 +88,7 @@
 ## Installation on podman                              ##
 #########################################################
 
-- name: Install Nexus repository on podman
+- name: "Install {{ container_name }} repository on podman"
   when: platform == "podman"
   block:
 
@@ -103,13 +102,14 @@
     # Pre-installation folders       # 
     ##################################
 
-    # Create Sonatype Nexus data folder
-    - name: Create Sonatype Nexus data folder
+    # Create folders from first part of container_volumes
+    - name: Create data folders...
       ansible.builtin.file:
-        path: "{{ data_dir }}/nexus-data"
+        path: "{{ item.split(':')[0] }}"
         state: directory
         owner: 200
         mode: "0755"
+      with_items: "{{ container_volumes }}"
 
     ##################################
     # Import container image         # 
@@ -127,7 +127,7 @@
         msg: "Get container image from registry. this may take a while..."
 
     # Pull image from repository to local image repository. If failed, lookup local image file.
-    - name: "Pull Nexus container image from repository {{ repository_url }}:{{ repository_tag }}"
+    - name: "Pull container image from repository {{ repository_url }}:{{ repository_tag }}"
       containers.podman.podman_image:
         name: "{{ repository_url }}"
         tag: "{{ repository_tag }}"
@@ -138,6 +138,17 @@
       when: pull_result is failed
       block:
 
+        # Show information message
+        - name: Show information message
+          ansible.builtin.debug:
+            msg: "Cannot pull from container repository, trying to load from file..."
+
+        # Delete local temp file
+        - name: "Delete local file /tmp/{{ container_name }}"
+          ansible.builtin.file:
+            path: "/tmp/{{ container_name }}.tar"
+            state: absent
+
         # repository_url is a local container file, check if file exists on ansible host
         - name: Check if repository_url is a local container file
           ansible.builtin.stat:
@@ -145,28 +156,71 @@
           register: repository_url_result
           delegate_to: localhost
 
+       # Copy image file to destination if local file
+        - name: Copy container image file to destination
+          ansible.builtin.copy:
+            src: "{{ repository_url }}"
+            dest: "/tmp/{{ container_name }}.tar"
+          when: 
+            - repository_url_result.stat.exists == true
+
+        # Download local file if http or https
+        - name: "Download file from {{ repository_url }}"
+          ansible.builtin.get_url:
+            url: "{{ repository_url }}"
+            dest: "/tmp/{{ container_name }}.tar"
+          when: ("http" in repository_url) or ("ftp" in repository_url) # https is included
+        
+        # check if container file exists
+        - name: "Check if /tmp/{{ container_name }}.tar exists..."
+          ansible.builtin.stat:
+            path: "/tmp/{{ container_name }}.tar"
+          register: container_tar_result
+
         # Fail if image file not found
-        - name: Fail if Nexus container image file not found
+        - name: Fail if Vault container image file not found
           ansible.builtin.fail:
             msg: "Repository URL {{ repository_url }} not found. Container image file location not found. Cannot continue..."
           when: 
-            - repository_url_result.stat.exists == false
+            - container_tar_result.stat.exists == false
 
-        # Copy image file to destination
-        - name: Copy Nexus container image file to destination
-          ansible.builtin.copy:
-            src: "{{ repository_url }}"
-            dest: "/tmp/nexus.tar"
+        ##################################
+        # Checksum image                 # 
+        ##################################
+
+        # If checksum contains :, split it in checksum and algorithm
+        - name: Split checksum and algorithm
+          ansible.builtin.set_fact:
+            repository_checksum: "{{ repository_checksum.split(':')[1] }}"
+            repository_checksum_algorithm: "{{ repository_checksum.split(':')[0] }}"
+          when: repository_checksum is defined and ":" in repository_checksum
+
+        # Get checksum of container file.tar
+        - name: Get checksum of local container file
+          ansible.builtin.stat:
+            path: "/tmp/{{ container_name }}.tar"
+            checksum_algorithm: "{{ repository_checksum_algorithm }}"
+            get_checksum: yes
+          register: checksum_result
+          when : repository_checksum is defined 
+
+        # Fail when checksum is not the same
+        - name: Fail when checksum is not correct
+          ansible.builtin.fail:
+            msg: "Checksum of /tmp/{{ container_name }}.tar ({{ checksum_result.stat.checksum }}) is not the same as the provided checksum ({{ repository_checksum }}). Cannot continue..."
+          when: 
+            - repository_checksum is defined
+            - checksum_result.stat.checksum != repository_checksum
 
         # Load image from file if pull failed
         - name: Import container image to podman
-          ansible.builtin.command: podman load -i /tmp/nexus.tar
+          ansible.builtin.command: "podman load -i /tmp/{{ container_name }}.tar"
           register: import_result
 
         # Cleanup image file
         - name: Cleanup container image file
           ansible.builtin.file:
-            path: /tmp/nexus.tar
+            path: "/tmp/{{ container_name }}.tar"
             state: absent
 
     # Get image info from podman
@@ -177,34 +231,33 @@
     # Find image id
     - name: Parse image info, select container image id
       ansible.builtin.set_fact:
-        image_id: "{{ images_info.images | selectattr('RepoTags', 'search', 'nexus3') | map(attribute='Id') | first }}"
+        image_id: "{{ images_info.images | selectattr('RepoTags', 'search', container_name) | map(attribute='Id') | first }}"
 
     ##################################
     # Create Nexus container         #
     ##################################
 
-    # Create Sonatype Nexus container
-    - name: "Create Sonatype Nexus container with id {{ image_id }}..."
+    # Create podman container
+    - name: "Create container {{ container_name }} with id {{ image_id }}..."
       containers.podman.podman_container:
-        name: nexus
+        name: "{{ container_name }}"
         image: "{{ image_id }}"
         ports: "{{ container_ports }}"
-        volumes:
-          - /data/nexus/nexus-data:/nexus-data:Z
+        volumes: "{{ container_volumes }}:Z"
         restart_policy: always
-
+ 
     # Wait for Sonatype Nexus pod init to complete
-    - name: Wait for Sonatype Nexus pod init to complete
-      ansible.builtin.shell: podman logs nexus | grep "Started Sonatype Nexus OSS"
+    - name: Wait for container init to complete
+      ansible.builtin.shell: "podman logs {{ container_name }} | grep 'Started Sonatype Nexus OSS'"
       register: nexus_pod_init
       until: nexus_pod_init.stdout.find("Started Sonatype Nexus OSS") != -1
       retries: 10
       delay: 15
 
-    # Auto-start Nexus pod on system boot
-    - name: Generate systemd unit file for Nexus container
+    # Auto-start container on system boot
+    - name: "Generate systemd unit file for container {{ container_name}}"
       containers.podman.podman_generate_systemd:
-        name: nexus
+        name: "{{ container_name }}"
         new: true
         no_header: true
         dest: /etc/systemd/system
@@ -215,10 +268,10 @@
         daemon_reload: yes
         scope: system
     
-    # Enable systemd service for Nexus container
-    - name: Enable systemd service for Nexus container
+    # Enable systemd service for container
+    - name: "Enable systemd service for {{ container_name }} container"
       ansible.builtin.service:
-        name: container-nexus.service
+        name: "container-{{ container_name }}.service"
         enabled: yes
 
 #########################################################
@@ -280,5 +333,12 @@
 # Unset variables
 - name: Unset variables
   ansible.builtin.set_fact:
+    action:
+    repository_url:
     repository_tag:
-    data_dir:
+    repository_checksum:
+    repository_checksum_algorithm:
+    container_name:
+    container_ports:
+    container_volumes:
+
