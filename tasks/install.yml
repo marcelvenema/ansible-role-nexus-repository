@@ -22,11 +22,17 @@
   ansible.builtin.package_facts:
     manager: auto
 
+# Bypass platform check if platform is defined
+- name: Bypass platform check if platform is defined
+  ansible.builtin.set_fact:
+    platform_check: false
+  when: platform is defined
+
 # Override platform check if platform variable is defined.
-- name: Override platform check if platform variable is defined.
+- name: See on which platform it can be installed...
   ansible.builtin.set_fact:
     platform_check: true 
-  when: platform is undefined or platform_check == ""
+  when: platform is undefined 
 
 # Set platform if podman is detected
 - name: Set platform if podman is detected
@@ -76,24 +82,6 @@
     - uninstall == true
 
 #########################################################
-## Pre-installation folders                            ##
-#########################################################
-
-# Check if data_dir exists, else set default
-- name: Validate data_dir folder, set default
-  ansible.builtin.set_fact:
-    data_dir: "/data/nexus"
-  when: data_dir is not defined or data_dir == "" or data_dir == none
-
-# Create Sonatype Nexus data folder
-- name: Create Sonatype Nexus data folder
-  ansible.builtin.file:
-    path: "{{ data_dir }}/nexus-data"
-    state: directory
-    owner: 200
-    mode: "0755"
-
-#########################################################
 ## Installation                                        ##
 #########################################################
 
@@ -104,6 +92,24 @@
 - name: Install Nexus repository on podman
   when: platform == "podman"
   block:
+
+    # Check if podman is detected
+    - name: Check if podman is detected
+      ansible.builtin.assert:
+        that: '"podman" in ansible_facts.packages'
+        fail_msg: "Podman is not installed. Please install Podman first. Cannot continue..."
+
+    ##################################
+    # Pre-installation folders       # 
+    ##################################
+
+    # Create Sonatype Nexus data folder
+    - name: Create Sonatype Nexus data folder
+      ansible.builtin.file:
+        path: "{{ data_dir }}/nexus-data"
+        state: directory
+        owner: 200
+        mode: "0755"
 
     ##################################
     # Import container image         # 
@@ -182,8 +188,7 @@
       containers.podman.podman_container:
         name: nexus
         image: "{{ image_id }}"
-        ports:
-          - 8081:8081
+        ports: "{{ container_ports }}"
         volumes:
           - /data/nexus/nexus-data:/nexus-data:Z
         restart_policy: always
