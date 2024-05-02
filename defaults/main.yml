@@ -8,7 +8,4 @@ repository_url: "docker.io/sonatype/nexus3"
 
 container_name: "nexus3"
 container_ports: ["8081:8081"]
-container_volumes: ["/data/nexus/nexus-data:/nexus-data"]
-
-
-#data_dir: "/data/nexus"
+container_volumes: ["/data/nexus/nexus-data:/nexus-data:Z"]

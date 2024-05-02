@@ -15,7 +15,6 @@
   loop: 
     - repository_url
 
-
 #########################################################
 ## Sonatype Nexus update                               ##
 #########################################################
@@ -23,17 +22,6 @@
 - name: Update Nexus repository
   when: action == "update"
   block:
-
-    # Validate local variables
-    - name: Validate local variables for Nexus Repository update action.
-      ansible.builtin.assert:
-        that: "{{ varitem }} is defined"
-        fail_msg: "Required variable '{{ varitem }}' has not been provided."
-        quiet: true
-      loop_control:
-        loop_var: varitem
-      loop: 
-        - nexus_firstname
 
     # Show information message
     - name: This part is not (yet) implemented.

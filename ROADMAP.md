@@ -23,12 +23,16 @@ De dienst export_artifacts vanaf een repository naar een folder en import_artifa
 
 # Diensten
 - Dienst Update Nexus Repository voltooien.
+- Dienst Start Nexus Repository service voltooien.
+- Dienst Stop Nexus Repository service voltooien.
 - Dienst Verwijderen repository voltooien.
 - Dienst Verwijderen gebruiker voltooien.
-- Dienst wijzigen wachtwoord gebruiker voltooien.
+- Dienst Wijzigen wachtwoord gebruiker voltooien.
+- ...
 
 # Code
 - install: detect kubernetes, install on kubernetes
-- install: install on linux
+- install: install on host
 - uninstall : uninstall on kubernetes
-- uninstall : uninstall on linux
+- uninstall : uninstall on host
+- ...

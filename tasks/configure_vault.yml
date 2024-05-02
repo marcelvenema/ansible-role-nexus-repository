@@ -13,7 +13,7 @@
     action: create_secret
     vault_name: "{{ ansible_fqdn | replace('.', '-') }}"
     secret_name: "SonatypeNexusRepository"
-    secret_keyvalue: "{ 'admin_password': '{{ nexus_admin_password }}', 'automation_username':'{{ automation_username }}', 'automation_password':'{{ nexus_automation_password }}', 'automation_address': '{{ nexus_hostname }}' }"
+    secret_keyvalue: "{ 'admin_password': '{{ nexus_admin_password }}' }' }"
 
 # Create Vault policy for Nexus
 # TODO
