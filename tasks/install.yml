@@ -114,6 +114,8 @@
     ##################################
     # Import container image         # 
     ##################################
+    # Pull container image, if failed try to use local file
+    # local file can be http, https, ftp or local file
 
     # If tag is not defined, set value to latest
     - name: Validate repository_tag, set default
@@ -134,6 +136,7 @@
       register: pull_result
       ignore_errors: true
 
+    # If pull failed, try to use local file
     - name: Install local image file
       when: pull_result is failed
       block:
