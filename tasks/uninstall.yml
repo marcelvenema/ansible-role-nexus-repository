@@ -1,7 +1,87 @@
 ---
 
 #########################################################
+## Uninstall action                                    ##
+#########################################################
+# Uninstall action 
+# variables: 
+#   - container_name: Name of the container to uninstall
+#   - container_volumes: Volumes folders of the container to uninstall
+#   - keep_data: true/false. Keep data when uninstalling. Default false.
+
+
+
+#########################################################
 ## Uninstall configuration                             ##
+#########################################################
+
+# Set keep_data if not defined
+- name: Set keep_data if not defined
+  set_fact:
+    keep_data: false
+  when: keep_data is not defined
+  
+#########################################################
+## Uninstall via podman                                ##
+#########################################################
+
+- name: "Uninstall {{ container_name }} on podman"
+  when: platform == "podman"
+  block:
+
+    # Check if container is present
+    - name: Check if container is present
+      containers.podman.podman_container_info:
+        name: "{{ container_name }}"
+      register: pod_info
+      ignore_errors: true
+
+    # Remove container
+    - name: "Remove container {{ container_name }}"
+      containers.podman.podman_container:
+        name: "{{ container_name }}"
+        state: absent
+      when: pod_info is defined
+
+
+#########################################################
+## Uninstall via kubernetes                            ##
+#########################################################
+
+- name: "Uninstall {{ container_name }} on kubernetes"
+  when: platform == "kubernetes"
+  block:
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+      msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+
+#########################################################
+## Uninstall via host                                  ##
+#########################################################
+
+- name: "Uninstall {{ container_name }} on host"
+  when: platform == "host"
+  block:
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+      msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+
+#########################################################
+## Uninstall data                                      ##
 #########################################################
 
 # Create folders from first part of container_volumes
@@ -10,27 +90,18 @@
     path: "{{ item.split(':')[0] }}"
     state: absent
   with_items: "{{ container_volumes }}"
-  when: platform == "podman"
-  
+  when:
+    - platform == "podman"
+    - keep_data == false
+
 #########################################################
-## Uninstall via podman                                ##
+## Post-uninstall                                      ##
 #########################################################
 
-- name: Uninstall Nexus repository on podman
-  when: platform == "podman"
-  block:
-
-    # Check if Nexus pod is present
-    - name: Check if Nexus Repository container is present
-      containers.podman.podman_container_info:
-        name: "{{ container_name }}"
-      register: nexus_pod_info
-      ignore_errors: true
-
-    # Remove Sonatype Nexus pod
-    - name: Remove Sonatype Nexus pod
-      containers.podman.podman_container:
-        name: "{{ container_name }}"
-        state: absent
-      when: nexus_pod_info is defined
-      
+# Unset variables
+- name: Unset variables
+  ansible.builtin.set_fact:
+    action:
+    uninstall:
+    keep_data:
+       
