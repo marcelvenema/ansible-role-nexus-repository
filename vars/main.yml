@@ -45,13 +45,13 @@ actions:
 # ----------------------------------------
 
 install_properties:
-  - repository_url
-  - repository_url_description : ""
-  - repository_url_required : true
-  - repository_tag
-  - repository_tag_description : "Release of versienummer van het image. Standaard is 'latest'."
-  - data_dir
-  - data_dir_description : "Folder waarin de data van Vault wordt opgeslagen."
+  - nexus_repository_url
+  - nexus_repository_url_description : ""
+  - nexus_repository_url_required : true
+  - nexus_repository_tag
+  - nexus_repository_tag_description : "Release of versienummer van het image. Standaard is 'latest'."
+  - nexus_data_dir
+  - nexus_data_dir_description : "Folder waarin de data van Vault wordt opgeslagen."
   - platform
   - platform_description : "installeer op specifiek platform, bijvoorbeeld podman, kubernetes, linux. Standaard is autodetect."
   - uninstall
