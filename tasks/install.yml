@@ -7,7 +7,7 @@
 # Validate variables
 - name: Validate variables for action.
   ansible.builtin.assert:
-    that: "{{ item }} is defined"
+    that: item is defined
     fail_msg: "Required variable '{{ item }}' has not been provided."
     quiet: true
   with_items: 
@@ -120,7 +120,7 @@
     # If tag is not defined, set value to latest
     - name: Validate repository_tag, set default
       ansible.builtin.set_fact:
-        repository_tag: "latest"
+        nexus_repository_tag: "latest"
       when: nexus_repository_tag is not defined or nexus_repository_tag == "" or nexus_repository_tag == none
 
     # Show information

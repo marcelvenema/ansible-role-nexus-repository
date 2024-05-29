@@ -26,6 +26,10 @@
   ansible.builtin.include_tasks: configure.yml
   when: action == "configure"
 
+- name: Configure Vault
+  ansible.builtin.include_tasks: configure_vault.yml
+  when: action == "configure_vault"
+
 - name: Update
   ansible.builtin.include_tasks: update.yml
   when: action == "update"

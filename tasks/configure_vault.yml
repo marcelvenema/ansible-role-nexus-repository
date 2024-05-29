@@ -4,6 +4,51 @@
 ## Vault module                                        ##
 #########################################################
 
+#
+# If secret engine does not exist, create it.
+#
+
+# Declare variable action_result if not defined
+- name: Register action_result variable
+  ansible.builtin.set_fact:
+    action_result: ""
+  when: action_result is not defined
+
+# Clear action_result variable to be sure it is empty
+- name: Clear action_result variable
+  ansible.builtin.set_fact:
+    action_result: ""
+
+# Check if secret_engine exists
+- name: "Check if Vault secret engine {{ ansible_fqdn | replace('.', '-') }} exists..."
+  ansible.builtin.include_role: 
+    name: vault
+    tasks_from: secret_engine.yml
+  vars:
+    action: get_secret_engine
+    vault_name: "{{ ansible_fqdn | replace('.', '-') }}"
+    vault_type: "kv"
+    vault_result: "action_result"
+  register: action_result
+
+# Declare variable vault_description if not defined
+- name: Register vault_description variable
+  ansible.builtin.set_fact:
+    vault_description: ""
+  when: vault_description is not defined
+
+# Create secret_engine if it does not exist
+- name: "Create Vault secret engine {{ ansible_fqdn | replace('.', '-') }}"
+  ansible.builtin.include_role: 
+    name: vault
+    tasks_from: secret_engine.yml
+  vars:
+    action: create_secret_engine
+    vault_name: "{{ ansible_fqdn | replace('.', '-') }}"
+    vault_description: "Secrets for {{ ansible_fqdn }}"
+    vault_type: "kv"
+  when: action_result | length == 0
+
 # Store usernames and passwords in Hashicorp Vault.
 - name: Store Nexus usernames and passwords in Vault
   ansible.builtin.include_role: 
@@ -13,7 +58,7 @@
     action: create_secret
     vault_name: "{{ ansible_fqdn | replace('.', '-') }}"
     secret_name: "SonatypeNexusRepository"
-    secret_keyvalue: "{ 'admin_password': '{{ nexus_admin_password }}' }' }"
+    secret_keyvalue: "{ 'admin_password': '{{ nexus_admin_password }}' }"
 
 # Create Vault policy for Nexus
 # TODO

@@ -7,7 +7,7 @@
 # Validate global variables
 - name: Validate global variables for Sonaytype Nexus repositories module.
   ansible.builtin.assert:
-    that: "{{ varitem }} is defined"
+    that: "varitem is defined"
     fail_msg: "Required variable '{{ varitem }}' has not been provided."
     quiet: true
   loop_control:
@@ -28,7 +28,7 @@
     # Validate local variables
     - name: Validate local variables for Nexus Repository get_repository action.
       ansible.builtin.assert:
-        that: "{{ varitem }} is defined"
+        that: "varitem is defined"
         fail_msg: "Required variable '{{ varitem }}' has not been provided."
         quiet: true
       loop_control:

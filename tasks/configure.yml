@@ -28,7 +28,7 @@
 
 # Get Nexus admin password from podman
 - name: Get Nexus admin password
-  ansible.builtin.command: "podman exec -it {{ container_name }} cat /nexus-data/admin.password"
+  ansible.builtin.command: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
   register: set_admin_password
   no_log: true
   when: platform == "podman"
@@ -60,6 +60,12 @@
   ansible.builtin.set_fact:
     nexus_automation_password: "{{ lookup('ansible.builtin.password', '/dev/null') }}"
   when: automation_password is not defined
+
+# Create automation password if provided
+- name: Create automation password
+  ansible.builtin.set_fact:
+    nexus_automation_password: "{{ automation_password }}"
+  when: automation_password is defined
 
 # Create automation user in Nexus repository
 # Use variables automation_username, automation_password and automation_e-mail if provided, else use default

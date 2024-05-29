@@ -13,6 +13,8 @@ actions:
   - configure_description: "Configureer Nexus Repository."
   - configure_icon: "media/icon_nexus_repository.png"
 
+  - configure_vault
+
   - update
   - update_description: "Update van Sonatype Nexus Repository naar laatste versie."
   - update_icon: "media/icon_nexus_repository.png"
