@@ -125,6 +125,60 @@
   when: uninstall == true
 
 #########################################################
+## Pre-installation user/group                         ##
+#########################################################
+# use user podman with podman containers, if not exists or not using podman, use vault user
+
+# create podman user and group when platform is podman
+- name: Create user/group for podman platform
+  when: platform == "podman"
+  block:
+
+    # Create podman user group
+    - name: Create Podman user group
+      ansible.builtin.group: 
+        name: "podman"
+      become: true
+
+    # Create podman user
+    - name: Create Podman user
+      ansible.builtin.user:
+        name: "podman"
+        group: "podman"
+        system: true
+        shell: "/bin/bash"
+        comment: "Podman user"
+        createhome: "yes"
+        state: present
+
+    # Enable linger for user
+    - name: Enable linger for Podman user
+      ansible.builtin.command: "loginctl enable-linger podman"
+
+    # Create folder for ansible tmp files
+    - name: Create home folders for user podman
+      ansible.builtin.file:
+        path: /home/podman/.ansible/tmp
+        state: directory
+        owner: podman
+        mode: 0755
+
+    # Create systemd folder for user
+    - name: Create systemd folder for user podman
+      ansible.builtin.file:
+        path: "/home/podman/.config/systemd/user/"
+        state: directory
+        owner: podman
+        mode: 0755
+
+    # Set variable service_user
+    - name: Set variable service_user
+      ansible.builtin.set_fact:
+        service_user: "podman"
+
+# TODO: create user for kubernetes, local
+
+#########################################################
 ## Installation                                        ##
 #########################################################
 
