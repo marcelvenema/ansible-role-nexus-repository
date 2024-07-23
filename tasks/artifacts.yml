@@ -17,6 +17,30 @@
     - nexus_repository_username
     - nexus_repository_password
 
+
+# Test if repository address is valid. 
+- name: Test if repository address is valid.
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_address }}/service/rest/v1/status/check"  
+    method: GET
+    status_code: 200, 401
+    user: "{{ nexus_repository_username }}"
+    password: "{{ nexus_repository_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    body_format: json 
+    headers:
+      accept: application/json
+      Content-Type: application/json
+  register: nexus_repository_status
+
+# Show custom error message if repository address is not valid.
+- name: Show information message.
+  ansible.builtin.fail:
+    msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
+  when: nexus_repository_status.status != 200
+
+
 #########################################################
 ## Sonatype Nexus artifacts import                     ##
 #########################################################
@@ -25,7 +49,7 @@
   block:
 
     # Validate local variables
-    - name: Validate local variables for Nexus Repository import_artifacts action.
+    - name: Validate local variables for Nexus Repository export_artifacts action.
       ansible.builtin.assert:
         that: "{{ varitem }} is defined"
         fail_msg: "Required variable '{{ varitem }}' has not been provided."
@@ -33,16 +57,51 @@
       loop_control:
         loop_var: varitem
       loop: 
-        - nexus_firstname
+        - nexus_repository_name
+        - nexus_repository_folder
+        - source_folder
 
-    # Show information message
-    - name: This part is not (yet) implemented.
+    # Test if repository name is valid.
+    - name: Test if repository name is valid.
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/{{ nexus_repository_name }}"  
+        method: GET
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json 
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: nexus_repository_status
+  
+    # Show custom error message if repository address is not valid.
+    - name: Export artifacts - information message.
+      ansible.builtin.fail:
+        msg: "Cannot find {{ nexus_repository_name }} on '{{ nexus_repository_address }}'..."
+      when: nexus_repository_status.status != 200
+
+    # find files in ource folder
+    - name: "Find files in source folder '{{ source_folder }}'..."
+      ansible.builtin.find:
+        paths: "{{ source_folder }}"
+        recurse: yes
+        file_type: file
+      register: source_files
+
+    # Debug message
+    - name: "Import artifacts - Information mesaage"
       ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
-
-    # Stop playbook
-    - name: Stop playbook
-      ansible.builtin.meta: end_play
+        msg: "Uploading {{ source_files.files | length }} files to {{ nexus_repository_address }}..."
+   
+    # include task to upload each asset
+    - name: "Gathering data to import artifacts..."
+      ansible.builtin.include_tasks: artifacts_import.yml
+      loop: "{{ source_files.files }}"
+      loop_control:
+        label: "{{ item }}"
+      no_log: true
 
 #########################################################
 ## Sonatype Nexus artifacts export                     ##
@@ -62,30 +121,8 @@
         loop_var: varitem
       loop: 
         - nexus_repository_name
-        - nexus_repository_artifact
+        - nexus_repository_folder
         - destination_folder
-
-    # Test if repository address is valid. 
-    - name: Test if repository address is valid.
-      ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/status/check"  
-        method: GET
-        status_code: 200, 401
-        user: "{{ nexus_repository_username }}"
-        password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
-        return_content: yes
-        body_format: json 
-        headers:
-          accept: application/json
-          Content-Type: application/json
-      register: nexus_repository_status
-
-    # Show custom error message if repository address is not valid.
-    - name: Show information message.
-      ansible.builtin.fail:
-        msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
-      when: nexus_repository_status.status != 200
 
     # Test if repository name is valid.
     - name: Test if repository name is valid.
@@ -101,42 +138,53 @@
           accept: application/json
           Content-Type: application/json
       register: nexus_repository_status
- 
+  
     # Show custom error message if repository address is not valid.
-    - name: Show information message.
+    - name: Export artifacts - information message.
       ansible.builtin.fail:
         msg: "Cannot find {{ nexus_repository_name }} on '{{ nexus_repository_address }}'..."
       when: nexus_repository_status.status != 200
 
-    # Declare continuationtoken variable.
-    - name: Define continuationtoken variable.
+    # Ensure destination folder exists
+    - name: "Ensure destination folder {{ destination_folder }} exists..."
+      ansible.builtin.file:
+        path: "{{ destination_folder }}"
+        state: directory
+        mode: "0755"
+      
+    # Set search query
+    - name: Export artifacts - Create search query
       ansible.builtin.set_fact:
-        continuationtoken: "start"
+        search_query: "&q={{ nexus_repository_folder | regex_replace('/', '%2F') }}"
+      when: nexus_repository_folder is defined
 
-    # Get list of assets from repository.
+    # Set continuation_token
+    - name: Set continuation token for pagination
+      ansible.builtin.set_fact:
+        continuation_token: "firstPage"
+        file_urls: []
 
-
-    # Get list of assets from repository, 
-    - name: Get list of assets
-      ansible.builtin.include_tasks: artifacts_get_assets.yml
-      vars:
-        nexus_asset_repository_address: "{{ nexus_repository_address }}"
-        nexus_asset_repository_username: "{{ nexus_repository_username }}"
-        nexus_asset_repository_password: "{{ nexus_repository_password }}"
-        nexus_asset_repository_name: "{{ nexus_repository_name }}"
-        nexus_asset_repository_artifact: "{{ nexus_repository_artifact }}"
-        #nexus_asset_continuationtoken: "{{ continuationtoken }}"
-      loop: 
-        - continuationtoken != ""
+    # include task to get assets from Nexus repository
+    - name: "Get assets from Nexus repository ({{ nexus_repository_address }})..."
+      ansible.builtin.import_tasks: artifacts_get_assets.yml
+      until: continuation_token == "" or continuation_token is not defined
 
     # Show information message
-    - name: This part is not (yet) implemented.
-      ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
+    - name: Export artifacts - information message
+      debug:
+        msg:
+          - "Total of {{ file_urls | length }} files found to export from repository {{ nexus_repository_folder}} on {{ nexus_repository_address}}..."
+          - "Downloading files to folder '{{ destination_folder }}'. This may take a while..."
+    
+    # include task to download each asset
+    - name: "Gathering data to export artifacts..."
+      ansible.builtin.include_tasks: artifacts_export.yml
+      loop: "{{ file_urls }}"
+      loop_control:
+        label: "{{ item }}"
+      no_log: true
 
-    # Stop playbook
-    - name: Stop playbook
-      ansible.builtin.meta: end_play
+
 
 #########################################################
 ## Sonatype Nexus artifacts sync                       ##

@@ -17,10 +17,6 @@ Naast installatie en configuratie zijn ook diensten beschikbaar voor het opslaan
 # Roadmap
 
 
-
-## Export en Import van artifacts
-De dienst export_artifacts vanaf een repository naar een folder en import_artifacts voor vice-versa, dient meer robuust gemaakt te worden zodat deze productiegereed is.<br/>
-
 # Diensten
 - Dienst Update Nexus Repository voltooien.
 - Dienst Start Nexus Repository service voltooien.

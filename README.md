@@ -25,7 +25,7 @@ variablen:<br/>
 <kbd>platform (optioneel)</kbd>  : installeer op specifiek platform, bijvoorbeeld podman, kubernetes, host. Standaard is autodetect. (podman, kubernetes, host)<br/>
 <kbd>uninstall (optioneel)</kbd> : true/false. Wanneer, true wordt voor installatie eerst uninstall gestart.<br/>
 <br/>
-Indien onderstaande gegevens worden toegevoegd, wordt bij installatie een key/value secret engine in de vault gemaakt met admin wachtwoord.<br/>  
+Indien onderstaande gegevens worden toegevoegd, wordt bij installatie een key/value secret engine in de vault gemaakt met admin wachtwoord.<br/>
 <kbd>vault_address</kbd>         : URL naar vault adres voor toegang vault, bijvoorbeeld `http://localhost:8081`. <br/>
 <kbd>vault_token</kbd>           : token voor toegang tot vault.<br/>
 
@@ -49,7 +49,7 @@ Stop van Nexus Repository OSS service. (backlog).<br/>
 variablen:<br/>
 <kbd>(geen)</kbd> : Geen variabelen benodigd.<br/>
 
-Wanneer variable action niet is ingevuld, wordt gedetecteerd of Nexus Repository OSS al is geinstalleerd. Zo nee, wordt aan action waarde **install** toegekend. Zo ja, wordt aan action waarde **start** toegekend.<br/>   
+Wanneer variable action niet is ingevuld, wordt gedetecteerd of Nexus Repository OSS al is geinstalleerd. Zo nee, wordt aan action waarde **install** toegekend. Zo ja, wordt aan action waarde **start** toegekend.<br/>
 
 
 Voorbeeld:
@@ -126,25 +126,25 @@ variablen:<br/>
 
 
 action: **import_artifacts**<br/>
-Importeer artifacts in folderstructuur naar Nexus repository. (backlog).<br/>
+Importeer artifacts in folderstructuur naar Nexus repository.<br/>
 variablen:<br/>
 <kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
 <kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
 <kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
 <kbd>nexus_repository_name</kbd>     : Naam van de repository om artifacts te importeren. Deze repository dient al te bestaan.<br/>
 <kbd>nexus_repository_folder</kbd>   : Repository folder voor import artifacts, bijvoorbeeld '/Microsoft/Windows/Server/2025'.<br/>
-<kbd>data_folder</kbd>               : Folder voor import artifacts, bijvoorbeeld '/tmp/'.<br/>
+<kbd>source_folder</kbd>               : Folder voor import artifacts, bijvoorbeeld '/tmp/'.<br/>
 
 
 action: **export_artifacts**<br/>
-Export artifacts uit repository naar folderstructuur. (backlog).<br/>
+Export artifacts uit repository naar folderstructuur.<br/>
 variablen:<br/>
 <kbd>nexus_repository_address</kbd> : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
 <kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
 <kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
 <kbd>nexus_repository_name</kbd>     : Naam van de repository.<br/>
 <kbd>nexus_repository_folder (optioneel)</kbd> : Repository folder voor export artifacts. Niet ingevuld is export gehele repository.<br/>
-<kbd>data_folder</kbd>               : Folder voor export artifacts, bijvoorbeeld '/tmp/export/'.<br/>
+<kbd>destination_folder</kbd>               : Folder voor export artifacts, bijvoorbeeld '/tmp/export/'.<br/>
 
 
 action: **sync_artifacts**<br/>
@@ -153,7 +153,7 @@ variablen:<br/>
 <kbd>nexus_repository_address</kbd> : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
 <kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
 <kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>config_file</kbd>               : Configuratie file met synchronisatie items.<br/> 
+<kbd>config_file</kbd>               : Configuratie file met synchronisatie items.<br/>
 
 
 ***

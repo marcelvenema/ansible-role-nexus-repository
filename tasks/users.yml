@@ -12,7 +12,7 @@
     quiet: true
   loop_control:
     loop_var: varitem
-  loop: 
+  loop:
     - nexus_repository_address
     - nexus_repository_username
     - nexus_repository_password
@@ -40,7 +40,7 @@
         quiet: true
       loop_control:
         loop_var: varitem
-      loop: 
+      loop:
         - nexus_username
 
 #########################################################
@@ -59,7 +59,7 @@
         quiet: true
       loop_control:
         loop_var: varitem
-      loop: 
+      loop:
         - nexus_firstname
         - nexus_lastname
         - nexus_email
@@ -69,23 +69,23 @@
     # Create user in Nexus Repository Manager via API
     - name: Create User in Nexus Repository Manager
       ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/security/users"  
+        url: "{{ nexus_repository_address }}/service/rest/v1/security/users"
         method: POST
         user: "admin"
         password: "{{ nexus_admin_password }}"
         force_basic_auth: yes
-        body_format: json 
-        body: 
+        body_format: json
+        body:
           userId      : "{{ nexus_username }}"
           firstName   : "{{ nexus_firstname }}"
           lastName    : "{{ nexus_lastname }}"
           emailAddress: "{{ nexus_email }}"
           password    : "{{ nexus_password }}"
           status      : "active"
-          roles       : ["{{ nexus_roles }}"] 
+          roles       : ["{{ nexus_roles }}"]
         headers:
           accept: application/json
-          Content-Type: application/json        
+          Content-Type: application/json
 
 #########################################################
 ## Destroy User                                        ##
@@ -103,7 +103,7 @@
         quiet: true
       loop_control:
         loop_var: varitem
-      loop: 
+      loop:
         - nexus_username
 
     # Show information message

@@ -1,58 +1,9 @@
 ---
 
-# Set base url to query repository for assets.
-- name: Set base url to query repository for assets.
-  ansible.builtin.set_fact:
-    nexus_asset_url: "{{ nexus_asset_repository_address }}/service/rest/v1/search/assets?"
-
-# Set query part of url. Add q=<artifact> if not empty.
-- name: Set query part of url.
-  ansible.builtin.set_fact:
-    nexus_asset_query_part: "{% if nexus_asset_repository_artifact == '' %}{% else %}q={{ nexus_asset_repository_artifact }}{% endif %}" 
-
-# Add to url if query part is not empty.
-- name: Add to url if query part is not empty.
-  ansible.builtin.set_fact:
-    nexus_asset_url: "{{ nexus_asset_url }}{{ nexus_asset_query_part }}"
-  when: nexus_asset_query_part != ""
-   
-# Set repository part of url. Add repository=<repository> if not empty.
-- name: Set repository part of url
-  ansible.builtin.set_fact:
-    nexus_asset_repository_part: "{% if nexus_asset_repository_name == '' %}{% else %}repository={{ nexus_asset_repository_name }}{% endif %}" 
-
-# Add to url if repository part is not empty.
-- name: Add to url if repository part is not empty.
-  ansible.builtin.set_fact:
-    nexus_asset_url: "{{ nexus_asset_url }}{% if nexus_asset_query_part == '' %}{{ nexus_asset_repository_part }}{% else %}&{{ nexus_asset_repository_part }}{% endif %}"
-  when: nexus_asset_repository_part != ""
-
-# Set continuationtoken part of url. Empty token if 'start'. 
-- name: Set token part of url
-  ansible.builtin.set_fact:
-    continuationtoken: ""
-  when: continuationtoken == "start"
-
-# Set continuationtoken part of url. Add continuationToken=<continuationtoken> if not empty.
-- name: Set token part of url
-  ansible.builtin.set_fact:
-    nexus_asset_token_part: "{% if continuationtoken == '' %}{% else %}continuationToken={{ continuationtoken }}{% endif %}"
-
-# Add to url if token part is not empty.
-- name: Add to url if token part is not empty.
-  ansible.builtin.set_fact:
-    nexus_asset_url: "{{ nexus_asset_url }}&{{ nexus_asset_token_part }}"
-  when: nexus_asset_token_part != ""
-
-# Debug message
-- name: Debug message
-  ansible.builtin.debug:
-    msg: "nexus_asset_url: {{ nexus_asset_url }}"
-
-# Assemble list of assets from repository, use uri and continuationtoken. Loop until continuationtoken is null.
-- name: List assets from repository, use uri and continuationtoken. Loop until continuationtoken is null.
+# Get assets from Nexus repository
+- name: "Retrieve assets from repository {{ nexus_repository_name }}..."
   ansible.builtin.uri:
-    url: "{{ nexus_asset_url }}"  
+    url: "{{ nexus_repository_address }}/service/rest/v1/search/assets?repository={{ nexus_repository_name }}{{ search_query }}"  
     method: GET
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
@@ -62,21 +13,11 @@
     headers:
       accept: application/json
       Content-Type: application/json
-  register: nexus_repository_assets
+  register: search_result
 
-# Debug result
-- name: Debug result
-  ansible.builtin.debug:
-    msg: "nexus_repository_assets: {{ nexus_repository_assets }}"
-
-# Set continuationtoken variable.
-- name: Set continuationtoken
-  ansible.builtin.set_fact:
-    continuationtoken: "{{ nexus_repository_assets.json.continuationToken }}"
-  when: nexus_repository_assets.json.continuationToken is defined
-
-# Debug continuationtoken
-- name: Debug continuationtoken
-  ansible.builtin.debug:
-    msg: "continuationtoken: {{ continuationtoken }}"
-
+# Set continuation token
+- name: Set continuation token for pagination
+  set_fact:
+    continuation_token: "{{ search_result.json.continuationToken }}"
+    file_urls: "{{ search_result.json['items'] | map(attribute='downloadUrl') | list }}"
+  when: search_result.status == 200

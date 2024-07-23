@@ -1,0 +1,20 @@
+---
+
+# Show information
+- name: "Import artifacts - Information message"
+  ansible.builtin.debug:
+    msg:
+      - "Import artifact {{ item.path | basename }} to repository {{ nexus_repository_name }}. This may take a while..."
+
+# upload files to Nexus repository
+- name: "Upload files to Nexus repository ({{ nexus_repository_address }})..."
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}/{{ nexus_repository_folder }}/{{ item.path | regex_replace('^' + source_folder + '/', '') }}"
+    method: PUT
+    user: "{{ nexus_repository_username }}"
+    password: "{{ nexus_repository_password }}"
+    force_basic_auth: yes
+    src: "{{ item.path }}"
+    status_code: 201
+    headers:
+      Content-Type: "application/octet-stream"
