@@ -1,0 +1,92 @@
+#########################################################
+## Get Nexus Repository variables from Vault           ##
+#########################################################
+
+- name: Gather Nexus Repository variables...
+  when: nexus_repository_initialized is not defined or nexus_repository_initialized is not true
+  block: 
+
+    # Validate variables
+    - name: Validate variables for Nexus Repository...
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_name
+
+    # NEXUS REPOSITORY
+    # Set variable _secret_name to cucm_name
+    - name: Register Vault variable (nexus_repository_name)...
+      ansible.builtin.set_fact:
+        _secret_name: "{{ nexus_repository_name }}"
+      no_log: true
+
+    # NEXUS_REPOSITORY_ADDRESS
+    # Set variable if not defined
+    - name: "Register variable (nexus_repository_address)..."
+      ansible.builtin.set_fact:
+        nexus_repository_address: ""
+      when: nexus_repository_address is not defined
+      no_log: true
+
+    # Get secrets from HashiCorp Vault
+    - name: Get variable from Vault (nexus_repository_address)...
+      ansible.builtin.include_role:
+        name: vault
+      vars:
+        action: get_secret
+        vault_name: "nexus-repository"
+        secret_name: "{{ _secret_name }}"
+        secret_key: "nexus_repository_address"
+        secret_result: "nexus_repository_address"
+      when : nexus_repository_address == ""
+
+    # NEXUS_REPOSITORY_USERNAME
+    # Set variable if not defined
+    - name: "Register variable (nexus_repository_username)..."
+      ansible.builtin.set_fact:
+        nexus_repository_username: ""
+      when: nexus_repository_username is not defined
+      no_log: true
+
+    # Get secrets from HashiCorp Vault
+    - name: Get variable from Vault (nexus_repository_username)...
+      ansible.builtin.include_role:
+        name: vault
+      vars:
+        action: get_secret
+        vault_name: "nexus-repository"
+        secret_name: "{{ _secret_name }}"
+        secret_key: "nexus_repository_username"
+        secret_result: "nexus_repository_username"
+      when : nexus_repository_username == ""
+
+    # NEXUS_REPOSITORY_PASSWORD
+    # Set variable if not defined
+    - name: "Register variable (nexus_repository_password)..."
+      ansible.builtin.set_fact:
+        nexus_repository_password: ""
+      when: nexus_repository_password is not defined
+      no_log: true
+
+    # Get secrets from HashiCorp Vault
+    - name: Get variable from Vault (nexus_repository_password)...
+      ansible.builtin.include_role:
+        name: vault
+      vars:
+        action: get_secret
+        vault_name: "nexus-repository"
+        secret_name: "{{ _secret_name }}"
+        secret_key: "nexus_repository_password"
+        secret_result: "nexus_repository_password"
+      when : nexus_repository_password == ""
+
+    # Set variable nexus_repository_initialized to true
+    # If true, gather_nexus_repository_variables.yml will not be executed again
+    - name: Register variable (nexus_repository_initialized)...
+      ansible.builtin.set_fact:
+        nexus_repository_initialized: true
+      no_log: true

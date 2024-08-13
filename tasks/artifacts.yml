@@ -13,9 +13,19 @@
   loop_control:
     loop_var: varitem
   loop: 
-    - nexus_repository_address
-    - nexus_repository_username
-    - nexus_repository_password
+    - nexus_repository_name
+
+#########################################################
+## Get Nexus Repository variables from Vault           ##
+#########################################################
+
+# include task gather_nexus_repository_variables.yml
+- name: Gather Nexus Repository variables...
+  ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
+
+#########################################################
+## Test connection to Nexus Repository                 ##
+#########################################################
 
 # Test if repository address is valid. 
 - name: Test if repository address is valid...
@@ -39,7 +49,6 @@
     msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
   when: nexus_repository_status.status != 200
 
-
 #########################################################
 ## Sonatype Nexus artifacts import                     ##
 #########################################################
@@ -48,7 +57,7 @@
   block:
 
     # Validate local variables
-    - name: Validate variables for Nexus Repository import_artifacts action.
+    - name: Validate variables for Nexus Repository import_artifacts action...
       ansible.builtin.assert:
         that: "{{ varitem }} is defined"
         fail_msg: "Required variable '{{ varitem }}' has not been provided."

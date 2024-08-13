@@ -23,6 +23,11 @@ actions:
 
   - stop
 
+  - setup
+  - setup_description: "Setup van Sonatype Nexus Repository."
+  - setup_icon: "media/icon_nexus_repository.png"
+
+
   # ----------------------------------------
   # get user
   - get_user

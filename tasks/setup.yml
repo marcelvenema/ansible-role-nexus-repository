@@ -1,0 +1,12 @@
+---
+
+#########################################################
+## Nexus Repository setup module                       ##
+#########################################################
+
+# Configure Vault for Nexus Repository if Vault is present
+- name: Configure Vault for Nexus Repository...
+  ansible.builtin.include_tasks: configure_vault.yml
+  when:
+    - vault_address is defined
+    - vault_token is defined

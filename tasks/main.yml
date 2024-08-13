@@ -1,5 +1,10 @@
 --- 
 
+# Show message
+- name: Show action message
+  debug:
+    msg: "Starting role {{ role_name }}... action: {{ action }}."
+
 # If action variable is not defined, gather status of the service and set action variable  
 - name: Determine action variable status
   ansible.builtin.include_tasks: get_status.yml
@@ -13,63 +18,66 @@
     quiet: true
 
 # -------------------------------------------------------
-  # install, uninstall, configure, update
-- name: Install
+  # install, uninstall, configure, update, setup
+- name: Start install action...
   ansible.builtin.include_tasks: install.yml
   when: action == "install"
 
-- name: Uninstall
+- name: Start uninstall action...
   ansible.builtin.include_tasks: uninstall.yml
   when: action == "uninstall"
 
-- name: Configure
+- name: Start configure action...
   ansible.builtin.include_tasks: configure.yml
   when: action == "configure"
 
-- name: Configure Vault
+- name: Start configure_vault action...
   ansible.builtin.include_tasks: configure_vault.yml
   when: action == "configure_vault"
 
-- name: Update
+- name: Start update action...
   ansible.builtin.include_tasks: update.yml
   when: action == "update"
 
+- name: Start setup action...
+  ansible.builtin.include_tasks: setup.yml
+  when: action == "setup"
+
 # -------------------------------------------------------
  # Start, stop
-- name: Start
+- name: Start start action...
   ansible.builtin.include_tasks: start.yml
   when: action == "start"
 
-- name: Stop
+- name: Start stop action...
   ansible.builtin.include_tasks: stop.yml
   when: action == "stop"
 
 # -------------------------------------------------------
   # users
-- name: Get user
+- name: Start get_user action...
   ansible.builtin.include_tasks: users.yml
   when: action == "get_user"
 
-- name: Create user
+- name: Start create_user action...
   ansible.builtin.include_tasks: users.yml
   when: action == "create_user"
 
-- name: Destroy user
+- name: Start destroy_user action...
   ansible.builtin.include_tasks: users.yml
   when: action == "destroy_user"
 
 # -------------------------------------------------------
   # repositories
-- name: Get repository
+- name: Start get_repository action...
   ansible.builtin.include_tasks: repositories.yml
   when: action == "get_repository"
 
-- name: Create repository
+- name: Start create_repository action...
   ansible.builtin.include_tasks: repositories.yml
   when: action == "create_repository"
 
-
-- name: Destroy user
+- name: Start destroy_repository action...
   ansible.builtin.include_tasks: repositories.yml
   when: action == "destroy_repository"
 
