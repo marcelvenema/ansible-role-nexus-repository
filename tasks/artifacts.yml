@@ -4,8 +4,8 @@
 ## Sonatype Nexus artifacts module                     ##
 #########################################################
 
-# Validate global variables
-- name: Validate global variables for Sonaytype Nexus artifacts module.
+# Validate artifacts variables
+- name: Validate variables for Sonaytype Nexus artifacts module...
   ansible.builtin.assert:
     that: "varitem is defined"
     fail_msg: "Required variable '{{ varitem }}' has not been provided."
@@ -17,9 +17,8 @@
     - nexus_repository_username
     - nexus_repository_password
 
-
 # Test if repository address is valid. 
-- name: Test if repository address is valid.
+- name: Test if repository address is valid...
   ansible.builtin.uri:
     url: "{{ nexus_repository_address }}/service/rest/v1/status/check"  
     method: GET
@@ -35,7 +34,7 @@
   register: nexus_repository_status
 
 # Show custom error message if repository address is not valid.
-- name: Show information message.
+- name: Show information message
   ansible.builtin.fail:
     msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
   when: nexus_repository_status.status != 200
@@ -49,7 +48,7 @@
   block:
 
     # Validate local variables
-    - name: Validate local variables for Nexus Repository export_artifacts action.
+    - name: Validate variables for Nexus Repository import_artifacts action.
       ansible.builtin.assert:
         that: "{{ varitem }} is defined"
         fail_msg: "Required variable '{{ varitem }}' has not been provided."
@@ -62,7 +61,7 @@
         - source_folder
 
     # Test if repository name is valid.
-    - name: Test if repository name is valid.
+    - name: Test if repository name is valid...
       ansible.builtin.uri:
         url: "{{ nexus_repository_address }}/service/rest/v1/repositories/{{ nexus_repository_name }}"  
         method: GET
@@ -77,7 +76,7 @@
       register: nexus_repository_status
   
     # Show custom error message if repository address is not valid.
-    - name: Export artifacts - information message.
+    - name: Import artifacts - information message...
       ansible.builtin.fail:
         msg: "Cannot find {{ nexus_repository_name }} on '{{ nexus_repository_address }}'..."
       when: nexus_repository_status.status != 200
@@ -91,12 +90,12 @@
       register: source_files
 
     # Debug message
-    - name: "Import artifacts - Information mesaage"
+    - name: "Import artifacts - Information mesaage..."
       ansible.builtin.debug:
         msg: "Uploading {{ source_files.files | length }} files to {{ nexus_repository_address }}..."
    
     # include task to upload each asset
-    - name: "Gathering data to import artifacts..."
+    - name: "Start artifacts_import task..."
       ansible.builtin.include_tasks: artifacts_import.yml
       loop: "{{ source_files.files }}"
       loop_control:
