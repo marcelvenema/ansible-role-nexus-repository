@@ -21,7 +21,7 @@
     # Set variable _secret_name to cucm_name
     - name: Register Vault variable (nexus_repository_name)...
       ansible.builtin.set_fact:
-        _secret_name: "{{ nexus_repository_name }}"
+        _secret_name: "{{ nexus_repository_id }}"
       no_log: true
 
     # NEXUS_REPOSITORY_ADDRESS
