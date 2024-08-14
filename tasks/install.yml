@@ -5,7 +5,7 @@
 #########################################################
 
 # Validate variables
-- name: Validate variables for action.
+- name: Validate variables for action...
   ansible.builtin.assert:
     that: item is defined
     fail_msg: "Required variable '{{ item }}' has not been provided."
@@ -18,42 +18,42 @@
 # and used in multiple roles
 
 # Set var role_repository_url
-- name: "Determine url {{ nexus_repository_url }}..."
+- name: "Register variable (nexus_repository_url)..."
   ansible.builtin.set_fact:
     role_repository_url: "{{ nexus_repository_url }}"
 
 # Set role_repository_tag if defined
-- name: Determine tag...
+- name: Register variable (nexus_repository_tag)...
   ansible.builtin.set_fact:
     role_repository_tag: "{{ nexus_repository_tag }}"
   when: nexus_repository_tag is defined
 
 # Set role_repository_checksum if defined
-- name: Determine checksum...
+- name: Register variable (nexus_repository_checksum)...
   ansible.builtin.set_fact:
     role_repository_checksum: "{{ nexus_repository_checksum }}"
   when: nexus_repository_checksum is defined
 
 # Set role_repository_checksum_algorithm if defined
-- name: Determine checksum algorithm...
+- name: Register variable nexus_repository_checksum_algorithm)...
   ansible.builtin.set_fact:
     role_repository_checksum_algorithm: "{{ nexus_repository_checksum_algorithm }}"
   when: nexus_repository_checksum_algorithm is defined
 
 # Set container name
-- name: Determine container name
+- name: Register variable (nexus_container_name)...
   ansible.builtin.set_fact:
     role_container_name: "{{ nexus_container_name }}"
   when: nexus_container_name is defined
 
 # Set container ports
-- name: Determine container ports
+- name: Register variable (nexus_container_ports)...
   ansible.builtin.set_fact:
     role_container_ports: "{{ nexus_container_ports }}"
   when: nexus_container_ports is defined
 
 # Set container volumes
-- name: Determine container volumes
+- name: Register variable (nexus_container_volumes)...
   ansible.builtin.set_fact:
     role_container_volumes: "{{ nexus_container_volumes }}"
   when: nexus_container_volumes is defined
@@ -63,24 +63,24 @@
 #########################################################
 
 # Gather installed packages
-- name: Gather installed packages
+- name: Gather installed packages...
   ansible.builtin.package_facts:
     manager: auto
 
 # Bypass platform check if platform is defined
-- name: Bypass platform check if platform is defined
+- name: Bypass platform check if platform is defined...
   ansible.builtin.set_fact:
     platform_check: false
   when: platform is defined
 
 # Override platform check if platform variable is defined.
-- name: See on which platform it can be installed...
+- name: Gather infrastructure platform information...
   ansible.builtin.set_fact:
     platform_check: true 
   when: platform is undefined 
 
 # Set platform if podman is detected
-- name: Set platform if podman is detected
+- name: Set platform to Podman...
   ansible.builtin.set_fact:
     platform: "podman"
     platform_check: false
@@ -89,7 +89,7 @@
     - platform_check == true
 
 # Set platform if kubernetes is detected
-- name: Set platform if kubernetes is detected
+- name: Set platform to Kubernetes...
   ansible.builtin.set_fact:
     platform: "kubernetes"
     platform_check: false
@@ -98,13 +98,13 @@
     - platform_check == true
 
 # Set platform to host if no podman or no kubernetes is detected
-- name: Set platform to host if no Podman or Kubernetes is detected
+- name: Set platform to host...
   ansible.builtin.set_fact:
     platform: "host"
   when: platform_check == true
 
 # Clear variable
-- name: Clear platform_check variable
+- name: Clear variables...
   ansible.builtin.set_fact:
     platform_check: undefined 
 
@@ -113,13 +113,13 @@
 #########################################################
 
 # Set uninstall to false if not defined
-- name: Set uninstall variable if set
+- name: Register variable (uninstall)...
   ansible.builtin.set_fact:
     uninstall: false
   when: uninstall is not defined
 
 # Run uninstall if uninstall is set
-- name: Run uninstall playbook if set
+- name: Start uninstall task...
   ansible.builtin.include_tasks: uninstall.yml
   ignore_errors: true
   when: uninstall == true
@@ -130,18 +130,18 @@
 # use user podman with podman containers, if not exists or not using podman, use vault user
 
 # create podman user and group when platform is podman
-- name: Create user/group for podman platform
+- name: Create user and usergroup for Podman...
   when: platform == "podman"
   block:
 
     # Create podman user group
-    - name: Create Podman user group
+    - name: Create Podman usergroup...
       ansible.builtin.group: 
         name: "podman"
       become: true
 
     # Create podman user
-    - name: Create Podman user
+    - name: Create Podman user...
       ansible.builtin.user:
         name: "podman"
         group: "podman"
@@ -152,11 +152,11 @@
         state: present
 
     # Enable linger for user
-    - name: Enable linger for Podman user
+    - name: Enable linger for Podman user...
       ansible.builtin.command: "loginctl enable-linger podman"
 
     # Create folder for ansible tmp files
-    - name: Create home folders for user podman
+    - name: Create home folders for Podman user...
       ansible.builtin.file:
         path: /home/podman/.ansible/tmp
         state: directory
@@ -164,7 +164,7 @@
         mode: 0755
 
     # Create systemd folder for user
-    - name: Create systemd folder for user podman
+    - name: Create systemd folder for Podman user...
       ansible.builtin.file:
         path: "/home/podman/.config/systemd/user/"
         state: directory
@@ -172,7 +172,7 @@
         mode: 0755
 
     # Set variable service_user
-    - name: Set variable service_user
+    - name: Set variable (service_user)...
       ansible.builtin.set_fact:
         service_user: "podman"
 
@@ -186,12 +186,12 @@
 ## Installation on podman                              ##
 #########################################################
 
-- name: "Install {{ role_container_name }} repository on podman"
+- name: "Install {{ role_container_name }} repository on Podman..."
   when: platform == "podman"
   block:
 
     # Check if podman is detected
-    - name: Check if podman is detected
+    - name: Gather package information...
       ansible.builtin.assert:
         that: '"podman" in ansible_facts.packages'
         fail_msg: "Podman is not installed. Please install Podman first. Cannot continue..."
@@ -216,7 +216,7 @@
     # local file can be http, https, ftp or local file
 
     # If tag is not defined, set value to latest
-    - name: Validate repository_tag, set default
+    - name: Set variable (repository_tag)...
       ansible.builtin.set_fact:
         role_repository_tag: "latest"
       when: role_repository_tag is not defined or role_repository_tag == "" or role_repository_tag == none
@@ -227,7 +227,7 @@
         msg: "Get container image from registry. this may take a while..."
 
     # Pull image from repository to local image repository. If failed, lookup local image file.
-    - name: "Pull container image from repository {{ role_repository_url }}:{{ role_repository_tag }}"
+    - name: "Pull container image from repository {{ role_repository_url }}:{{ role_repository_tag }}..."
       containers.podman.podman_image:
         name: "{{ role_repository_url }}"
         tag: "{{ role_repository_tag }}"
@@ -235,7 +235,7 @@
       ignore_errors: true
 
     # If pull failed, try to use local file
-    - name: Install local image file
+    - name: Install local image file...
       when: pull_result is failed
       block:
 
@@ -245,13 +245,13 @@
             msg: "Cannot pull from container repository, trying to load from file..."
 
         # Delete local temp file
-        - name: "Delete local file /tmp/{{ role_container_name }}"
+        - name: "Delete local file /tmp/{{ role_container_name }}..."
           ansible.builtin.file:
             path: "/tmp/{{ role_container_name }}.tar"
             state: absent
 
         # repository_url is a local container file, check if file exists on ansible host
-        - name: Check if repository_url is a local container file
+        - name: Check if repository_url is a local container file...
           ansible.builtin.stat:
             path: "{{ role_repository_url }}"
           register: repository_url_result
@@ -379,7 +379,7 @@
 ## Installation via kubernetes                         ##
 #########################################################
 
-- name: Install container on Kubernetes
+- name: Install container on Kubernetes...
   when: platform == "kubernetes"
   block:
 
@@ -401,7 +401,7 @@
 ## Installation on host                                ##
 #########################################################
 
-- name: Install application on host
+- name: Install application on host...
   when: platform == "host"
   block:
 
@@ -424,7 +424,7 @@
 #########################################################
 
 # Configure Sonatype Nexus
-- name: Configure application
+- name: Start configure task...
   ansible.builtin.include_tasks: configure.yml 
 
 #########################################################
@@ -432,7 +432,7 @@
 #########################################################
 
 # Unset variables
-- name: Unset variables
+- name: Unset variables...
   ansible.builtin.set_fact:
     role_repository_url:
     role_repository_tag:

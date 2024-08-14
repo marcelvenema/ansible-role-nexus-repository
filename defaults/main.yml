@@ -9,3 +9,5 @@ nexus_repository_url: "docker.io/sonatype/nexus3"
 nexus_container_name: "nexus3"
 nexus_container_ports: ["8081:8081"]
 nexus_container_volumes: ["/data/nexus/nexus-data:/nexus-data:Z"]
+
+# nexus_repository_vault_name: "nexus-repository"

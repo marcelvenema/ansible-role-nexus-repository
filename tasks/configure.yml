@@ -4,19 +4,19 @@
 ## Configuration                                       ##
 #########################################################
 
-# Get hostname
-- name: Get hostname
+# Gather hostname
+- name: Gather hostname...
   ansible.builtin.command: hostname
   register: nexus_address
 
 # TODO
 # Set nexus_address 
-- name: Set nexus_repository_address
+- name: Register variable (nexus_repository_address)...
   ansible.builtin.set_fact:
     nexus_repository_address: "http://localhost:8081"
 
 # Wait for Nexus website is available
-- name: Wait for Nexus website is available
+- name: Wait for Nexus Repository website is available...
   ansible.builtin.uri:
     url: "{{ nexus_repository_address }}"
     method: GET
@@ -27,21 +27,21 @@
   delay: 10
 
 # Get Nexus admin password from podman
-- name: Get Nexus admin password
+- name: Gather Nexus Repository admin password...
   ansible.builtin.command: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
   register: set_admin_password
   no_log: true
   when: platform == "podman"
 
 # Set Nexus admin password
-- name: Set Nexus admin password
+- name: Register Nexus Repository admin password...
   ansible.builtin.set_fact:
     nexus_admin_password: "{{ set_admin_password.stdout }}"
     nexus_repository_password: "{{ set_admin_password.stdout }}"
     nexus_repository_username: "admin"
 
 # Wait for Nexus website is available
-- name: Wait for Nexus website is available
+- name: Wait for Nexus Repository website is available...
   ansible.builtin.uri:
     url: "{{ nexus_repository_address }}"
     method: GET
@@ -56,20 +56,20 @@
 #########################################################
 
 # Create automation password if not provided
-- name: Create automation password
+- name: Register automation password...
   ansible.builtin.set_fact:
     nexus_automation_password: "{{ lookup('ansible.builtin.password', '/dev/null') }}"
   when: automation_password is not defined
 
 # Create automation password if provided
-- name: Create automation password
+- name: Register automation password...
   ansible.builtin.set_fact:
     nexus_automation_password: "{{ automation_password }}"
   when: automation_password is defined
 
 # Create automation user in Nexus repository
 # Use variables automation_username, automation_password and automation_e-mail if provided, else use default
-- name: Create automation user for Nexus Repository
+- name: Create automation user for Nexus Repository...
   ansible.builtin.include_tasks: users.yml
   vars:
     action         : create_user
@@ -80,16 +80,6 @@
     nexus_email    : "{{ automation_email | default('automation@localhost') }}"
     nexus_roles    : "nx-admin"
   ignore_errors: true
-
-# Get hostname for Nexus Repository
-- name: Get hostname for Nexus Repository
-  ansible.builtin.command: hostname
-  register: hostname_nexus
-
-# Set nexus_hostname  
-- name: Set nexus_hostname
-  ansible.builtin.set_fact:
-    nexus_hostname: "http://{{ hostname_nexus.stdout }}:8081"
 
 # Configure Vault for Nexus if Vault is present
 - name: Configure Vault for Nexus Repository

@@ -20,7 +20,13 @@
 - name: Register variable (vault_name)...
   ansible.builtin.set_fact:
     _vault_name: "nexus-repository"
-  when: vault_name is not defined
+  when: nexus_repository_vault_name is not defined
+
+# Dbug message
+- name: Debug message...
+  ansible.builtin.debug:
+    msg: "{{ vault_address }}"
+
 
 # Check if secret_engine exists
 - name: "Check if Vault secret engine exists..."
@@ -60,7 +66,7 @@
   vars:
     action: create_secret
     vault_name: "{{ _vault_name }}"
-    secret_name: "{{ nexus_repository_name }}"
+    secret_name: "{{ nexus_repository_id }}"
     secret_keyvalue: "{ 'admin_password': 'change_me', 'nexus_repository_username': 'ansible', 'nexus_repository_password': 'change_me', 'nexus_repository_address': 'change_me' }"
 
 # Create Vault policy for Nexus
