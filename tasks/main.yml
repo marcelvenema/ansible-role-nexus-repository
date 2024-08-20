@@ -10,11 +10,12 @@
   ansible.builtin.include_tasks: get_status.yml
   when: action is not defined
 
-- name: "Verify valid action {{ action }}..."
+# Assert that action is in actions
+- name: "Verify valid action ({{ action }})..."
   ansible.builtin.assert:
     that:
-      - action is defined and action in actions
-    fail_msg: "Please provide 'action' {{ actions }}"
+      - action in (actions | map('dict2items') | map('first') | map(attribute='key') | list)
+    fail_msg: "The action '{{ action }}' is not in the list of valid actions..."
     quiet: true
 
 # -------------------------------------------------------

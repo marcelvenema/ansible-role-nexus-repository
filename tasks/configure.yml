@@ -4,16 +4,10 @@
 ## Configuration                                       ##
 #########################################################
 
-# Gather hostname
-- name: Gather hostname...
-  ansible.builtin.command: hostname
-  register: nexus_address
-
-# TODO
-# Set nexus_address 
+# Get IP address of Nexus Repository
 - name: Register variable (nexus_repository_address)...
   ansible.builtin.set_fact:
-    nexus_repository_address: "http://localhost:8081"
+    nexus_repository_address: "http://{{ ansible_default_ipv4.address }}:8081"
 
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
@@ -34,11 +28,10 @@
   when: platform == "podman"
 
 # Set Nexus admin password
-- name: Register Nexus Repository admin password...
+- name: Register Nexus Repository admin username and password...
   ansible.builtin.set_fact:
-    nexus_admin_password: "{{ set_admin_password.stdout }}"
-    nexus_repository_password: "{{ set_admin_password.stdout }}"
     nexus_repository_username: "admin"
+    nexus_repository_password: "{{ set_admin_password.stdout }}"
 
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
@@ -58,14 +51,7 @@
 # Create automation password if not provided
 - name: Register automation password...
   ansible.builtin.set_fact:
-    nexus_automation_password: "{{ lookup('ansible.builtin.password', '/dev/null') }}"
-  when: automation_password is not defined
-
-# Create automation password if provided
-- name: Register automation password...
-  ansible.builtin.set_fact:
-    nexus_automation_password: "{{ automation_password }}"
-  when: automation_password is defined
+    automation_password: "{{ lookup('password', '/dev/null length=12 chars=ascii_letters,digits') }}"
 
 # Create automation user in Nexus repository
 # Use variables automation_username, automation_password and automation_e-mail if provided, else use default
@@ -74,7 +60,7 @@
   vars:
     action         : create_user
     nexus_username : "{{ automation_username | default('automation') }}"
-    nexus_password : "{{ nexus_automation_password }}"
+    nexus_password : "{{ automation_password }}"
     nexus_firstname: "{{ automation_username | default('automation') }}"
     nexus_lastname : "{{ automation_username | default('automation') }}"
     nexus_email    : "{{ automation_email | default('automation@localhost') }}"

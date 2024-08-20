@@ -18,6 +18,7 @@
 action: **install**<br/>
 Installatie van laatste versie van Sonatype Nexus Repository OSS. Basis configuratie.<br/>
 variablen:<br/>
+<kbd>nexus_repository_id</kbd> : 
 <kbd>repository_url</kbd>        : URL met locatie van container repository. Kan een url zijn of pad naar lokaal of remote bestand, bijvoorbeeld 'docker.io/sonatype/nexus3', '/tmp/nexus3.67.1.tar', 'https://192.168.1.1/repo/nexus.tar'. Standaard verwijst naar docker.io/sonatype/nexus3 via defaults/main.yml.<br/>
 <kbd>repository_tag (optioneel)</kbd> : release of versienummer van het container image. standaard is 'latest'.<br/>
 <kbd>repository_checksum (optioneel)</kbd> : checksum van het container image. Voorbeeld: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" of "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".<br/>

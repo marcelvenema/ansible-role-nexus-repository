@@ -5,7 +5,7 @@
 #########################################################
 
 # Validate global variables
-- name: Validate global variables for Sonatype Nexus users module.
+- name: Validate required variables for Sonatype Nexus users module...
   ansible.builtin.assert:
     that: "varitem is defined"
     fail_msg: "Required variable '{{ varitem }}' has not been provided."
@@ -71,8 +71,8 @@
       ansible.builtin.uri:
         url: "{{ nexus_repository_address }}/service/rest/v1/security/users"
         method: POST
-        user: "admin"
-        password: "{{ nexus_admin_password }}"
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
         force_basic_auth: yes
         body_format: json
         body:

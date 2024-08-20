@@ -1,75 +1,133 @@
 ---
 
 actions:
-  - install
-  - install_description: "Installatie van laatste versie van Sonatype Nexus Repository. Basis configuratie."
-  - install_icon: "media/icon_nexus_repository.png"
+  # Deployment actions
+  - install:
+      description: "Installatie van laatste versie van Sonatype Nexus Repository. Basis configuratie."
+      icon: "media/icon_nexus_repository.png"
+      parameters:
+        - repository_url
+        - repository_tag
+        - repository_checksum
+        - repository_checksum_algorithm
+        - platform
+        - uninstall
+        - data_dir
 
-  - uninstall
-  - uninstall_description: "De-installatie van Sonatype Nexus Repository. Verwijderd de container, bestanden, gebruikers en groepen."
-  - uninstall_icon: "media/icon_nexus_repository.png"
+  - uninstall:
+      description: "De-installatie van Sonatype Nexus Repository. Verwijderd de container, bestanden, gebruikers en groepen."
+      icon: "media/icon_nexus_repository.png"
+      parameters:
+        - keep_data
 
-  - configure
-  - configure_description: "Configureer Nexus Repository."
-  - configure_icon: "media/icon_nexus_repository.png"
+  - configure:
+      description: "Configureer Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
+      parameters: 
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
 
-  - configure_vault
+  - configure_vault:
+      description: "Configureer Nexus Repository met Vault."
+      icon: "media/icon_nexus_repository.png"
 
-  - update
-  - update_description: "Update van Sonatype Nexus Repository naar laatste versie."
-  - update_icon: "media/icon_nexus_repository.png"
+  - update:
+      description: "Update van Sonatype Nexus Repository naar laatste versie."
+      icon: "media/icon_nexus_repository.png"
 
-  - start
+  - start:
+      description: "Start van Sonatype Nexus Repository service."
+      icon: "media/icon_nexus_repository.png"
 
-  - stop
+  - stop:
+      description: "Stop van Sonatype Nexus Repository service."
+      icon: "media/icon_nexus_repository.png"
+  
+  - setup:
+      description: "Setup van Sonatype Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
 
-  - setup
-  - setup_description: "Setup van Sonatype Nexus Repository."
-  - setup_icon: "media/icon_nexus_repository.png"
+  # User actions
+  - get_user:
+      description: "Haal gebruikers op van Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
 
+  - create_user:
+      description: "Maak gebruiker aan in Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
 
-  # ----------------------------------------
-  # get user
-  - get_user
-  # create user
-  - create_user
-  # destroy user
-  - destroy_user
-  # ----------------------------------------
-  # get repository
-  - get_repository
-  # create repository
-  - create_repository
-  # destroy repository
-  - destroy_repository
-  # ----------------------------------------
-  # import artifacts
-  - import_artifacts
-  # export artifacts
-  - export_artifacts
-  # sync artifacts
-  - sync_artifacts
-# ----------------------------------------
+  - destroy_user:
+      description: "Verwijder gebruiker uit Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
 
-install_properties:
-  - nexus_repository_url
-  - nexus_repository_url_description : ""
-  - nexus_repository_url_required : true
-  - nexus_repository_tag
-  - nexus_repository_tag_description : "Release of versienummer van het image. Standaard is 'latest'."
-  - nexus_data_dir
-  - nexus_data_dir_description : "Folder waarin de data van Vault wordt opgeslagen."
-  - platform
-  - platform_description : "installeer op specifiek platform, bijvoorbeeld podman, kubernetes, linux. Standaard is autodetect."
-  - uninstall
-  - uninstall_description : "Start de-installatie voordat de installatie wordt gestart. true/false. Standaard is 'true'."
-  - vault_address
-  - vault_address_description : "Adres van Vault server."
-  - vault_token
-  - vault_token_description : "Token van Vault server."
+  # Repository actions
+  - get_repository:
+      description: "Haal repository op van Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
 
-rolevars:
+  - create_repository:
+      description: "Maak repository aan in Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
+
+  - destroy_repository:
+      description: "Verwijder repository uit Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
+
+  # Artifact actions
+  - import_artifacts:
+      description: "Importeer artifacts in Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
+
+  - export_artifacts:
+      description: "Exporteer artifacts uit Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
+
+  - sync_artifacts:
+      description: "Synchroniseer artifacts in Nexus Repository."
+      icon: "media/icon_nexus_repository.png"
+
+# -------------------------------------------------------
+
+nexus_repository:
+  - id: 
+      value: "nexus-repository"
+      description: "Unique identifier for Nexus Repository." 
+  - address:
+      value: ""
+      description: "Address of Nexus Repository."
+  - username: 
+      value: ""
+      description: "Username for Nexus Repository."
+  - password: 
+      value: ""
+      description: "Password for Nexus Repository."
+  - container_name: 
+      value: "nexus-repository"
+      description: "Name of Nexus Repository container."
+  - container_ports: 
+      value: "8081:8081"
+      description: "Ports for Nexus Repository container."
+  - container_volumes: 
+      value: "/nexus-data:/nexus-data"
+      description: "Volumes for Nexus Repository container."
+  - repository_url: 
+      value: "docker.io/sonatype/nexus3"
+      description: "URL for Nexus Repository container."
+  - repository_tag: 
+      value: "latest"
+      description: "Tag for Nexus Repository container."
+  - repository_checksum: 
+      value: ""
+      description: "Checksum for Nexus Repository container."
+  - repository_checksum_algorithm: 
+      value: ""
+      description: "Checksum algorithm for Nexus Repository container."
+  - vault_name:
+      value: "nexus-repository"
+      description: "Vault name for Nexus Repository."
+
+role_vars:
   - nexus_repository_address
   - nexus_repository_username
   - nexus_repository_password
-
