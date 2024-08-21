@@ -60,7 +60,7 @@
         action: get_secret
         vault_name: "nexus-repository"
         secret_name: "{{ _secret_name }}"
-        secret_key: "nexus_repository_username"
+        secret_key: "automation_username"
         secret_result: "nexus_repository_username"
       when : nexus_repository_username == ""
 
@@ -80,7 +80,7 @@
         action: get_secret
         vault_name: "nexus-repository"
         secret_name: "{{ _secret_name }}"
-        secret_key: "nexus_repository_password"
+        secret_key: "automation_password"
         secret_result: "nexus_repository_password"
       when : nexus_repository_password == ""
 
