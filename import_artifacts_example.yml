@@ -1,0 +1,25 @@
+- name: Import artifacts from Nexus Repository example
+  hosts: localhost
+  vars:
+    vault_address: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR', default=Undefined) }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN', default=Undefined) }}"
+
+  roles:
+    # Import repository
+    - role: nexus-repository
+      vars:
+        action : import_artifacts
+        nexus_repository_id: "NXR-42M0002" # unique id to search in Vault
+        # nexus_repository_address : "" # Get from Vault
+        # nexus_repository_username : "" # Get from Vault
+        # nexus_repository_password : "" # Get from Vault
+        nexus_repository_name : "blauwe_disk"
+        nexus_repository_folder : ""
+        source_folder : "/tmp/export"
+
+  tasks:
+
+    - name: Show information message
+      debug:
+        msg:
+          - "Import completed..."

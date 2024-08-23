@@ -4,7 +4,7 @@
 
 - name: Gather Nexus Repository variables...
   when: nexus_repository_initialized is not defined or nexus_repository_initialized is not true
-  block: 
+  block:
 
     # Validate variables
     - name: Validate variables for Nexus Repository...
@@ -15,12 +15,13 @@
       loop_control:
         loop_var: varitem
       loop:
-        - nexus_repository_name
+        - nexus_repository_id
 
     # NEXUS REPOSITORY
     # Set variable _secret_name to cucm_name
     - name: Register Vault variable (nexus_repository_name)...
       ansible.builtin.set_fact:
+        _vault_name: "nexus-repository"
         _secret_name: "{{ nexus_repository_id }}"
       no_log: true
 
@@ -38,7 +39,7 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "nexus-repository"
+        vault_name: "{{ _vault_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_address"
         secret_result: "nexus_repository_address"
@@ -58,7 +59,7 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "nexus-repository"
+        vault_name: "{{ _vault_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "automation_username"
         secret_result: "nexus_repository_username"
@@ -78,11 +79,37 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "nexus-repository"
+        vault_name: "{{ _vault_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "automation_password"
         secret_result: "nexus_repository_password"
       when : nexus_repository_password == ""
+
+    #########################################################
+    ## Test connection to Nexus Repository                 ##
+    #########################################################
+
+    # Test if repository address is valid.
+    - name: Test if repository address is valid...
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/status/check"
+        method: GET
+        status_code: 200, 401
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: nexus_repository_status
+
+    # Show custom error message if repository address is not valid.
+    - name: Show information message
+      ansible.builtin.fail:
+        msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
+      when: nexus_repository_status.status != 200
 
     # Set variable nexus_repository_initialized to true
     # If true, gather_nexus_repository_variables.yml will not be executed again

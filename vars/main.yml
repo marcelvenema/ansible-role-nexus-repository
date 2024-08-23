@@ -6,27 +6,92 @@ actions:
       description: "Installatie van laatste versie van Sonatype Nexus Repository. Basis configuratie."
       icon: "media/icon_nexus_repository.png"
       parameters:
-        - repository_url
-        - repository_tag
-        - repository_checksum
-        - repository_checksum_algorithm
-        - platform
-        - uninstall
-        - data_dir
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - repository_url:
+            description: "URL/file naar Nexus Repository container of installatiebestand."
+            required: true
+            value: ""
+        - repository_tag:
+            description: "Tag van Nexus Repository container."
+            required: false
+            value: ""
+        - repository_checksum:
+            description: "Checksum van Nexus Repository container."
+            required: false
+            value: ""
+        - repository_checksum_algorithm:
+            description: "Checksum algoritme van Nexus Repository container."
+            required: false
+            value: ""
+        - nexus_repository_name:
+            description: "Naam van Nexus Repository container."
+            required: true
+            value: ""
+        - nexus_container_name:
+            description: "Naam van Nexus Repository container."
+            required: false
+            value: "nexus3"
+        - nexus_container_ports:
+            description: "Poorten van Nexus Repository container."
+            required: false
+            value: [""]
+        - nexus_container_volumes:
+            description: "Volumes van Nexus Repository container."
+            required: false
+            value: [""]
+        - nexus_data_dir:
+            description: "Data directory voor Nexus Repository."
+            required: false
+            value: "/data/nexus"             
+        - platform:
+            description: "Platform waarop Nexus Repository wordt geïnstalleerd."
+            required: false
+            value: ""
+        - uninstall:
+            description: "De-installatie van Sonatype Nexus Repository. Verwijderd de container, bestanden, gebruikers en groepen."
+            required: false
+            value: false
+
 
   - uninstall:
       description: "De-installatie van Sonatype Nexus Repository. Verwijderd de container, bestanden, gebruikers en groepen."
       icon: "media/icon_nexus_repository.png"
       parameters:
-        - keep_data
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - keep_data:
+            description: "Behoud data directory."
+            required: false
+            value: false
 
   - configure:
       description: "Configureer Nexus Repository."
       icon: "media/icon_nexus_repository.png"
-      parameters: 
-        - nexus_repository_address
-        - nexus_repository_username
-        - nexus_repository_password
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
 
   - configure_vault:
       description: "Configureer Nexus Repository met Vault."
@@ -35,99 +100,376 @@ actions:
   - update:
       description: "Update van Sonatype Nexus Repository naar laatste versie."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - repository_url:
+            description: "URL/file naar Nexus Repository container of installatiebestand."
+            required: true
+            value: ""
+        - repository_tag:
+            description: "Tag van Nexus Repository container."
+            required: false
+            value: ""
+        - repository_checksum:
+            description: "Checksum van Nexus Repository container."
+            required: false
+            value: ""
+        - repository_checksum_algorithm:
+            description: "Checksum algoritme van Nexus Repository container."
+            required: false
+            value: ""
 
   - start:
       description: "Start van Sonatype Nexus Repository service."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
 
   - stop:
       description: "Stop van Sonatype Nexus Repository service."
       icon: "media/icon_nexus_repository.png"
-  
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+
   - setup:
       description: "Setup van Sonatype Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+
+# -------------------------------------------------------
 
   # User actions
   - get_user:
       description: "Haal gebruikers op van Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_username:
+            description: "Gebruikersnaam van Nexus Repository."
+            required: true
+            value: ""
 
   - create_user:
       description: "Maak gebruiker aan in Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: true
+            value: ""
+        - nexus_password:
+            description: "Wachtwoord bij gebruiker voor tegang tot Nexus Repository instantie."
+            required: true
+            value: ""
+        - nexus_first_name:
+            description: "Voornaam van gebruiker."
+            required: true
+            value: ""
+        - nexus_last_name:
+            description: "Achternaam van gebruiker."
+            required: true
+            value: ""
+        - nexus_email:
+            description: "E-mailadres van gebruiker."
+            required: true
+            value: ""
+        - nexus_roles:
+            description: "Rollen van gebruiker."
+            required: true
+            value: ""
 
   - destroy_user:
       description: "Verwijder gebruiker uit Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_username:
+            description: "Gebruikersnaam van Nexus Repository."
+            required: true
+            value: ""
+
+# -------------------------------------------------------
 
   # Repository actions
   - get_repository:
       description: "Haal repository op van Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_name:
+            description: "Naam van Nexus Repository."
+            required: true
+            value: ""
+        - nexus_repository_type:
+            description: "Type van Nexus Repository."
+            required: false
+            value: ""
 
   - create_repository:
       description: "Maak repository aan in Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_name:
+            description: "Naam van Nexus Repository."
+            required: true
+            value: ""
+        - nexus_repository_type:
+            description: "Type van Nexus Repository."
+            required: false
+            value: ""
 
   - destroy_repository:
       description: "Verwijder repository uit Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_name:
+            description: "Naam van Nexus Repository."
+            required: true
+            value: ""
+
+# -------------------------------------------------------
 
   # Artifact actions
   - import_artifacts:
       description: "Importeer artifacts in Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_name:
+            description: "Naam repository waar artifacts geimporteerd naar dienen te worden, bijvoorbeeld 'maven-releases', 'operating_systems'."
+            required: true
+            value: ""
+        - nexus_repository_folder:
+            description: "Folder van Nexus Repository waar artifacts geimporteerd dienen te worden, bijvoorbeeld '/Microsoft/Windows/Server/2022'"
+            required: true
+            value: ""
+        - source_folder:
+            description: "Folder/directory van artifacts welke geimporteerd dienen te worden, bijvoorbeeld '/tmp/import'."
+            required: true
+            value: ""
 
   - export_artifacts:
       description: "Exporteer artifacts uit Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instance, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_name:
+            description: "Naam repository waarvan artifacts geexporteerd van worden, bijvoorbeeld 'maven-releases', 'operating_systems'."
+            required: true
+            value: ""
+        - nexus_repository_folder:
+            description: "Folder van Nexus Repository waar artifacts geexporteerd van worden, bijvoorbeeld '/Microsoft/Windows/Server/2022'"
+            required: true
+            value: ""
+        - destination_folder:
+            description: "Folder locatie waar artifacts geexporteerd dienen te worden"
+            required: true
+            value: ""
+        - overwrite:
+            description: "Overschrijf bestanden indien deze al bestaan."
+            required: false
+            value: false
 
   - sync_artifacts:
       description: "Synchroniseer artifacts in Nexus Repository."
       icon: "media/icon_nexus_repository.png"
+      parameters:
+        - nexus_repository_id:
+            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            required: true
+            value: ""
+        - nexus_repository_address:
+            description: "URL:poort voor toegang tot Nexus Repository instantie, bijvoorbeeld 'http://nexus-repository:8081'."
+            required: false
+            value: ""
+        - nexus_repository_username:
+            description: "Gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
+        - nexus_repository_password:
+            description: "Wachtwoord bij gebruikersnaam voor toegang tot Nexus Repository instantie."
+            required: false
+            value: ""
 
 # -------------------------------------------------------
 
 nexus_repository:
-  - id: 
+  - id:
       value: "nexus-repository"
-      description: "Unique identifier for Nexus Repository." 
+      description: "Unique identifier for Nexus Repository."
   - address:
       value: ""
       description: "Address of Nexus Repository."
-  - username: 
+  - username:
       value: ""
       description: "Username for Nexus Repository."
-  - password: 
+  - password:
       value: ""
       description: "Password for Nexus Repository."
-  - container_name: 
+  - container_name:
       value: "nexus-repository"
       description: "Name of Nexus Repository container."
-  - container_ports: 
+  - container_ports:
       value: "8081:8081"
       description: "Ports for Nexus Repository container."
-  - container_volumes: 
+  - container_volumes:
       value: "/nexus-data:/nexus-data"
       description: "Volumes for Nexus Repository container."
-  - repository_url: 
+  - repository_url:
       value: "docker.io/sonatype/nexus3"
       description: "URL for Nexus Repository container."
-  - repository_tag: 
+  - repository_tag:
       value: "latest"
       description: "Tag for Nexus Repository container."
-  - repository_checksum: 
+  - repository_checksum:
       value: ""
       description: "Checksum for Nexus Repository container."
-  - repository_checksum_algorithm: 
+  - repository_checksum_algorithm:
       value: ""
       description: "Checksum algorithm for Nexus Repository container."
   - vault_name:
       value: "nexus-repository"
       description: "Vault name for Nexus Repository."
-
-role_vars:
-  - nexus_repository_address
-  - nexus_repository_username
-  - nexus_repository_password

@@ -6,8 +6,8 @@ nexus_repository_url: "docker.io/sonatype/nexus3"
 # nexus_repository_checksum can be a checksum of the container file. example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".
 # nexus_repository_checksum_algorithm can be a checksum algorithm of the container file. example: "sha256", sha512", "md5".
 
+nexus_data_dir: "/data/nexus"
 nexus_container_name: "nexus3"
 nexus_container_ports: ["8081:8081"]
-nexus_container_volumes: ["/data/nexus/nexus-data:/nexus-data:Z"]
-
-# nexus_repository_vault_name: "nexus-repository"
+nexus_container_volumes: ["{{ nexus_data_dir }}/nexus-data:/nexus-data:Z"]
+#nexus_container_volumes: ["/data/nexus/nexus-data:/nexus-data:Z"]

@@ -1,34 +1,36 @@
 ---
 
+#########################################################
+## Artifacts export module                             ##
+#########################################################
+
 # Assemble folder_name. Get item_dirname and exclude nexus_repository_address and nexus_repository_name
-- name: Create subfolder
+- name: Register export folder...
   set_fact:
     subfolder: "{{ item | dirname | regex_replace(nexus_repository_address + '/repository/' + nexus_repository_name + '/', '') }}"
 
 # Be sure folder exists
-- name: Ensure subfolder exists
+- name: Ensure subfolder exists...
   ansible.builtin.file:
     path: "{{ destination_folder }}/{{ subfolder }}"
     state: directory
     mode: "0755"
 
 
-# Debug foldername
-- name: Debug foldername
+# Debug message
+- name: Debug message
   ansible.builtin.debug:
-    msg: "{{ subfolder }}"
+    msg: "{{ item }}"
 
+# TODO overwrite option
 
 # Show information message
 - name: Export Artifacts - information message.
   ansible.builtin.debug:
-    msg: "Exporting {{ item | basename }}... This may take a while..."
-
-
-
+    msg: "Exporting {{ item | basename }}. This may take a while..."
 
 # Download each asset
-- name: "Download {{ item | basename }}"
+- name: "Download {{ item | basename }} to {{ destination_folder }}/{{ subfolder }}..."
   ansible.builtin.uri:
     url: "{{ item }}"
     method: GET
@@ -36,5 +38,3 @@
     password: "{{ nexus_repository_password }}"
     force_basic_auth: yes
     dest: "{{ destination_folder }}/{{ subfolder }}/{{ item | basename }}"
-
-

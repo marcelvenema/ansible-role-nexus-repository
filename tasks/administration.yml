@@ -1,18 +1,18 @@
 ---
 
 #########################################################
-## Sonatype Nexus update module                        ##
+## Sonatype Nexus administration module                ##
 #########################################################
 
 # Validate global variables
-- name: Validate global variables for Sonaytype Nexus update module.
+- name: Validate required variables for Sonatype Nexus administration module...
   ansible.builtin.assert:
     that: "varitem is defined"
     fail_msg: "Required variable '{{ varitem }}' has not been provided."
     quiet: true
   loop_control:
     loop_var: varitem
-  loop: 
+  loop:
     - nexus_repository_id
 
 #########################################################
@@ -24,11 +24,11 @@
   ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
 
 #########################################################
-## Sonatype Nexus update                               ##
+## Start                                               ##
 #########################################################
 
-- name: Update Nexus repository
-  when: action == "update"
+- name: Start Nexus Repository...
+  when: action == "start"
   block:
 
     # Show information message
@@ -39,4 +39,20 @@
     # Stop playbook
     - name: Stop playbook
       ansible.builtin.meta: end_play
-  
+
+#########################################################
+## Stop                                                ##
+#########################################################
+
+- name: Stop Nexus Repository...
+  when: action == "stop"
+  block:
+
+    # Show information message
+    - name: Information message
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play

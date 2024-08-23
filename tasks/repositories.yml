@@ -5,17 +5,23 @@
 #########################################################
 
 # Validate global variables
-- name: Validate global variables for Sonaytype Nexus repositories module.
+- name: Validate required variables for Sonaytype Nexus repositories module.
   ansible.builtin.assert:
     that: "varitem is defined"
     fail_msg: "Required variable '{{ varitem }}' has not been provided."
     quiet: true
   loop_control:
     loop_var: varitem
-  loop: 
-    - nexus_repository_address
-    - nexus_repository_username
-    - nexus_repository_password
+  loop:
+    - nexus_repository_id
+
+#########################################################
+## Get Nexus Repository variables from Vault           ##
+#########################################################
+
+# include task gather_nexus_repository_variables.yml
+- name: Gather Nexus Repository variables...
+  ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
 
 #########################################################
 ## Get repository                                      ##
@@ -33,7 +39,10 @@
         quiet: true
       loop_control:
         loop_var: varitem
-      loop: 
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
         - nexus_repository_name
         - nexus_repository_type
 
@@ -64,48 +73,51 @@
         quiet: true
       loop_control:
         loop_var: varitem
-      loop: 
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
         - nexus_repository_name
         - nexus_repository_type
 
     # Create blob store in Nexus Repository Manager via API
     - name: "Create blob store for repository '{{ nexus_repository_name }}'"
       ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file"  
+        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file"
         method: POST
         status_code: 204
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
         force_basic_auth: yes
         body_format: json
-        body: 
+        body:
           softquota: "{ type: 'spaceRemainingQuota', limit: 0 }"
           path     : "blobs/{{ nexus_repository_name }}"
           name     : "{{ nexus_repository_name }}"
         headers:
           accept: application/json
-          Content-Type: application/json   
- 
+          Content-Type: application/json
+
     # Create repository in Nexus Repository Manager via API
     - name: "Create repository '{{ nexus_repository_name }}'"
       ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/raw/hosted"  
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/raw/hosted"
         method: POST
         status_code: 201
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
         force_basic_auth: yes
         body_format: json
-        body: 
+        body:
           name      : "{{ nexus_repository_name }}"
           online    : true
-          storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow_once" }
+          storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
           cleanup   : { policyNames: [ "string" ] }
           component : { proprietaryComponents: true }
           raw       : { contentDisposition: "attachment"}
         headers:
           accept: application/json
-          Content-Type: application/json  
+          Content-Type: application/json
 
 #########################################################
 ## Destroy repository                                  ##
@@ -123,9 +135,17 @@
         quiet: true
       loop_control:
         loop_var: varitem
-      loop: 
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
         - nexus_repository_name
         - nexus_repository_type
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
 
     # Stop playbook
     - name: Stop playbook

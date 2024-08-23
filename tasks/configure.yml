@@ -73,4 +73,3 @@
   when:
     - vault_address is defined
     - vault_token is defined
-

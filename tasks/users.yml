@@ -13,9 +13,15 @@
   loop_control:
     loop_var: varitem
   loop:
-    - nexus_repository_address
-    - nexus_repository_username
-    - nexus_repository_password
+    - nexus_repository_id
+
+#########################################################
+## Get Nexus Repository variables from Vault           ##
+#########################################################
+
+# include task gather_nexus_repository_variables.yml
+- name: Gather Nexus Repository variables...
+  ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
 
 #########################################################
 ## Get User                                            ##
@@ -24,13 +30,6 @@
 - name: Get user
   when: action == "get_user"
   block:
-
-    # Register var_result variable
-    - name: Register var_result variable
-      ansible.builtin.set_fact:
-        var_result: "{{ var_result }}"
-      no_log: true
-      when: var_result is not defined
 
     # Validate local variables
     - name: Validate local variables for Nexus Repository get_user action.
@@ -41,7 +40,26 @@
       loop_control:
         loop_var: varitem
       loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
         - nexus_username
+
+    # Register var_result variable
+    - name: Register var_result variable
+      ansible.builtin.set_fact:
+        var_result: "{{ var_result }}"
+      no_log: true
+      when: var_result is not defined
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
 
 #########################################################
 ## Create User                                         ##
@@ -60,10 +78,14 @@
       loop_control:
         loop_var: varitem
       loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_username
+        - nexus_password
         - nexus_firstname
         - nexus_lastname
         - nexus_email
-        - nexus_password
         - nexus_roles
 
     # Create user in Nexus Repository Manager via API
@@ -104,6 +126,9 @@
       loop_control:
         loop_var: varitem
       loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
         - nexus_username
 
     # Show information message

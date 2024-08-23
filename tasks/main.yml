@@ -47,11 +47,11 @@
 # -------------------------------------------------------
  # Start, stop
 - name: Start start action...
-  ansible.builtin.include_tasks: start.yml
+  ansible.builtin.include_tasks: administration.yml
   when: action == "start"
 
 - name: Start stop action...
-  ansible.builtin.include_tasks: stop.yml
+  ansible.builtin.include_tasks: administration.yml
   when: action == "stop"
 
 # -------------------------------------------------------
