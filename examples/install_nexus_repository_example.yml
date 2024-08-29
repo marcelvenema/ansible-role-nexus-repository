@@ -1,0 +1,48 @@
+---
+
+# Install Nexus Repository OSS example
+# Run with: ansible-playbook -i inventory install_nexus_repository_example.yml -K
+- name: Install Nexus Repositroy OSS example
+  hosts: lab1
+  become: true
+  vars:
+    vault_address: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR', default=Undefined) }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN', default=Undefined) }}"
+    automation_username : "ansible"
+    automation_password : "P@ssw0rd01!"
+    automation_email: "ansible@nexus.local"
+
+  tasks:
+  - name: Install Podman containers
+    ansible.builtin.include_role:
+      name: podman
+    vars:
+      action : install
+
+  - name: Install Nexus Repository OSS
+    ansible.builtin.include_role:
+      name: nexus-repository
+    vars:
+      action : install
+      nexus_repository_id : "NXR-42M0003" # unique id to identify instance in Vault
+      # nexus_repository_url can be an url to docker image or a tar file. example: "docker.io/sonatype/nexus3" or "/tmp/nexus3.67.1.tar", "https://192.168.1.1/repo/nexus.tar".
+      nexus_repository_url: "docker.io/sonatype/nexus3"
+      # nexus_repository_tag can be a tag or a version. example: 1.15.0 or 1.15.0-beta1. default is 'latest'.
+      # nexus_repository_tag: 1.14.8
+      # nexus_repository_checksum: "80b945be128a6466320df09589d73ed4a5dbf09f3495243281d264bbc643228c"
+      # nexus_repository_checksum_algorithm: "sha256"
+      # nexus_repository_checksum_algorithm: "sha256"
+      # nexus_data_dir : base folder to store data. example: "/data/vault" # default is /data/vault
+      # nexus_data_dir: "/data/nexus"
+      platform : "podman"
+      # automation_username : "" # Declared at playbook level
+      # automation_password : "" # Declared at playbook level
+      # automation_email: "" # Declared at playbook level
+
+  # Show information message
+  - name: Show information message
+    ansible.builtin.debug:
+      msg:
+        - "Nexus Repository OSS installed on: '{{ nexus_repository_address }}'."
+        - "user 'admin' password stored in Vault."
+        - "user '{{ automation_username }}' created with password '{{ automation_password }}'"

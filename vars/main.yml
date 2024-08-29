@@ -7,23 +7,23 @@ actions:
       icon: "media/icon_nexus_repository.png"
       parameters:
         - nexus_repository_id:
-            # Unieke ID voor identificatie om parameters via Vault aan te vullen
+            # Unieke ID voor identificatie Nexus Repository instance in Vault
             description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
             required: true
             value: ""
-        - repository_url:
+        - nexus_repository_url:
             description: "URL/file naar Nexus Repository container of installatiebestand."
             required: true
             value: ""
-        - repository_tag:
+        - nexus_repository_tag:
             description: "Tag van Nexus Repository container."
             required: false
             value: ""
-        - repository_checksum:
+        - nexus_repository_checksum:
             description: "Checksum van Nexus Repository container."
             required: false
             value: ""
-        - repository_checksum_algorithm:
+        - nexus_repository_checksum_algorithm:
             description: "Checksum algoritme van Nexus Repository container."
             required: false
             value: ""
@@ -46,7 +46,7 @@ actions:
         - nexus_data_dir:
             description: "Data directory voor Nexus Repository."
             required: false
-            value: "/data/nexus"             
+            value: "/data/nexus"
         - platform:
             description: "Platform waarop Nexus Repository wordt geïnstalleerd."
             required: false
@@ -346,7 +346,7 @@ actions:
       parameters:
         - nexus_repository_id:
             # Unieke ID voor identificatie om parameters via Vault aan te vullen
-            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om Vault parameters aan te vullen"
             required: true
             value: ""
         - nexus_repository_address:

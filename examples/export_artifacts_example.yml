@@ -1,3 +1,5 @@
+---
+
 - name: Export artifacts from Nexus Repository example
   hosts: localhost
   vars:
@@ -9,17 +11,18 @@
     - role: nexus-repository
       vars:
         action : export_artifacts
-        nexus_repository_id : "NXR-42M0002" # unique id to search in Vault
+        nexus_repository_id : "NXR-42M0002" # unique id to identify instance in Vault
         # nexus_repository_address : "" # Get from Vault
         # nexus_repository_username : "" # Get from Vault
         # nexus_repository_password : "" # Get from Vault
         nexus_repository_name : "blauwe_disk"
         nexus_repository_folder : "containers"
-        destination_folder : "/tmp/demo2"
+        destination_folder : "/tmp/demo"
 
   tasks:
 
     - name: Show information message
       debug:
         msg:
-          - "Export completed..."
+          - "Export completed from folder '{{ nexus_repository_folder }}' of '{{ nexus_repository_address }}'..."
+          - "Destination folder: '{{ destination_folder }}'"
