@@ -67,7 +67,7 @@
         msg: "Cannot find {{ nexus_repository_name }} on '{{ nexus_repository_address }}'..."
       when: nexus_repository_status.status != 200
 
-    # find files in source folder
+    # Find files in source folder
     - name: "Find files in source folder '{{ source_folder }}'..."
       ansible.builtin.find:
         paths: "{{ source_folder }}"
@@ -78,7 +78,7 @@
     # Debug message
     - name: "Import artifacts - Information mesaage..."
       ansible.builtin.debug:
-        msg: "Uploading {{ source_files.files | length }} files to {{ nexus_repository_address }}..."
+        msg: "Uploading {{ source_files.files | length }} file(s) to {{ nexus_repository_address }}..."
 
     # include task to upload each asset
     - name: "Start artifacts_import task..."

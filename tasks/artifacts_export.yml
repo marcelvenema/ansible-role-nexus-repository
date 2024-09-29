@@ -20,7 +20,10 @@
 # Debug message
 - name: Debug message
   ansible.builtin.debug:
-    msg: "{{ item }}"
+    msg: "{{ destination_folder }}/{{ subfolder }}/'{{ item | basename }}'"
+
+
+
 
 # TODO overwrite option
 
@@ -32,7 +35,7 @@
 # Download each asset
 - name: "Download {{ item | basename }} to {{ destination_folder }}/{{ subfolder }}..."
   ansible.builtin.uri:
-    url: "{{ item }}"
+    url: "{{ item | replace(' ', '%20') }}"
     method: GET
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
