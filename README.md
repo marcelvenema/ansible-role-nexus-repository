@@ -18,7 +18,6 @@
 action: **install**<br/>
 Installatie van laatste versie van Sonatype Nexus Repository OSS. Basis configuratie.<br/>
 variablen:<br/>
-<kbd>nexus_repository_id</kbd> : 
 <kbd>repository_url</kbd>        : URL met locatie van container repository. Kan een url zijn of pad naar lokaal of remote bestand, bijvoorbeeld 'docker.io/sonatype/nexus3', '/tmp/nexus3.67.1.tar', 'https://192.168.1.1/repo/nexus.tar'. Standaard verwijst naar docker.io/sonatype/nexus3 via defaults/main.yml.<br/>
 <kbd>repository_tag (optioneel)</kbd> : release of versienummer van het container image. standaard is 'latest'.<br/>
 <kbd>repository_checksum (optioneel)</kbd> : checksum van het container image. Voorbeeld: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" of "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".<br/>
@@ -29,6 +28,8 @@ variablen:<br/>
 Indien onderstaande gegevens worden toegevoegd, wordt bij installatie een key/value secret engine in de vault gemaakt met admin wachtwoord.<br/>
 <kbd>vault_address</kbd>         : URL naar vault adres voor toegang vault, bijvoorbeeld `http://localhost:8081`. <br/>
 <kbd>vault_token</kbd>           : token voor toegang tot vault.<br/>
+<kbd>nexus_repository_name</kbd> : Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen.<br/>
+
 
 action: **uninstall**<br/>
 De-installatie van Nexus Repository OSS.<br/>
