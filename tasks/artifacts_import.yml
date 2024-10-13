@@ -16,20 +16,10 @@
     nexus_repository_folder: "{{ nexus_repository_folder }}/"
   when: nexus_repository_folder | regex_search('/$') is not match and nexus_repository_folder != ""
 
-
-# Debug message
-- name: "Debug message"
-  ansible.builtin.debug:
-    msg:
-      - "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}/{{ nexus_repository_folder }}/{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
-      - "{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
-      - "{{ source_folder }}"
-      - "{{ item.path }}"
-
 # upload files to Nexus repository
 - name: "Import artifacts to Nexus repository ({{ nexus_repository_address }})..."
   ansible.builtin.uri:
-    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}/{{ nexus_repository_folder }}/{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
+    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}/{{ nexus_repository_folder }}{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
     method: PUT
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"

@@ -16,15 +16,6 @@
     state: directory
     mode: "0755"
 
-
-# Debug message
-- name: Debug message
-  ansible.builtin.debug:
-    msg: "{{ destination_folder }}/{{ subfolder }}/'{{ item | basename }}'"
-
-
-
-
 # TODO overwrite option
 
 # Show information message

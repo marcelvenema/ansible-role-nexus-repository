@@ -10,11 +10,11 @@
     that: item is defined
     fail_msg: "Required variable '{{ item }}' has not been provided."
     quiet: true
-  with_items: 
+  with_items:
     # should be defined in defaults/main.yml
     - nexus_repository_url
 
-# variables are copied to role variables, so this code block can be a template 
+# variables are copied to role variables, so this code block can be a template
 # and used in multiple roles
 
 # Set var role_repository_url
@@ -76,8 +76,8 @@
 # Override platform check if platform variable is defined.
 - name: Gather infrastructure platform information...
   ansible.builtin.set_fact:
-    platform_check: true 
-  when: platform is undefined 
+    platform_check: true
+  when: platform is undefined
 
 # Set platform if podman is detected
 - name: Set platform to Podman...
@@ -106,7 +106,7 @@
 # Clear variable
 - name: Clear variables...
   ansible.builtin.set_fact:
-    platform_check: undefined 
+    platform_check: undefined
 
 #########################################################
 ## Pre-installation uninstall                          ##
@@ -136,7 +136,7 @@
 
     # Create podman user group
     - name: Create Podman usergroup...
-      ansible.builtin.group: 
+      ansible.builtin.group:
         name: "podman"
       become: true
 
@@ -197,7 +197,7 @@
         fail_msg: "Podman is not installed. Please install Podman first. Cannot continue..."
 
     ##################################
-    # Pre-installation folders       # 
+    # Pre-installation folders       #
     ##################################
 
     # Create folders from first part of container_volumes
@@ -210,7 +210,7 @@
       with_items: "{{ role_container_volumes }}"
 
     ##################################
-    # Import container image         # 
+    # Import container image         #
     ##################################
     # Pull container image, if failed try to use local file
     # local file can be http, https, ftp or local file
@@ -262,7 +262,7 @@
           ansible.builtin.copy:
             src: "{{ role_repository_url }}"
             dest: "/tmp/{{ role_container_name }}.tar"
-          when: 
+          when:
             - repository_url_result.stat.exists == true
 
         # Download local file if http or https
@@ -271,7 +271,7 @@
             url: "{{ role_repository_url }}"
             dest: "/tmp/{{ role_container_name }}.tar"
           when: ("http" in role_repository_url) or ("ftp" in role_repository_url) # https is included
-        
+
         # check if container file exists
         - name: "Check if /tmp/{{ role_container_name }}.tar exists..."
           ansible.builtin.stat:
@@ -282,11 +282,11 @@
         - name: Fail if container image file not found
           ansible.builtin.fail:
             msg: "Repository URL {{ role_repository_url }} not found. Container image file location not found. Cannot continue..."
-          when: 
+          when:
             - container_tar_result.stat.exists == false
 
         ##################################
-        # Checksum image                 # 
+        # Checksum image                 #
         ##################################
 
         # If checksum contains :, split it in checksum and algorithm
@@ -303,13 +303,13 @@
             checksum_algorithm: "{{ role_repository_checksum_algorithm }}"
             get_checksum: yes
           register: checksum_result
-          when : role_repository_checksum is defined 
+          when : role_repository_checksum is defined
 
         # Fail when checksum is not the same
         - name: Fail when checksum is not correct
           ansible.builtin.fail:
             msg: "Checksum of /tmp/{{ role_container_name }}.tar ({{ checksum_result.stat.checksum }}) is not the same as the provided checksum ({{ repository_checksum }}). Cannot continue..."
-          when: 
+          when:
             - role_repository_checksum is defined
             - checksum_result.stat.checksum != role_repository_checksum
 
@@ -346,7 +346,7 @@
         ports: "{{ role_container_ports }}"
         volumes: "{{ role_container_volumes }}"
         restart_policy: always
- 
+
     # Wait for Sonatype Nexus pod init to complete
     - name: Wait for container init to complete
       ansible.builtin.shell: "podman logs {{ role_container_name }} | grep 'Started Sonatype Nexus OSS'"
@@ -368,7 +368,7 @@
       ansible.builtin.systemd_service:
         daemon_reload: yes
         scope: system
-    
+
     # Enable systemd service for container
     - name: "Enable systemd service for {{ role_container_name }} container"
       ansible.builtin.service:
@@ -425,7 +425,7 @@
 
 # Configure Sonatype Nexus
 - name: Start configure task...
-  ansible.builtin.include_tasks: configure.yml 
+  ansible.builtin.include_tasks: configure.yml
 
 #########################################################
 ## Post-install                                        ##

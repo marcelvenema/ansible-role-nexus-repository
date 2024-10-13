@@ -3,12 +3,12 @@
 actions:
   # Deployment actions
   - install:
-      description: "Installatie van laatste versie van Sonatype Nexus Repository. Basis configuratie."
+      description: "Installatie en configuratie laatste versie van Sonatype Nexus Repository."
       icon: "media/icon_nexus_repository.png"
       parameters:
-        - nexus_repository_id:
-            # Unieke ID voor identificatie Nexus Repository instance in Vault
-            description: "Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen"
+        - nexus_repository_name:
+            # Unieke naam voor identificatie Nexus Repository instance in Vault
+            description: "Unieke naam (identificatie) van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt icm Vault parameters."
             required: true
             value: ""
         - nexus_repository_url:

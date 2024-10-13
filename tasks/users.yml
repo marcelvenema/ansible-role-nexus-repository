@@ -4,24 +4,14 @@
 ## Sonatype Nexus users module                         ##
 #########################################################
 
-# Validate global variables
-- name: Validate required variables for Sonatype Nexus users module...
-  ansible.builtin.assert:
-    that: "varitem is defined"
-    fail_msg: "Required variable '{{ varitem }}' has not been provided."
-    quiet: true
-  loop_control:
-    loop_var: varitem
-  loop:
-    - nexus_repository_id
-
-#########################################################
-## Get Nexus Repository variables from Vault           ##
-#########################################################
-
 # include task gather_nexus_repository_variables.yml
 - name: Gather Nexus Repository variables...
   ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
+  when:
+    - vault_address is defined
+    - vault_token is defined
+    - nexus_repository_vault_name is defined
+    - nexus_repository_server_name is defined
 
 #########################################################
 ## Get User                                            ##
