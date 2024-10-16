@@ -4,10 +4,16 @@
 ## Configuration                                       ##
 #########################################################
 
+# Get port of nexus from role_container_ports
+- name: Retrieve container port...
+  ansible.builtin.set_fact:
+    nexus_port: "{{ nexus_container_ports[0].split(':')[0] }}"
+  when: platform == "podman"
+
 # Get IP address of Nexus Repository
 - name: Register variable (nexus_repository_address)...
   ansible.builtin.set_fact:
-    nexus_repository_address: "http://{{ ansible_default_ipv4.address }}:8081"
+    nexus_repository_address: "http://{{ ansible_default_ipv4.address }}:{{ nexus_port }}"
 
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
@@ -66,6 +72,9 @@
     nexus_lastname : "{{ automation_username | default('automation') }}"
     nexus_email    : "{{ automation_email | default('automation@localhost') }}"
     nexus_roles    : "nx-admin"
+    # nexus_repository_username: # set in playbook
+    # nexus_repository_password: # set in playbook
+    # nexus_repository_address: # set in playbook
   ignore_errors: true
 
 # Configure Vault for Nexus if Vault is present

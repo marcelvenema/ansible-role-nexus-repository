@@ -45,6 +45,7 @@
         password: "{{ nexus_repository_password }}"
         force_basic_auth: yes
         return_content: yes
+        validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
         body_format: json
         headers:
           accept: application/json
@@ -111,6 +112,7 @@
         password: "{{ nexus_repository_password }}"
         force_basic_auth: yes
         return_content: yes
+        validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
         body_format: json
         headers:
           accept: application/json

@@ -1,118 +1,62 @@
 ---
 
 #########################################################
-## Nexus Repository Vault module                       ##
+## Vault module for nexus-repository                   ##
 #########################################################
-# If secret engine does not exist, create it.
+# secret engine name (vault_name): nexus-repository
+# secret engine type: kv
+# secret name: variable nexus_repository_vault_id, default '{{ ansible_fqdn | replace('.', '-') }}'
 
-#########################################################
-## Secret Engines                                      ##
-#########################################################
+# Validate variables
+- name: Validate required variables for action.
+  ansible.builtin.assert:
+    that: "item is defined"
+    fail_msg: "Required variable '{{ item }}' has not been provided."
+    quiet: true
+  with_items:
+    - vault_address
+    - vault_token
 
-# Declare variable action_result if not defined
-- name: Register variables...
-  ansible.builtin.set_fact:
-    action_result: ""
-  when: action_result is not defined
-
-# Clear action_result variable to be sure it is empty
-- name: Clear variables...
-  ansible.builtin.set_fact:
-    action_result: ""
-
-# Declare variable vault_name if defined
+# Register variable (_vault_name) 
 - name: Register variable (vault_name)...
   ansible.builtin.set_fact:
-    _vault_name: "{{ nexus_repository_vault_name }}"
-  when: nexus_repository_vault_name is defined
+   _vault_name: "{{ nexus_repository_vault_name | default('nexus-repository') }}"
 
-# Declare variable vault_name if not defined
-- name: Register variable (vault_name)...
+# Register variable (_secret_name)
+- name: Register variable (secret_name)...
   ansible.builtin.set_fact:
-    _vault_name: "nexus-repository"
-  when: nexus_repository_vault_name is not defined
+    _secret_name: "{{ nexus_repository_vault_id | default( ansible_fqdn | replace('.', '-') ) }}"
 
-# Check if secret_engine exists
-- name: "Check if Vault secret engine exists..."
-  ansible.builtin.include_role:
-    name: vault
-    tasks_from: secret_engine.yml
-  vars:
-    action: get_secret_engine
-    vault_name: "{{ _vault_name }}"
-    vault_type: "kv"
-    vault_result: "action_result"
-  register: action_result
-
-# Declare variable vault_description if not defined
-- name: Register variable (vault_description)...
-  ansible.builtin.set_fact:
-    vault_description: ""
-  when: vault_description is not defined
+#########################################################
+## Secret Engine (nexus-repository)                    ##
+#########################################################
 
 # Create secret_engine if it does not exist
-- name: "Create Vault secret engine {{ vault_name }}..."
+- name: "Create Vault secret engine for {{ _vault_name }}..."
   ansible.builtin.include_role:
     name: vault
     tasks_from: secret_engine.yml
   vars:
     action: create_secret_engine
     vault_name: "{{ _vault_name }}"
-    vault_description: "Secrets for Nexus Repository"
+    vault_description: "{{ nexus_repository_vault_description | default('Secrets for Sonatype Nexus Repository.') }}"
     vault_type: "kv"
-  when: action_result | length == 0
 
 #########################################################
-## Secrets                                             ##
+## Secrets (prismcentral_address)                      ##
 #########################################################
-
-# Register nexus_repository_password if not defined
-- name: Register variable (nexus_repository_password)...
-  ansible.builtin.set_fact:
-    nexus_repository_password: "change_me"
-  when: nexus_repository_password is not defined
-
-# Register nexus_repository_username if not defined
-- name: Register variable (nexus_repository_username)...
-  ansible.builtin.set_fact:
-    nexus_repository_username: "ansible"
-  when: nexus_repository_username is not defined
-
-# Register nexus_repository_password if not defined
-- name: Register variable (nexus_repository_password)...
-  ansible.builtin.set_fact:
-    nexus_repository_password: "change_me"
-  when: nexus_repository_password is not defined
-
-# Register automation_username if not defined
-- name: Register variable (automation_username)...
-  ansible.builtin.set_fact:
-    automation_username: "ansible"
-  when: automation_username is not defined
-
-# Register automation_password if not defined
-- name: Register variable (automation_password)...
-  ansible.builtin.set_fact:
-    automation_password: "change_me"
-  when: automation_password is not defined
-
-# Register automation_email if not defined
-- name: Register variable (automation_email)...
-  ansible.builtin.set_fact:
-    automation_email: ""
-  when: automation_email is not defined
 
 # Declare variable _secret_keyvalue
 - name: Register variable (secret_keyvalue)...
   ansible.builtin.set_fact:
     _secret_keyvalue: |
-      admin_password: '{{ nexus_repository_password }}'
-      nexus_repository_username: '{{ nexus_repository_username }}'
-      nexus_repository_password: '{{ nexus_repository_password }}'
-      nexus_repository_address: '{{ nexus_repository_address }}'
-      automation_username: '{{ automation_username }}'
-      automation_password: '{{ automation_password }}'
-      automation_email: '{{ automation_email }}'
+      admin_password: '{{ nexus_repository_password | default('change_me') }}'
+      nexus_repository_username: '{{ nexus_repository_username | default('change_me') }}'
+      nexus_repository_password: '{{ nexus_repository_password | default('change_me') }}'
+      nexus_repository_address: '{{ nexus_repository_address | default('change_me') }}'
+      automation_username: '{{ automation_username | default('change_me') }}'
+      automation_password: '{{ automation_password | default('change_me') }}'
+      automation_email: '{{ automation_email | default('ansible@{{ ansible_fqdn }}') }}'
 
 # Store usernames and passwords in Hashicorp Vault.
 - name: Store Nexus Repository secrets and configuration data in Vault...
@@ -122,7 +66,7 @@
   vars:
     action: create_secret
     vault_name: "{{ _vault_name }}"
-    secret_name: "{{ nexus_repository_id }}"
+    secret_name: "{{ _secret_name }}"
     secret_keyvalue: "{{ _secret_keyvalue | from_yaml }}"
 
 # Create Vault policy for Nexus

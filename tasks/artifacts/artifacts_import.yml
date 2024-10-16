@@ -26,6 +26,7 @@
     force_basic_auth: yes
     src: "{{ item.path }}"
     status_code: 200, 201 # 201 Created, 200 OK
+    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
     headers:
       Content-Type: "application/octet-stream"
   register: upload_result

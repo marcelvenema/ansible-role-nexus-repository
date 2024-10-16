@@ -14,99 +14,17 @@
     # should be defined in defaults/main.yml
     - nexus_repository_url
 
-# variables are copied to role variables, so this code block can be a template
-# and used in multiple roles
-
-# Set var role_repository_url
-- name: "Register variable (nexus_repository_url)..."
-  ansible.builtin.set_fact:
-    role_repository_url: "{{ nexus_repository_url }}"
-
-# Set role_repository_tag if defined
-- name: Register variable (nexus_repository_tag)...
-  ansible.builtin.set_fact:
-    role_repository_tag: "{{ nexus_repository_tag }}"
-  when: nexus_repository_tag is defined
-
-# Set role_repository_checksum if defined
-- name: Register variable (nexus_repository_checksum)...
-  ansible.builtin.set_fact:
-    role_repository_checksum: "{{ nexus_repository_checksum }}"
-  when: nexus_repository_checksum is defined
-
-# Set role_repository_checksum_algorithm if defined
-- name: Register variable nexus_repository_checksum_algorithm)...
-  ansible.builtin.set_fact:
-    role_repository_checksum_algorithm: "{{ nexus_repository_checksum_algorithm }}"
-  when: nexus_repository_checksum_algorithm is defined
-
-# Set container name
-- name: Register variable (nexus_container_name)...
-  ansible.builtin.set_fact:
-    role_container_name: "{{ nexus_container_name }}"
-  when: nexus_container_name is defined
-
-# Set container ports
-- name: Register variable (nexus_container_ports)...
-  ansible.builtin.set_fact:
-    role_container_ports: "{{ nexus_container_ports }}"
-  when: nexus_container_ports is defined
-
-# Set container volumes
-- name: Register variable (nexus_container_volumes)...
-  ansible.builtin.set_fact:
-    role_container_volumes: "{{ nexus_container_volumes }}"
-  when: nexus_container_volumes is defined
-
 #########################################################
 ## Pre-installation platform check                     ##
 #########################################################
 
-# Gather installed packages
-- name: Gather installed packages...
-  ansible.builtin.package_facts:
-    manager: auto
-
-# Bypass platform check if platform is defined
-- name: Bypass platform check if platform is defined...
-  ansible.builtin.set_fact:
-    platform_check: false
-  when: platform is defined
-
-# Override platform check if platform variable is defined.
-- name: Gather infrastructure platform information...
-  ansible.builtin.set_fact:
-    platform_check: true
-  when: platform is undefined
-
-# Set platform if podman is detected
-- name: Set platform to Podman...
-  ansible.builtin.set_fact:
-    platform: "podman"
-    platform_check: false
-  when:
-    - '"podman" in ansible_facts.packages'
-    - platform_check == true
-
-# Set platform if kubernetes is detected
-- name: Set platform to Kubernetes...
-  ansible.builtin.set_fact:
-    platform: "kubernetes"
-    platform_check: false
-  when:
-    - '"kubernetes" in ansible_facts.packages'
-    - platform_check == true
-
-# Set platform to host if no podman or no kubernetes is detected
-- name: Set platform to host...
-  ansible.builtin.set_fact:
-    platform: "host"
-  when: platform_check == true
-
-# Clear variable
-- name: Clear variables...
-  ansible.builtin.set_fact:
-    platform_check: undefined
+# Determine platformn
+- name: Determine platform for installation...
+  ansible.builtin.include_role:
+    name: server-config
+  vars:
+    action: "platform_check"
+  register: platform
 
 #########################################################
 ## Pre-installation uninstall                          ##
@@ -125,60 +43,6 @@
   when: uninstall == true
 
 #########################################################
-## Pre-installation user/group                         ##
-#########################################################
-# use user podman with podman containers, if not exists or not using podman, use vault user
-
-# create podman user and group when platform is podman
-- name: Create user and usergroup for Podman...
-  when: platform == "podman"
-  block:
-
-    # Create podman user group
-    - name: Create Podman usergroup...
-      ansible.builtin.group:
-        name: "podman"
-      become: true
-
-    # Create podman user
-    - name: Create Podman user...
-      ansible.builtin.user:
-        name: "podman"
-        group: "podman"
-        system: true
-        shell: "/bin/bash"
-        comment: "Podman user"
-        createhome: "yes"
-        state: present
-
-    # Enable linger for user
-    - name: Enable linger for Podman user...
-      ansible.builtin.command: "loginctl enable-linger podman"
-
-    # Create folder for ansible tmp files
-    - name: Create home folders for Podman user...
-      ansible.builtin.file:
-        path: /home/podman/.ansible/tmp
-        state: directory
-        owner: podman
-        mode: 0755
-
-    # Create systemd folder for user
-    - name: Create systemd folder for Podman user...
-      ansible.builtin.file:
-        path: "/home/podman/.config/systemd/user/"
-        state: directory
-        owner: podman
-        mode: 0755
-
-    # Set variable service_user
-    - name: Set variable (service_user)...
-      ansible.builtin.set_fact:
-        service_user: "podman"
-
-# TODO: create user for kubernetes, local
-
-#########################################################
 ## Installation                                        ##
 #########################################################
 
@@ -186,194 +50,56 @@
 ## Installation on podman                              ##
 #########################################################
 
-- name: "Install {{ role_container_name }} repository on Podman..."
+- name: Install container on Podman...
   when: platform == "podman"
   block:
 
     # Check if podman is detected
-    - name: Gather package information...
+    - name: Check if podman is detected
       ansible.builtin.assert:
         that: '"podman" in ansible_facts.packages'
         fail_msg: "Podman is not installed. Please install Podman first. Cannot continue..."
 
-    ##################################
-    # Pre-installation folders       #
-    ##################################
-
-    # Create folders from first part of container_volumes
-    - name: Create data folders...
-      ansible.builtin.file:
-        path: "{{ item.split(':')[0] }}"
-        state: directory
-        owner: 200
-        mode: "0755"
-      with_items: "{{ role_container_volumes }}"
-
-    ##################################
-    # Import container image         #
-    ##################################
-    # Pull container image, if failed try to use local file
-    # local file can be http, https, ftp or local file
-
-    # If tag is not defined, set value to latest
-    - name: Set variable (repository_tag)...
+    # Set variable service_user
+    - name: Set variable (podman_service_user)...
       ansible.builtin.set_fact:
-        role_repository_tag: "latest"
-      when: role_repository_tag is not defined or role_repository_tag == "" or role_repository_tag == none
+        podman_service_user: "podman"
 
-    # Show information
-    - name: Show information
-      ansible.builtin.debug:
-        msg: "Get container image from registry. this may take a while..."
+    # Get uid of user podman
+    - name: "Get uid of user ({{ podman_service_user }})..."
+      ansible.builtin.user:
+        name: "{{ podman_service_user }}"
+      register: podman_service_user_details
 
-    # Pull image from repository to local image repository. If failed, lookup local image file.
-    - name: "Pull container image from repository {{ role_repository_url }}:{{ role_repository_tag }}..."
-      containers.podman.podman_image:
-        name: "{{ role_repository_url }}"
-        tag: "{{ role_repository_tag }}"
-      register: pull_result
-      ignore_errors: true
-
-    # If pull failed, try to use local file
-    - name: Install local image file...
-      when: pull_result is failed
-      block:
-
-        # Show information message
-        - name: Show information message
-          ansible.builtin.debug:
-            msg: "Cannot pull from container repository, trying to load from file..."
-
-        # Delete local temp file
-        - name: "Delete local file /tmp/{{ role_container_name }}..."
-          ansible.builtin.file:
-            path: "/tmp/{{ role_container_name }}.tar"
-            state: absent
-
-        # repository_url is a local container file, check if file exists on ansible host
-        - name: Check if repository_url is a local container file...
-          ansible.builtin.stat:
-            path: "{{ role_repository_url }}"
-          register: repository_url_result
-          delegate_to: localhost
-
-       # Copy image file to destination if local file
-        - name: Copy container image file to destination
-          ansible.builtin.copy:
-            src: "{{ role_repository_url }}"
-            dest: "/tmp/{{ role_container_name }}.tar"
-          when:
-            - repository_url_result.stat.exists == true
-
-        # Download local file if http or https
-        - name: "Download file from {{ role_repository_url }}"
-          ansible.builtin.get_url:
-            url: "{{ role_repository_url }}"
-            dest: "/tmp/{{ role_container_name }}.tar"
-          when: ("http" in role_repository_url) or ("ftp" in role_repository_url) # https is included
-
-        # check if container file exists
-        - name: "Check if /tmp/{{ role_container_name }}.tar exists..."
-          ansible.builtin.stat:
-            path: "/tmp/{{ role_container_name }}.tar"
-          register: container_tar_result
-
-        # Fail if image file not found
-        - name: Fail if container image file not found
-          ansible.builtin.fail:
-            msg: "Repository URL {{ role_repository_url }} not found. Container image file location not found. Cannot continue..."
-          when:
-            - container_tar_result.stat.exists == false
-
-        ##################################
-        # Checksum image                 #
-        ##################################
-
-        # If checksum contains :, split it in checksum and algorithm
-        - name: Split checksum and algorithm
-          ansible.builtin.set_fact:
-            repository_checksum: "{{ role_repository_checksum.split(':')[1] }}"
-            repository_checksum_algorithm: "{{ role_repository_checksum.split(':')[0] }}"
-          when: role_repository_checksum is defined and ":" in role_repository_checksum
-
-        # Get checksum of container file.tar
-        - name: Get checksum of local container file
-          ansible.builtin.stat:
-            path: "/tmp/{{ role_container_name }}.tar"
-            checksum_algorithm: "{{ role_repository_checksum_algorithm }}"
-            get_checksum: yes
-          register: checksum_result
-          when : role_repository_checksum is defined
-
-        # Fail when checksum is not the same
-        - name: Fail when checksum is not correct
-          ansible.builtin.fail:
-            msg: "Checksum of /tmp/{{ role_container_name }}.tar ({{ checksum_result.stat.checksum }}) is not the same as the provided checksum ({{ repository_checksum }}). Cannot continue..."
-          when:
-            - role_repository_checksum is defined
-            - checksum_result.stat.checksum != role_repository_checksum
-
-        # Load image from file if pull failed
-        - name: Import container image to podman
-          ansible.builtin.command: "podman load -i /tmp/{{ role_container_name }}.tar"
-          register: import_result
-
-        # Cleanup image file
-        - name: Cleanup container image file
-          ansible.builtin.file:
-            path: "/tmp/{{ role_container_name }}.tar"
-            state: absent
-
-    # Get image info from podman
-    - name: Gather info on container image
-      containers.podman.podman_image_info:
-      register: images_info
-
-    # Find image id
-    - name: Parse image info, select container image id
+    # Set fact vault_uid
+    - name: "Register uid of user ({{ podman_service_user }})..."
       ansible.builtin.set_fact:
-        image_id: "{{ images_info.images | selectattr('RepoTags', 'search', role_container_name) | map(attribute='Id') | first }}"
+        podman_uid: "{{ podman_service_user_details.uid }}"
 
-    ##################################
-    # Create Nexus container         #
-    ##################################
+    # Create volumes
+    - name: Create configuration folders...
+      ansible.builtin.include_role:
+        name: podman
+      vars:
+        action: create_volumes
+        volume_owner: 0200
+        container_volumes: "{{ nexus_container_volumes }}"
 
-    # Create podman container
-    - name: "Create container {{ role_container_name }} with id {{ image_id }}..."
-      containers.podman.podman_container:
-        name: "{{ role_container_name }}"
-        image: "{{ image_id }}"
-        ports: "{{ role_container_ports }}"
-        volumes: "{{ role_container_volumes }}"
-        restart_policy: always
-
-    # Wait for Sonatype Nexus pod init to complete
-    - name: Wait for container init to complete
-      ansible.builtin.shell: "podman logs {{ role_container_name }} | grep 'Started Sonatype Nexus OSS'"
-      register: nexus_pod_init
-      until: nexus_pod_init.stdout.find("Started Sonatype Nexus OSS") != -1
-      retries: 10
-      delay: 15
-
-    # Auto-start container on system boot
-    - name: "Generate systemd unit file for container {{ role_container_name}}"
-      containers.podman.podman_generate_systemd:
-        name: "{{ role_container_name }}"
-        new: true
-        no_header: true
-        dest: /etc/systemd/system
-
-    # Reload systemd
-    - name: Reload systemd
-      ansible.builtin.systemd_service:
-        daemon_reload: yes
-        scope: system
-
-    # Enable systemd service for container
-    - name: "Enable systemd service for {{ role_container_name }} container"
-      ansible.builtin.service:
-        name: "container-{{ role_container_name }}.service"
-        enabled: yes
+    # Import container
+    - name: "Install {{ nexus_container_name }} container on podman"
+      ansible.builtin.include_role:
+        name: podman
+      vars:
+        action: import_container
+        container_repository_url: "{{ nexus_repository_url }}"
+        container_repository_tag: "{{ nexus_repository_tag | default('latest') }}"
+        container_repository_checksum: "{{ nexus_repository_checksum }}"
+        container_repository_checksum_algorithm: "{{ nexus_repository_checksum_algorithm }}"
+        container_name: "{{ nexus_container_name }}"
+        container_ports: "{{ nexus_container_ports }}"
+        container_volumes: "{{ nexus_container_volumes }}"
+        container_user: "{{ podman_uid }}"
+        container_env: "{{ nexus_container_env | default({}) }}"
 
 #########################################################
 ## Installation via kubernetes                         ##
@@ -432,12 +158,5 @@
 #########################################################
 
 # Unset variables
-- name: Unset variables...
-  ansible.builtin.set_fact:
-    role_repository_url:
-    role_repository_tag:
-    role_repository_checksum:
-    role_repository_checksum_algorithm:
-    role_container_name:
-    role_container_ports:
-    role_container_volumes:
+#- name: Unset variables...
+#  ansible.builtin.set_fact:
