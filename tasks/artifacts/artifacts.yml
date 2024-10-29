@@ -11,7 +11,7 @@
     - vault_address is defined
     - vault_token is defined
     - nexus_repository_vault_name is defined
-    - nexus_repository_server_name is defined
+    - nexus_repository_vault_id is defined
 
 #########################################################
 ## Sonatype Nexus Repository artifacts import          ##
