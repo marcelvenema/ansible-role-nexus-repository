@@ -100,6 +100,7 @@
         container_volumes: "{{ nexus_container_volumes }}"
         container_user: "{{ podman_uid }}"
         container_env: "{{ nexus_container_env | default({}) }}"
+        container_privileged: false
 
 #########################################################
 ## Installation via kubernetes                         ##
