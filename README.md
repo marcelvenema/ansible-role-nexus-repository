@@ -15,6 +15,16 @@
 
 # Diensten:
 
+| --- | --- | --- | --- |
+| install | create_repository | create_user | import_artifacts |
+| uninstall | destroy_repository | destroy_user | export_artefacts |
+| update | | | sync_artefacts |
+| start | | | |
+| stop | | | |
+| --- | --- | --- | --- |
+
+## Deployment
+
 action: **install**<br/>
 Installatie van laatste versie van Sonatype Nexus Repository OSS. Basis configuratie.<br/>
 variablen:<br/>
