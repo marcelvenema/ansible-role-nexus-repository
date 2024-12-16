@@ -7,19 +7,21 @@ Ansible role for installation, configuration, usage, and management of Sonatype 
 </td>
 </tr></table>
 
-Ansible role Nexus Repository : [Design](docs/DESIGN.md) | [Examples](examples) | [Test](molecule) |
-Latest version
+Ansible role Nexus Repository : [Design](docs/DESIGN.md) | [Examples](examples) | [Test](molecule) |<br>
+Latest version:
 
 # Actions:
 
-<table style="border:0px; width:100%"><tr>
-<td>install<br>uninstall<br>update<br>start<br>stop<br></td>
-<td>create_repository<br>destroy_repository<br></td>
-<td>create_user<br>destroy_user<br></td>
-<td>import_artifacts<br>export_artifacts<br>sync_artifacts<br></td>
-<td></td>
+<table style="border:0px; width:100%">
+<tr><th>Deployment</th><th>Repository</th><th>Users</th><th>Artefacts</th></tr>
+<tr>
+<td valign=top>install<br>uninstall<br>update<br>start<br>stop<br></td>
+<td valign=top>create_repository<br>destroy_repository<br></td>
+<td valign=top>create_user<br>destroy_user<br></td>
+<td valign=top>import_artifacts<br>export_artifacts<br>sync_artifacts<br></td>
 </tr></table>
 
+## Deployment
 
 action: **install**<br>
 Installation of the latest version of Sonatype Nexus Repository OSS.<br>
