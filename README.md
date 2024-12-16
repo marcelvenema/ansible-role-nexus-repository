@@ -1,6 +1,18 @@
 # Role: Sonatype Nexus Repository OSS
 
-| <img src="media/icon_nexus.png" alt="Nexus Repository icon" width=256 height=256> | Ansible role for installation, configuration, usage, and management of Sonatype Nexus Repository OSS.<br>Nexus Repository OSS is an open-source repository manager that centralizes the management and storage of software artifacts, such as libraries, dependencies, and build outputs. It supports multiple formats, including Maven, npm, Docker, PyPI, and more, enabling teams to securely store, version, and distribute components across development and deployment workflows.<br><br>Official website: `https://www.sonatype.com/products/sonatype-nexus-repository`
+
+<table><tr><td><img src="media/icon_nexus.png" alt="Nexus Repository icon" width=256 height=256></td>
+<td>
+Ansible role for installation, configuration, usage, and management of Sonatype Nexus Repository OSS.<br>Nexus Repository OSS is an open-source repository manager that centralizes the management and storage of software artifacts, such as libraries, dependencies, and build outputs. It supports multiple formats, including Maven, npm, Docker, PyPI, and more, enabling teams to securely store, version, and distribute components across development and deployment workflows.<br><br>Official website: `https://www.sonatype.com/products/sonatype-nexus-repository`<br>
+</td>
+</tr></table>
+
+
+***
+
+
+
+|  | Ansible role for installation, configuration, usage, and management of Sonatype Nexus Repository OSS.<br>Nexus Repository OSS is an open-source repository manager that centralizes the management and storage of software artifacts, such as libraries, dependencies, and build outputs. It supports multiple formats, including Maven, npm, Docker, PyPI, and more, enabling teams to securely store, version, and distribute components across development and deployment workflows.<br><br>Official website: `https://www.sonatype.com/products/sonatype-nexus-repository`
 |---|---|
 
 
