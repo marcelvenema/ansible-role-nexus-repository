@@ -13,7 +13,7 @@ Latest version:
 # Actions:
 
 <table style="border:0px; width:100%">
-<tr width="100%"><th>Deployment</th><th>Repository</th><th>Users</th><th>Artefacts</th></tr>
+<tr><th>Deployment</th><th>Repositories</th><th>Users and groups</th><th>Artefacts</th></tr>
 <tr>
 <td valign=top>install<br>uninstall<br>update<br>start<br>stop<br></td>
 <td valign=top>create_repository<br>destroy_repository<br></td>
@@ -115,27 +115,71 @@ variables:<br>
 ```
 
 
-
-
 ## Repositories
 
 action: **create_repository**<br>
-Create repository in Nexus.<br>
+Create a repository in Nexus.<br>
 variables:<br>
-<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_address</kbd>  : FQDN or IP-address for repository access, for example `https://192.168.1.1:8081`.<br>
 <kbd>nexus_repository_username</kbd> : Username for repository access.<br>
-<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
-<kbd>nexus_repository_name</kbd> : Name for the repository.<br>
-<kbd>nexus_repository_type</kbd> : Type of repository, for example raw.<br>
+<kbd>nexus_repository_password</kbd> : Password of user for repository access.<br>
+<kbd>nexus_repository_name</kbd>     : Name of the repository.<br>
+<kbd>nexus_repository_type</kbd>     : Type of repository, for example `raw`.<br>
 
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, a vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+<kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
+<kbd>vault_token</kbd>               : Token for vault access.<br>
+<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+
+```
+- name: Create Nexus Repository
+  hosts: localhost
+  roles:
+   - role: nexus-repository
+     vars:
+       action: create_repository
+       nexus_repository_address: https://192.168.1.1:8081
+       nexus_repository_username: admin
+       nexus_repository_password: admin123
+       nexus_repository_name: my-repo
+       nexus_repository_type: raw
+
+or
+
+- name: Create Nexus Repository
+  hosts: localhost
+  vars: 
+    vault_address: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR', default=Undefined) }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN', default=Undefined) }}"  
+  
+  roles:
+    - role: nexus_repository
+      vars:
+        action: create_repository
+        nexus_repository_vault_id: server01
+        
+```
 
 action: **destroy_repository**<br>
-Delete repository in Nexus. (backlog).<br>
+Delete a repository in Nexus.<br>
 variables:<br>
-<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example `https://192.168.1.1:8081`.<br>
 <kbd>nexus_repository_username</kbd> : Username for repository access.<br>
 <kbd>nexus_repository_password</kbd> : Password for repository access.<br>
-<kbd>nexus_repository_name</kbd> : Name for the repository.<br>
+<kbd>nexus_repository_name</kbd>     : Name of the repository.<br>
+
+```
+- name: Destroy Nexus Repository
+  hosts: localhost
+  roles:
+   - role: nexus-repository
+     vars:
+       action: destroy_repository
+       nexus_repository_address: https://192.168.1.1:8081
+       nexus_repository_username: admin
+       nexus_repository_password: admin123
+       nexus_repository_name: my-repo
+```
 
 
 ## Users and groups
