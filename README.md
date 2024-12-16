@@ -1,4 +1,7 @@
-# Sonatype Nexus Repository OSS
+# role: Sonatype Nexus Repository OSS
+
+| ![Cisco CallManager Icon](media/icon_cucm.png) | Ansible role for installation, configuration, usage and management of Cisco CallManager.<br>Official website: `https://www.cisco.com/c/en/us/support/unified-communications/unified-communications-manager-callmanager/series.html`
+|---|---|
 
 <table border="0">
   <tr>
@@ -13,8 +16,9 @@
   </tr>
 </table>
 
-# Diensten:
+[Design Ansible role Nexus Repository](docs/DESIGN.md)<br/>
 
+# Actions:
 
 | action | action | action | action |
 | --- | --- | --- | --- |
@@ -23,7 +27,7 @@
 | update | | | sync_artefacts |
 | start | | | |
 | stop | | | |
-| --- | --- | --- | --- |
+
 
 ## Deployment
 

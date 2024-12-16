@@ -1,11 +1,10 @@
----
 
 #########################################################
 ## Sonatype Nexus administration module                ##
 #########################################################
 
 # include task gather_nexus_repository_variables.yml
-- name: Gather Nexus Repository variables...
+- name: Gather Nexus Repository variables from the vault.
   ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
   when:
     - vault_address is defined
@@ -17,8 +16,8 @@
 ## Start                                               ##
 #########################################################
 
-- name: Start Nexus Repository...
-  when: action == "start"
+- name: Start Nexus Repository service.
+  when: action == 'start'
   block:
 
     # Show information message

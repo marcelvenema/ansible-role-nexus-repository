@@ -1,9 +1,2 @@
----
-collections:
-  - name: ansible.posix
 
-roles:
-  - name: vault
-    src: ssh://git@git.mindef.nl/automation/ansible-roles/ansible-role-vault.git
-    version: main
-    scm: git
+# no requirements or dependencies.
