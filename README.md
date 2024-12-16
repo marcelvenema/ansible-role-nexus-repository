@@ -13,7 +13,7 @@ Latest version:
 # Actions:
 
 <table style="border:0px; width:100%">
-<tr><th>Deployment</th><th>Repository</th><th>Users</th><th>Artefacts</th></tr>
+<tr width=100%><th>Deployment</th><th>Repository</th><th>Users</th><th>Artefacts</th></tr>
 <tr>
 <td valign=top>install<br>uninstall<br>update<br>start<br>stop<br></td>
 <td valign=top>create_repository<br>destroy_repository<br></td>
