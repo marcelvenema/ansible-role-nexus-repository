@@ -1,12 +1,16 @@
 # Role: Sonatype Nexus Repository OSS
 
-| ![Nexus Repository Icon](media/icon_nexus.png) | Ansible role for installation, configuration, usage, and management of Sonatype Nexus Repository OSS.<br>Nexus Repository OSS is an open-source repository manager that centralizes the management and storage of software artifacts, such as libraries, dependencies, and build outputs. It supports multiple formats, including Maven, npm, Docker, PyPI, and more, enabling teams to securely store, version, and distribute components across development and deployment workflows.<br><br>Official website: `https://www.sonatype.com/products/sonatype-nexus-repository`
+| <img src="media/icon_nexus.png" alt="Nexus Repository icon" width=256 height=256> | Ansible role for installation, configuration, usage, and management of Sonatype Nexus Repository OSS.<br>Nexus Repository OSS is an open-source repository manager that centralizes the management and storage of software artifacts, such as libraries, dependencies, and build outputs. It supports multiple formats, including Maven, npm, Docker, PyPI, and more, enabling teams to securely store, version, and distribute components across development and deployment workflows.<br><br>Official website: `https://www.sonatype.com/products/sonatype-nexus-repository`
 |---|---|
+
+
+
 
 [Design Ansible role Nexus Repository](docs/DESIGN.md)<br>
 
 # Actions:
 
+|     |     |     |     |
 | --- | --- | --- | --- |
 | install | create_repository | create_user | import_artifacts |
 | uninstall | destroy_repository | destroy_user | export_artifacts |
