@@ -1,7 +1,7 @@
 ---
 
 # Install Nexus Repository OSS example
-# Run with: ansible-playbook -i inventory install_nexus_repository_example.yml -K
+# Run with: ansible-playbook install_nexus_repository_example.yml -K
 - name: Install Nexus Repositroy OSS example
   hosts: lab1
   become: true

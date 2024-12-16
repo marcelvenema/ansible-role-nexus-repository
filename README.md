@@ -1,206 +1,233 @@
-# role: Sonatype Nexus Repository OSS
+# Role: Sonatype Nexus Repository OSS
 
-| ![Cisco CallManager Icon](media/icon_cucm.png) | Ansible role for installation, configuration, usage and management of Cisco CallManager.<br>Official website: `https://www.cisco.com/c/en/us/support/unified-communications/unified-communications-manager-callmanager/series.html`
+| ![Nexus Repository Icon](media/icon_nexus.png) | Ansible role for installation, configuration, usage, and management of Sonatype Nexus Repository OSS.<br>Nexus Repository OSS is an open-source repository manager that centralizes the management and storage of software artifacts, such as libraries, dependencies, and build outputs. It supports multiple formats, including Maven, npm, Docker, PyPI, and more, enabling teams to securely store, version, and distribute components across development and deployment workflows.<br><br>Official website: `https://www.sonatype.com/products/sonatype-nexus-repository`
 |---|---|
 
-<table border="0">
-  <tr>
-    <td width="160px" valign="top"><img src="media/icon_nexus.png" align="left" height="128" width="128" /></td>
-    <td>Ansible role voor installatie en configuratie van Sonatype Nexus Repository OSS.<br/>
-        Afhankelijk van de infrastructuur wordt deze als Podman pod (docker container), kubernetes container of direct op het besturingssysteem geinstalleerd.<br/>
-        Vooralsnog is alleen installatie en configuratie als Podman pod beschikbaar.<br/>
-        <br/>
-        Website leverancier: `https://www.sonatype.com/products/sonatype-nexus-repository` <br/>
-        <br/>
-    </td>
-  </tr>
-</table>
-
-[Design Ansible role Nexus Repository](docs/DESIGN.md)<br/>
+[Design Ansible role Nexus Repository](docs/DESIGN.md)<br>
 
 # Actions:
 
-| action | action | action | action |
 | --- | --- | --- | --- |
 | install | create_repository | create_user | import_artifacts |
-| uninstall | destroy_repository | destroy_user | export_artefacts |
-| update | | | sync_artefacts |
+| uninstall | destroy_repository | destroy_user | export_artifacts |
+| update | | | sync_artifacts |
 | start | | | |
 | stop | | | |
+| --- | --- | --- | --- |
 
 
-## Deployment
 
-action: **install**<br/>
-Installatie van laatste versie van Sonatype Nexus Repository OSS. Basis configuratie.<br/>
-variablen:<br/>
-<kbd>repository_url</kbd>        : URL met locatie van container repository. Kan een url zijn of pad naar lokaal of remote bestand, bijvoorbeeld 'docker.io/sonatype/nexus3', '/tmp/nexus3.67.1.tar', 'https://192.168.1.1/repo/nexus.tar'. Standaard verwijst naar docker.io/sonatype/nexus3 via defaults/main.yml.<br/>
-<kbd>repository_tag (optioneel)</kbd> : release of versienummer van het container image. standaard is 'latest'.<br/>
-<kbd>repository_checksum (optioneel)</kbd> : checksum van het container image. Voorbeeld: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" of "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".<br/>
-<kbd>repository_checksum_algorithm (optioneel)</kbd> : algoritme voor de checksum, bijvoorbeeld sha256, sha512, md5, etc.<br/>
-<kbd>platform (optioneel)</kbd>  : installeer op specifiek platform, bijvoorbeeld podman, kubernetes, host. Standaard is autodetect. (podman, kubernetes, host)<br/>
-<kbd>uninstall (optioneel)</kbd> : true/false. Wanneer, true wordt voor installatie eerst uninstall gestart.<br/>
-<br/>
-Indien onderstaande gegevens worden toegevoegd, wordt bij installatie een key/value secret engine in de vault gemaakt met admin wachtwoord.<br/>
-<kbd>vault_address</kbd>         : URL naar vault adres voor toegang vault, bijvoorbeeld `http://localhost:8081`. <br/>
-<kbd>vault_token</kbd>           : token voor toegang tot vault.<br/>
-<kbd>nexus_repository_name</kbd> : Unieke identificatie van Nexus Repository instantie, bijvoorbeeld servernaam/clusternaam. Wordt gebruikt om parameters aan te vullen.<br/>
+action: **install**<br>
+Installation of the latest version of Sonatype Nexus Repository OSS.<br>
+variables:<br>
+<kbd>nexus_repository_url</kbd> : URL with the location of the container repository. This can be an URL or path to a local or remote file, for example 'docker.io/sonatype/nexus3', '/tmp/nexus3.67.1.tar' or 'https://192.168.1.1/repo/nexus.tar'. By default, it points to docker.io/sonatype/nexus3 via defaults/main.yml.<br>
+<kbd>nexus_repository_tag (optional)</kbd> : release or version number of the container image. Default is 'latest'.<br>
+<kbd>nexus_repository_checksum (optional)</kbd> : checksum of the container image. Example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".<br>
+<kbd>nexus_repository_checksum_algorithm (optional)</kbd> : algorithm for the checksum, for example sha256, sha512, md5, etc.<br>
+<kbd>platform (optional)</kbd>  : install on a specific platform, for example podman, kubernetes, host. Default is autodetect. (podman, kubernetes, host)<br>
+<kbd>uninstall (optional)</kbd> : true/false. When true, uninstall is started before installation.<br>
+<br>
+If the following variables are added, a key/value secret engine in the vault will be created with the Nexus Repository admin password during installation.<br>
+<kbd>vault_address</kbd>         : URL to the vault address for vault access, for example `http://localhost:8081`. <br>
+<kbd>vault_token</kbd>           : token for vault access.<br>
+<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault .<br>
 
-
-action: **uninstall**<br/>
-De-installatie van Nexus Repository OSS.<br/>
-variablen:<br/>
-<kbd>keep_data (optioneel)</kbd> : true/false. Wanneer true, wordt bij uninstall data folders bewaard. Standaard false.<br/>
-
-action: **update**<br/>
-Update naar laatste Sonatype Nexus Repository OSS versie. (backlog).<br/>
-variablen:<br/>
-<kbd>(geen)</kbd> : Geen variabelen benodigd.<br/>
-
-action: **start**<br/>
-Start van Nexus Repository OSS service. (backlog).<br/>
-variablen:<br/>
-<kbd>(geen)</kbd> : Geen variabelen benodigd.<br/>
-
-action: **stop**<br/>
-Stop van Nexus Repository OSS service. (backlog).<br/>
-variablen:<br/>
-<kbd>(geen)</kbd> : Geen variabelen benodigd.<br/>
-
-Wanneer variable action niet is ingevuld, wordt gedetecteerd of Nexus Repository OSS al is geinstalleerd. Zo nee, wordt aan action waarde **install** toegekend. Zo ja, wordt aan action waarde **start** toegekend.<br/>
-
-
-Voorbeeld:
 ```
----
-- hosts: lab_server
-  vars:
+- name: Install Sonatype Nexus Repository OSS
+  hosts: localhost
   roles:
-    - role: nexus_repository
-      vars:
-        action        : install
-        repository_url: "\tmp\nexus_repository.tar"
-        vault_address : "http://localhost:8200"
-        vault_token   : "hvs.9MGoUtPEGZWRgLX3dxZYkqxV"
+   - role: nexus-repository
+     vars:
+       action : install
+       nexus_repository_url: docker.io/sonatype/nexus3
+       nexus_repository_tag: latest
+
 ```
+
+
+action: **uninstall**<br>
+Uninstallation of Nexus Repository OSS.<br>
+variables:<br>
+<kbd>keep_data (optional)</kbd> : true/false. When true, data folders are kept during uninstall. Default is false.<br>
+
+```
+- name: Uninstall Sonatype Nexus Repository OSS
+  hosts: localhost
+  roles:
+   - role: nexus-repository
+     vars:
+       action : uninstall
+
+```
+
+
+action: **update**<br>
+Update to the latest Sonatype Nexus Repository OSS version. `ROADMAP`.<br>
+variables:<br>
+<kbd>(none)</kbd> : No variables required.<br>
+
+```
+- name: Update Sonatype Nexus Repository OSS
+  hosts: localhost
+  roles:
+   - role: nexus-repository
+     vars:
+       action : update
+
+```
+
+
+action: **start**<br>
+Start of Nexus Repository OSS service. `ROADMAP`.<br>
+variables:<br>
+<kbd>(none)</kbd> : No variables required.<br>
+
+```
+- name: Start Sonatype Nexus Repository OSS service
+  hosts: localhost
+  roles:
+   - role: nexus-repository
+     vars:
+       action : start
+
+```
+
+
+action: **stop**<br>
+Stop of Nexus Repository OSS service. `ROADMAP`.<br>
+variables:<br>
+<kbd>(none)</kbd> : No variables required.<br>
+
+```
+- name: Stop Sonatype Nexus Repository OSS service
+  hosts: localhost
+  roles:
+   - role: nexus-repository
+     vars:
+       action : stop
+
+```
+
+
+
 
 ## Repositories
 
-action: **create_repository**<br/>
-Aanmaken repository in Nexus.<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_repository_name</kbd> : Naam voor repository.<br/>
-<kbd>nexus_repository_type</kbd> : Type repository, bijvoorbeeld raw.<br/>
+action: **create_repository**<br>
+Create repository in Nexus.<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_repository_name</kbd> : Name for the repository.<br>
+<kbd>nexus_repository_type</kbd> : Type of repository, for example raw.<br>
 
 
-action: **destroy_repository**<br/>
-Verwijderen repository in Nexus. (backlog).<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_repository_name</kbd> : Naam voor repository.<br/>
+action: **destroy_repository**<br>
+Delete repository in Nexus. (backlog).<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_repository_name</kbd> : Name for the repository.<br>
 
 
 ## Users and groups
 
-action: **create_user**<br/>
-Aanmaken lokale gebruiker in Nexus Repository.<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_username</kbd>  : Gebruikersnaam.<br/>
-<kbd>nexus_firstname</kbd> : Voornaam van gebruiker.<br/>
-<kbd>nexus_lastname</kbd>  : Achternaam van gebruiker.<br/>
-<kbd>nexus_email</kbd>     : E-mail adres van gebruiker.<br/>
-<kbd>nexus_password</kbd>  : Wachtwoord van gebruiker.<br/>
-<kbd>nexus_role</kbd>      : Rol, bijvoorbeeld nx-admin.<br/>
+action: **create_user**<br>
+Create a local user in Nexus Repository.<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_username</kbd>  : Username.<br>
+<kbd>nexus_firstname</kbd> : First name of the user.<br>
+<kbd>nexus_lastname</kbd>  : Last name of the user.<br>
+<kbd>nexus_email</kbd>     : Email address of the user.<br>
+<kbd>nexus_password</kbd>  : Password of the user.<br>
+<kbd>nexus_role</kbd>      : Role, for example nx-admin.<br>
 
 
-action: **destroy_user**<br/>
-Verwijderen gebruiker in Nexus. (backlog).<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_username</kbd> : Gebruikersnaam.<br/>
+action: **destroy_user**<br>
+Delete user in Nexus. (backlog).<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_username</kbd> : Username.<br>
 
 
-action: **set_password**<br/>
-Wijzigen van wachtwoord van een gebruiker in Nexus. (backlog).<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_username</kbd> : Gebruikersnaam.<br/>
-<kbd>nexus_password</kbd> : Wachtwoord.<br/>
+action: **set_password**<br>
+Change the password of a user in Nexus. (backlog).<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_username</kbd> : Username.<br>
+<kbd>nexus_password</kbd> : Password.<br>
 
 
 ## Artifacts
 
 
-action: **import_artifacts**<br/>
-Importeer artifacts in folderstructuur naar Nexus repository.<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd>  : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_repository_name</kbd>     : Naam van de repository om artifacts te importeren. Deze repository dient al te bestaan.<br/>
-<kbd>nexus_repository_folder</kbd>   : Repository folder voor import artifacts, bijvoorbeeld '/Microsoft/Windows/Server/2025'.<br/>
-<kbd>source_folder</kbd>               : Folder voor import artifacts, bijvoorbeeld '/tmp/'.<br/>
+action: **import_artifacts**<br>
+Import artifacts in folder structure to Nexus repository.<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_repository_name</kbd>     : Name of the repository to import artifacts. This repository must already exist.<br>
+<kbd>nexus_repository_folder</kbd>   : Repository folder for import artifacts, for example '/Microsoft/Windows/Server/2025'.<br>
+<kbd>source_folder</kbd>               : Folder for import artifacts, for example '/tmp/'.<br>
 
 
-action: **export_artifacts**<br/>
-Export artifacts uit repository naar folderstructuur.<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd> : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>nexus_repository_name</kbd>     : Naam van de repository.<br/>
-<kbd>nexus_repository_folder (optioneel)</kbd> : Repository folder voor export artifacts. Niet ingevuld is export gehele repository.<br/>
-<kbd>destination_folder</kbd>               : Folder voor export artifacts, bijvoorbeeld '/tmp/export/'.<br/>
+action: **export_artifacts**<br>
+Export artifacts from repository to folder structure.<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd> : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>nexus_repository_name</kbd>     : Name of the repository.<br>
+<kbd>nexus_repository_folder (optional)</kbd> : Repository folder for export artifacts. If not filled in, the entire repository is exported.<br>
+<kbd>destination_folder</kbd>               : Folder for export artifacts, for example '/tmp/export/'.<br>
 
 
-action: **sync_artifacts**<br/>
-Synchroniseer via .json bestand artifacts van extern naar repository. (backlog).<br/>
-variablen:<br/>
-<kbd>nexus_repository_address</kbd> : URL naar adres voor toegang tot repository, bijvoorbeeld https://192.168.1.1:8081.<br/>
-<kbd>nexus_repository_username</kbd> : Gebruikersnaam voor toegang tot repository.<br/>
-<kbd>nexus_repository_password</kbd> : Wachtwoord voor toegang tot repository.<br/>
-<kbd>config_file</kbd>               : Configuratie file met synchronisatie items.<br/>
-
-
-***
-
-- **changelog**<br/>
-  Wijzigingen logboek.<br/>
-  Zie [changelog](CHANGELOG.md)<br/>
-
-
-- **roadmap**<br/>
-  Visie en toekomstige ontwikkelingen.<br/>
-  Zie [roadmap](ROADMAP.md)<br/>
+action: **sync_artifacts**<br>
+Synchronize artifacts from external to repository via .json file. (backlog).<br>
+variables:<br>
+<kbd>nexus_repository_address</kbd> : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
+<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd> : Password for repository access.<br>
+<kbd>config_file</kbd>               : Configuration file with synchronization items.<br>
 
 
 ***
 
-## Voorbereidingen
-(geen).<br/>
+- **changelog**<br>
+  Change log.<br>
+  See [changelog](CHANGELOG.md)<br>
 
 
-## Afhankelijkheden
-Afhankelijkheden zijn benoemd in het **requirements.yml** bestand. Gebruik `ansible-galaxy install -r requirements.yml --force` voor installatie.<br/>
+- **roadmap**<br>
+  Vision and future developments.<br>
+  See [roadmap](ROADMAP.md)<br>
 
-Indien deze role in andere playbooks of Ansible projecten wordt gebruikt, dient de URL van deze rol te worden toegevoegd aan het `requirements.yml` bestand. Via bovenstaand command wordt de rol dan in de juiste folderstructuur geplaatst.<br/>
-<br/>
 
-## Installatie
-Installatie via action 'install'.<br/>
-Voorbeeld voor installatie Nexus Repository OSS:
+***
+
+## Preparations
+(none).<br>
+
+
+## Dependencies
+Dependencies are listed in the **requirements.yml** file. Use `ansible-galaxy install -r requirements.yml --force` for installation.<br>
+
+If this role is used in other playbooks or Ansible projects, the URL of this role must be added to the `requirements.yml` file. Using the above command, the role will be placed in the correct folder structure.<br>
+<br>
+
+## Installation
+Installation via action 'install'.<br>
+Example for installing Nexus Repository OSS:
 
 ```
 ---
@@ -216,18 +243,18 @@ Voorbeeld voor installatie Nexus Repository OSS:
 
 ```
 
-## Configuratie
-(geen).<br/>
+## Configuration
+(none).<br>
 
 
-## Overige informatie
+## Other information
 
-**Globale variabelen**
+**Global variables**
 
 
-## Licentie
+## License
 MIT
 
 
-## Auteur
+## Author
 Marcel Venema

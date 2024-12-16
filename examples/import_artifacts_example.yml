@@ -21,9 +21,9 @@
         # nexus_repository_address : "" # Get from Vault
         # nexus_repository_username : "" # Get from Vault
         # nexus_repository_password : "" # Get from Vault
-        nexus_repository_name : "blauwe_disk"
+        nexus_repository_name : "files"
         nexus_repository_folder : ""
-        source_folder : "/tmp/blauwe_disk"
+        source_folder : "/tmp/files"
 
     - name: Show information message
       debug:
