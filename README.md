@@ -7,13 +7,13 @@ Ansible role for installation, configuration, usage, and management of Sonatype 
 </td>
 </tr></table>
 
-Ansible role Nexus Repository : [Design](docs/DESIGN.md) | [Examples](examples) | [Test](molecule) |<br>
+Ansible role Nexus Repository : [Design](docs/DESIGN.md)  |  [Examples](examples)  |  [Test](molecule)  |  [Issues]()  |<br>
 Latest version:
 
 # Actions:
 
 <table style="border:0px; width:100%">
-<tr><th>Deployment</th><th>Repositories</th><th>Users and groups</th><th>Artefacts</th></tr>
+<tr><th>Deployment</th><th>Repositories</th><th>Users and groups</th><th>Artifacts</th></tr>
 <tr>
 <td valign=top>install<br>uninstall<br>update<br>start<br>stop<br></td>
 <td valign=top>create_repository<br>destroy_repository<br></td>
@@ -47,7 +47,6 @@ If the following variables are added, a key/value secret engine in the vault wil
        action : install
        nexus_repository_url: docker.io/sonatype/nexus3
        nexus_repository_tag: latest
-
 ```
 
 
@@ -63,7 +62,6 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : uninstall
-
 ```
 
 
@@ -79,7 +77,6 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : update
-
 ```
 
 
@@ -95,7 +92,6 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : start
-
 ```
 
 
@@ -111,7 +107,6 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : stop
-
 ```
 
 
@@ -143,9 +138,9 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
        nexus_repository_password: admin123
        nexus_repository_name: my-repo
        nexus_repository_type: raw
-
+```
 or
-
+```
 - name: Create Nexus Repository
   hosts: localhost
   vars: 
@@ -157,7 +152,6 @@ or
       vars:
         action: create_repository
         nexus_repository_vault_id: server01
-
 ```
 
 action: **destroy_repository**<br>
@@ -185,7 +179,6 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
       vars:
         action: destroy_repository
         nexus_repository_vault_id: server01
-
 ```
 
 
@@ -204,6 +197,10 @@ variables:<br>
 <kbd>nexus_password</kbd>  : Password of the user.<br>
 <kbd>nexus_role</kbd>      : Role, for example nx-admin.<br>
 
+```
+
+```
+
 
 action: **destroy_user**<br>
 Delete user in Nexus. (backlog).<br>
@@ -212,6 +209,10 @@ variables:<br>
 <kbd>nexus_repository_username</kbd> : Username for repository access.<br>
 <kbd>nexus_repository_password</kbd> : Password for repository access.<br>
 <kbd>nexus_username</kbd> : Username.<br>
+
+```
+
+```
 
 
 action: **set_password**<br>
@@ -223,9 +224,11 @@ variables:<br>
 <kbd>nexus_username</kbd> : Username.<br>
 <kbd>nexus_password</kbd> : Password.<br>
 
+```
+
+```
 
 ## Artifacts
-
 
 action: **import_artifacts**<br>
 Import artifacts in folder structure to Nexus repository.<br>
@@ -236,6 +239,10 @@ variables:<br>
 <kbd>nexus_repository_name</kbd>     : Name of the repository to import artifacts. This repository must already exist.<br>
 <kbd>nexus_repository_folder</kbd>   : Repository folder for import artifacts, for example '/Microsoft/Windows/Server/2025'.<br>
 <kbd>source_folder</kbd>               : Folder for import artifacts, for example '/tmp/'.<br>
+
+```
+
+```
 
 
 action: **export_artifacts**<br>
@@ -248,6 +255,9 @@ variables:<br>
 <kbd>nexus_repository_folder (optional)</kbd> : Repository folder for export artifacts. If not filled in, the entire repository is exported.<br>
 <kbd>destination_folder</kbd>               : Folder for export artifacts, for example '/tmp/export/'.<br>
 
+```
+
+```
 
 action: **sync_artifacts**<br>
 Synchronize artifacts from external to repository via .json file. (backlog).<br>
@@ -257,18 +267,20 @@ variables:<br>
 <kbd>nexus_repository_password</kbd> : Password for repository access.<br>
 <kbd>config_file</kbd>               : Configuration file with synchronization items.<br>
 
+```
+
+```
+
 
 ***
 
-- **changelog**<br>
-  Change log.<br>
+- **changelog**
+  Change log.
   See [changelog](CHANGELOG.md)<br>
 
-
-- **roadmap**<br>
-  Vision and future developments.<br>
+- **roadmap**
+  Vision and future developments.
   See [roadmap](ROADMAP.md)<br>
-
 
 ***
 
@@ -278,7 +290,6 @@ variables:<br>
 
 ## Dependencies
 Dependencies are listed in the **requirements.yml** file. Use `ansible-galaxy install -r requirements.yml --force` for installation.<br>
-
 If this role is used in other playbooks or Ansible projects, the URL of this role must be added to the `requirements.yml` file. Using the above command, the role will be placed in the correct folder structure.<br>
 <br>
 
@@ -295,8 +306,7 @@ Example for installing Nexus Repository OSS:
       vars:
         action        : install
         repository_url: "\tmp\nexus_repository.tar"
-        vault_address : "http://localhost:8200"
-        vault_token   : "hvs.9MGoUtPEGZWRgLX3dxZYkqxV"
+
 
 ```
 
