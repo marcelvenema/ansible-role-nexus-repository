@@ -75,7 +75,7 @@
         - nexus_repository_user_password
         - nexus_repository_user_firstname
         - nexus_repository_user_lastname
-        - nexus_repositiry_user_email
+        - nexus_repository_user_email
         - nexus_repository_user_roles
 
     # Create user in Nexus Repository Manager via API
