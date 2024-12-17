@@ -66,12 +66,12 @@
   ansible.builtin.include_tasks: users.yml
   vars:
     action         : create_user
-    nexus_username : "{{ automation_username | default('automation') }}"
-    nexus_password : "{{ automation_password }}"
-    nexus_firstname: "{{ automation_username | default('automation') }}"
-    nexus_lastname : "{{ automation_username | default('automation') }}"
-    nexus_email    : "{{ automation_email | default('automation@localhost') }}"
-    nexus_roles    : "nx-admin"
+    nexus_repository_user_username : "{{ automation_username | default('automation') }}"
+    nexus_repository_user_password : "{{ automation_password }}"
+    nexus_repository_user_firstname: "{{ automation_username | default('automation') }}"
+    nexus_repository_user_lastname : "{{ automation_username | default('automation') }}"
+    nexus_repository_user_email    : "{{ automation_email | default('automation@localhost') }}"
+    nexus_repository_user_roles    : "nx-admin"
     # nexus_repository_username: # set in playbook
     # nexus_repository_password: # set in playbook
     # nexus_repository_address: # set in playbook
