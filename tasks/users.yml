@@ -71,12 +71,12 @@
         - nexus_repository_address
         - nexus_repository_username
         - nexus_repository_password
-        - nexus_username
-        - nexus_password
-        - nexus_firstname
-        - nexus_lastname
-        - nexus_email
-        - nexus_roles
+        - nexus_repository_user_username
+        - nexus_repository_user_password
+        - nexus_repository_user_firstname
+        - nexus_repository_user_lastname
+        - nexus_repositiry_user_email
+        - nexus_repository_user_roles
 
     # Create user in Nexus Repository Manager via API
     - name: Create User in Nexus Repository Manager
@@ -88,13 +88,13 @@
         force_basic_auth: yes
         body_format: json
         body:
-          userId      : "{{ nexus_username }}"
-          firstName   : "{{ nexus_firstname }}"
-          lastName    : "{{ nexus_lastname }}"
-          emailAddress: "{{ nexus_email }}"
-          password    : "{{ nexus_password }}"
+          userId      : "{{ nexus_repository_user_username }}"
+          firstName   : "{{ nexus_repository_user_firstname }}"
+          lastName    : "{{ nexus_repository_user_lastname }}"
+          emailAddress: "{{ nexus_repository_user_email }}"
+          password    : "{{ nexus_repository_user_password }}"
           status      : "active"
-          roles       : ["{{ nexus_roles }}"]
+          roles       : ["{{ nexus_repository_user_roles }}"]
         headers:
           accept: application/json
           Content-Type: application/json
@@ -119,7 +119,39 @@
         - nexus_repository_address
         - nexus_repository_username
         - nexus_repository_password
-        - nexus_username
+        - nexus_repository_user_username
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+#########################################################
+## Set password for user                               ##
+#########################################################
+
+- name: Destroy user on Nexus repository
+  when: action == "set_password_user"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository set_password_user action.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_user_username
+        - nexus_repository_user_password
 
     # Show information message
     - name: This part is not (yet) implemented.
