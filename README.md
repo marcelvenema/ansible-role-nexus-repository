@@ -13,12 +13,13 @@ Latest version:
 # Actions:
 
 <table style="border:0px; width:100%">
-<tr><th>Deployment</th><th>Repositories</th><th>Users and groups</th><th>Artifacts</th></tr>
+<tr><th>Deployment</th><th>Repositories</th><th>Users and groups</th><th>Artifacts</th><th>Administration</th></tr>
 <tr>
-<td valign=top>install<br>uninstall<br>update<br>start<br>stop<br></td>
+<td valign=top>install<br>uninstall<br>update<br></td>
 <td valign=top>create_repository<br>destroy_repository<br></td>
-<td valign=top>create_user<br>destroy_user<br></td>
+<td valign=top>create_user<br>destroy_user<br>set_password_user<br></td>
 <td valign=top>import_artifacts<br>export_artifacts<br>sync_artifacts<br></td>
+<td valign=top>configure<br>start<br>stop<br></td>
 </tr></table>
 
 ## Deployment
@@ -77,36 +78,6 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : update
-```
-
-
-action: **start**<br>
-Start of Nexus Repository OSS service. `ROADMAP`.<br>
-variables:<br>
-<kbd>(none)</kbd> : No variables required.<br>
-
-```
-- name: Start Sonatype Nexus Repository OSS service
-  hosts: nexus-server
-  roles:
-   - role: nexus-repository
-     vars:
-       action : start
-```
-
-
-action: **stop**<br>
-Stop of Nexus Repository OSS service. `ROADMAP`.<br>
-variables:<br>
-<kbd>(none)</kbd> : No variables required.<br>
-
-```
-- name: Stop Sonatype Nexus Repository OSS service
-  hosts: nexus-server
-  roles:
-   - role: nexus-repository
-     vars:
-       action : stop
 ```
 
 
@@ -379,6 +350,51 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
         config_file: "/tmp/sync_artifacts.yml"\
 ```
 
+## Administration
+
+action: **start**<br>
+Start of Nexus Repository OSS service. `ROADMAP`.<br>
+variables:<br>
+<kbd>(none)</kbd> : No variables required.<br>
+
+```
+- name: Start Sonatype Nexus Repository OSS service
+  hosts: nexus-server
+  roles:
+   - role: nexus-repository
+     vars:
+       action : start
+```
+
+
+action: **stop**<br>
+Stop of Nexus Repository OSS service. `ROADMAP`.<br>
+variables:<br>
+<kbd>(none)</kbd> : No variables required.<br>
+
+```
+- name: Stop Sonatype Nexus Repository OSS service
+  hosts: nexus-server
+  roles:
+   - role: nexus-repository
+     vars:
+       action : stop
+```
+
+action: **configure**<br>
+Configure Nexus Repository OSS service. `ROADMAP`.<br>
+variables:<br>
+<kbd>(none)</kbd> : No variables required.<br>
+
+```
+- name: Configure Sonatype Nexus Repository OSS service
+  hosts: nexus-server
+  roles:
+   - role: nexus-repository
+     vars:
+       action: configure
+```
+    
 
 ***
 
