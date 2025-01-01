@@ -15,14 +15,14 @@
       loop_control:
         loop_var: varitem
       loop:
-        - nexus_repository_vault_name
+        - nexus_repository_secret_engine_name
         - nexus_repository_vault_id
 
     # NEXUS REPOSITORY
     # Set variable _secret_name to cucm_name
     - name: Register Vault variable (nexus_repository_name)...
       ansible.builtin.set_fact:
-        _vault_name: "{{ nexus_repository_vault_name }}"
+        _secret_engine_name: "{{ nexus_repository_secret_engine_name }}"
         _secret_name: "{{ nexus_repository_vault_id }}"
       no_log: true
 
@@ -80,7 +80,7 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "{{ _vault_name }}"
+        vault_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "automation_password"
         secret_result: "nexus_repository_password"
