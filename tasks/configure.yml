@@ -23,21 +23,24 @@
     return_content: yes
   register: nexus_website
   until: nexus_website.status == 200
-  retries: 10
+  retries: 20
   delay: 10
 
 # Get Nexus admin password from podman
 - name: Gather Nexus Repository admin password...
-  ansible.builtin.command: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
-  register: set_admin_password
-  no_log: true
-  when: platform == "podman"
+  ansible.builtin.include_role:
+    name: podman
+  vars:
+    action: "run_container_command"
+    container_name: "{{ nexus_container_name }}"
+    container_command: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
+    container_command_output: ""
 
 # Set Nexus admin password
 - name: Register Nexus Repository admin username and password...
   ansible.builtin.set_fact:
     nexus_repository_username: "admin"
-    nexus_repository_password: "{{ set_admin_password.stdout }}"
+    nexus_repository_password: "{{ container_command_output }}"
 
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
