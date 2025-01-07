@@ -43,7 +43,7 @@
     secret_engine_type: "kv"
 
 #########################################################
-## Secrets (prismcentral_address)                      ##
+## Secrets (nexus-repository)                          ##
 #########################################################
 
 # Declare variable _secret_keyvalue
