@@ -20,15 +20,15 @@
 # Register variable (_secret_engine_name)
 - name: Register variable (secret_engine_name)...
   ansible.builtin.set_fact:
-   _secret_engine_name: "{{ nexus_repository_secret_engine_name | default('nexus-repository') }}"
+   _secret_engine_name: "{{ nexus_secret_engine_name | default('nexus-repository') }}"
 
 # Register variable (_secret_name)
 - name: Register variable (secret_name)...
   ansible.builtin.set_fact:
-    _secret_name: "{{ nexus_repository_vault_id | default( ansible_fqdn | replace('.', '-') ) }}"
+    _secret_name: "{{ nexus_vault_id | default( ansible_fqdn | replace('.', '-') ) }}"
 
 #########################################################
-## Secret Engine (nexus-repository)                    ##
+## Secret Engine                                       ##
 #########################################################
 
 # Create secret_engine if it does not exist
@@ -39,11 +39,11 @@
   vars:
     action: create_secret_engine
     secret_engine_name: "{{ _secret_engine_name }}"
-    secret_engine_description: "{{ nexus_repository_vault_description | default('Secrets for Sonatype Nexus Repository.') }}"
+    secret_engine_description: "{{ nexus_secret_engine_description | default('Secrets for Sonatype Nexus Repository.') }}"
     secret_engine_type: "kv"
 
 #########################################################
-## Secrets (nexus-repository)                          ##
+## Secrets                                             ##
 #########################################################
 
 # Declare variable _secret_keyvalue
@@ -60,7 +60,7 @@
       automation_email: '{{ automation_email | default('ansible@{{ ansible_fqdn }}') }}'
 
 # Store usernames and passwords in Hashicorp Vault.
-- name: Store Nexus Repository secrets and configuration data in Vault...
+- name: Store secrets and configuration data in Vault...
   ansible.builtin.include_role:
     name: vault
     tasks_from: secrets.yml

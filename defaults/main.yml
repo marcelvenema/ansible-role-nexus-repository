@@ -1,35 +1,28 @@
 ---
 
 # Variables for container configuration
-
-# nexus_repository_url can be a URL to a docker image or a tar file. example: "docker.io/sonatype/nexus3" or "/tmp/nexus3.67.1.tar", "https://192.168.1.1/repo/nexus.tar".
+# <container_name>_repository_url can be a URL to a docker image or a tar file. example: "docker.io/sonatype/nexus3" or "/tmp/nexus3.67.1.tar", "https://192.168.1.1/repo/nexus.tar".
 nexus_repository_url: "docker.io/sonatype/nexus3"
-# nexus_repository_tag can be a tag of the image or a version of the tar file. example: "3.67.1" or "latest".
+# <container_name>_repository_tag can be a tag of the image or a version of the tar file. example: "3.67.1" or "latest".
 # nexus_repository_tag: ""
-# nexus_repository_checksum can be a checksum of the container file. example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".
+# <container_name>_repository_checksum can be a checksum of the container file. example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".
 # nexus_repository_checksum: ""
-# nexus_repository_checksum_algorithm can be a checksum algorithm of the container file. example: "sha256", sha512", "md5".
+# <container_name>_repository_checksum_algorithm can be a checksum algorithm of the container file. example: "sha256", sha512", "md5".
 # nexus_repository_checksum_algorithm: "sha256"
-# nexus_container_name is the name of the container used in podman or docker. example: "nexus3".
+# <container_name>_repository_container_name is the name of the container used in podman or docker. example: "nexus3".
 nexus_container_name: "nexus3"
-# nexus_container_ports is a list of ports used in the container. example: ["8081:8081"] or ["8081:8081", "8082:8082"].
+# <container_name>_container_ports is a list of ports used in the container. example: ["8081:8081"] or ["8081:8081", "8082:8082"].
 nexus_container_ports: ["8081:8081"]
-# nexus_container_volumes is a list of volumes used in the container. example: ["nexus/nexus-data:/nexus-data:Z"] or ["nexus/nexus-data:/nexus-data:Z", "nexus/config:/nexus-config:Z"].
+# <container_name>_container_volumes is a list of volumes used in the container. example: ["nexus/nexus-data:/nexus-data:Z"] or ["nexus/nexus-data:/nexus-data:Z", "nexus/config:/nexus-config:Z"].
 nexus_container_volumes: ["nexus/nexus-data:/nexus-data:Z"]
 
-
-# Variables for Hashicorp Vault configuration
+# Variables for configuring Vault to store secrets and configuration data
+# <container_name>_secret_engine_name is the name of the vault used for storing secrets and configuration data. example: "nexus-repository".
+nexus_secret_engine_name: "nexus-repository"
+# <container_name>_secret_engine_description is the description of the vault used for storing secrets and configuration data. example: "Secrets for Sonatype Nexus Repository.".
+nexus_secret_engine_description: "Secrets for Sonatype Nexus Repository OSS."
+# <container_name>_vault_id is the unique id of the vault used for storing secrets and configuration data. default is {{ansible_fqdn }}.
+# nexus_vault_id: ""
 
 # nexus_repository_validate_certs configures if the certificate of the server should be validated. example: true or false. 
 nexus_repository_validate_certs: false
-
-
-# Variables for Vault configuration for storing secrets and configuration data
-
-# nexus_repository_server_engine_name is the name of the vault used for storing secrets and configuration data. example: "nexus-repository".
-nexus_repository_server_engine_name: "nexus-repository"
-# nexus_repository_server_engine_description is the description of the vault used for storing secrets and configuration data. example: "Secrets for Sonatype Nexus Repository.".
-nexus_repository_server_engine_description: "Secrets for Sonatype Nexus Repository."
-# nexus_repository_vault_id is the unique id of the vault used for storing secrets and configuration data. default is {{ansible_fqdn }}.
-# nexus_repository_vault_id: "" 
-
