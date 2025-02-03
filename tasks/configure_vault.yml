@@ -17,7 +17,7 @@
     - vault_address
     - vault_token
 
-# Register variable (_secret_engine_name) 
+# Register variable (_secret_engine_name)
 - name: Register variable (secret_engine_name)...
   ansible.builtin.set_fact:
    _secret_engine_name: "{{ nexus_repository_secret_engine_name | default('nexus-repository') }}"
@@ -51,6 +51,7 @@
   ansible.builtin.set_fact:
     _secret_keyvalue: |
       admin_password: '{{ nexus_repository_password | default('change_me') }}'
+      nexus_repository_url: '{{ nexus_repository_url | default('change_me') }}'
       nexus_repository_username: '{{ nexus_repository_username | default('change_me') }}'
       nexus_repository_password: '{{ nexus_repository_password | default('change_me') }}'
       nexus_repository_address: '{{ nexus_repository_address | default('change_me') }}'
