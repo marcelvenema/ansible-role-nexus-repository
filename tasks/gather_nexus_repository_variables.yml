@@ -40,7 +40,7 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "{{ _vault_name }}"
+        secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_address"
         secret_result: "nexus_repository_address"
@@ -60,9 +60,9 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "{{ _vault_name }}"
+        secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
-        secret_key: "automation_username"
+        secret_key: "nexus_repository_username"
         secret_result: "nexus_repository_username"
       when : nexus_repository_username == ""
 
@@ -80,9 +80,9 @@
         name: vault
       vars:
         action: get_secret
-        vault_name: "{{ _secret_engine_name }}"
+        secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
-        secret_key: "automation_password"
+        secret_key: "nexus_repository_password"
         secret_result: "nexus_repository_password"
       when : nexus_repository_password == ""
 

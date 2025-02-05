@@ -13,10 +13,6 @@
     - nexus_repository_secret_engine_name is defined
     - nexus_repository_vault_id is defined
 
-# gather nexus repository variables
-- name: Gather Nexus Repository variables...
-  ansible.builtin.import_tasks: gather_nexus_repository_variables.yml
-
 #########################################################
 ## Sonatype Nexus Repository artifacts import          ##
 #########################################################
