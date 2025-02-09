@@ -20,12 +20,12 @@
 # Register variable (_secret_engine_name)
 - name: Register variable (secret_engine_name)...
   ansible.builtin.set_fact:
-   _secret_engine_name: "{{ nexus_secret_engine_name | default('nexus-repository') }}"
+   _secret_engine_name: "{{ nexus_repository_secret_engine_name | default('nexus-repository') }}"
 
 # Register variable (_secret_name)
 - name: Register variable (secret_name)...
   ansible.builtin.set_fact:
-    _secret_name: "{{ nexus_vault_id | default( ansible_fqdn | replace('.', '-') ) }}"
+    _secret_name: "{{ nexus_repository_vault_id | default( ansible_fqdn | replace('.', '-') ) }}"
 
 #########################################################
 ## Secret Engine                                       ##
@@ -35,7 +35,6 @@
 - name: "Create Vault secret engine for {{ _secret_engine_name }}..."
   ansible.builtin.include_role:
     name: vault
-    tasks_from: secret_engine.yml
   vars:
     action: create_secret_engine
     secret_engine_name: "{{ _secret_engine_name }}"
@@ -63,7 +62,6 @@
 - name: Store secrets and configuration data in Vault...
   ansible.builtin.include_role:
     name: vault
-    tasks_from: secrets.yml
   vars:
     action: create_secret
     secret_engine_name: "{{ _secret_engine_name }}"

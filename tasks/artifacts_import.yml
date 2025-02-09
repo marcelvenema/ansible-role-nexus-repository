@@ -25,6 +25,7 @@
     password: "{{ nexus_repository_password }}"
     force_basic_auth: yes
     src: "{{ item.path }}"
+    remote_src: true # use managed (remote) node
     status_code: 200, 201 # 201 Created, 200 OK
     validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
     headers:
