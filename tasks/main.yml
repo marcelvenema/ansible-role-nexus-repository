@@ -1,5 +1,9 @@
 --- 
 
+############################################################
+## Main module for Sonatype Nexus Repository Ansible role ##
+############################################################
+
 # Show message
 - name: Show action message
   debug:
@@ -7,7 +11,7 @@
 
 # If action variable is not defined, gather status of the service and set action variable  
 - name: Gather action variable status...
-  ansible.builtin.include_tasks: get_status.yml
+  ansible.builtin.include_tasks: set_action.yml
   when: action is not defined
 
 # Assert that action is in actions
@@ -17,6 +21,12 @@
       - action in (actions | map('dict2items') | map('first') | map(attribute='key') | list)
     fail_msg: "The action '{{ action }}' is not in the list of valid actions..."
     quiet: true
+
+# TODO: Send message to Kafka bus
+- name: Publish message to Kafka bus...
+  ansible.builtin.debug:
+    msg: "TODO: Publish message to Kafka bus..."
+  when: kafka_bootstrap_servers is defined 
 
 # -------------------------------------------------------
   # install, uninstall, configure, update, setup
@@ -43,7 +53,6 @@
 - name: Start setup action...
   ansible.builtin.include_tasks: setup.yml
   when: action == "setup"
-
 # -------------------------------------------------------
  # Start, stop
 - name: Start start action...
@@ -53,9 +62,8 @@
 - name: Start stop action...
   ansible.builtin.include_tasks: administration.yml
   when: action == "stop"
-
 # -------------------------------------------------------
-  # users
+  # Users
 - name: Start get_user action...
   ansible.builtin.include_tasks: users.yml
   when: action == "get_user"
@@ -67,9 +75,8 @@
 - name: Start destroy_user action...
   ansible.builtin.include_tasks: users.yml
   when: action == "destroy_user"
-
 # -------------------------------------------------------
-  # repositories
+  # Repositories
 - name: Start get_repository action...
   ansible.builtin.include_tasks: repositories.yml
   when: action == "get_repository"
@@ -81,9 +88,8 @@
 - name: Start destroy_repository action...
   ansible.builtin.include_tasks: repositories.yml
   when: action == "destroy_repository"
-
 # -------------------------------------------------------
-  # artifacts
+  # Artifacts
 - name: Start import_artifacts action...
   ansible.builtin.include_tasks: "artifacts.yml"
   when: action == "import_artifacts"
@@ -95,3 +101,4 @@
 - name: Start sync_artifacts action...
   ansible.builtin.include_tasks: "artifacts.yml"
   when: action == "sync_artifacts"
+# -------------------------------------------------------

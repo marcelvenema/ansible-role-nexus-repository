@@ -28,19 +28,17 @@
 
 # Get Nexus admin password from podman
 - name: Gather Nexus Repository admin password...
-  ansible.builtin.include_role:
-    name: podman
-  vars:
-    action: "run_container_command"
-    container_name: "{{ nexus_container_name }}"
-    container_command: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
-    container_command_output: ""
+  become: true
+  become_user: "{{ podman_service_user }}"
+  ansible.builtin.command:
+    cmd: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
+  register: admin_password_result
 
 # Set Nexus admin password
 - name: Register Nexus Repository admin username and password...
   ansible.builtin.set_fact:
     nexus_repository_username: "admin"
-    nexus_repository_password: "{{ container_command_output }}"
+    nexus_repository_password: "{{ admin_password_result.stdout }}"
 
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
@@ -68,7 +66,7 @@
 - name: Create automation user for Nexus Repository...
   ansible.builtin.include_tasks: users.yml
   vars:
-    action         : create_user
+    action : create_user
     nexus_repository_user_username : "{{ automation_username | default('automation') }}"
     nexus_repository_user_password : "{{ automation_password }}"
     nexus_repository_user_firstname: "{{ automation_username | default('automation') }}"
