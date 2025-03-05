@@ -26,10 +26,16 @@
   retries: 20
   delay: 10
 
+# Get podman service user from podman role
+# TODO: create function in podman role to get podman service user
+- name: Get podman service user...
+  ansible.builtin.set_fact:
+    retrieved_podman_service_user: "podman"
+
 # Get Nexus admin password from podman
 - name: Gather Nexus Repository admin password...
   become: true
-  become_user: "{{ podman_service_user }}"
+  become_user: "{{ retrieved_podman_service_user }}"
   ansible.builtin.command:
     cmd: "podman exec -it {{ nexus_container_name }} cat /nexus-data/admin.password"
   register: admin_password_result
