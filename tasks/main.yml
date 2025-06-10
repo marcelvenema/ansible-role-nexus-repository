@@ -1,4 +1,4 @@
---- 
+---
 
 ############################################################
 ## Main module for Sonatype Nexus Repository Ansible role ##
@@ -9,7 +9,7 @@
   debug:
     msg: "Starting role {{ role_name }}... action: {{ action }}."
 
-# If action variable is not defined, gather status of the service and set action variable  
+# If action variable is not defined, gather status of the service and set action variable
 - name: Gather action variable status...
   ansible.builtin.include_tasks: set_action.yml
   when: action is not defined
@@ -26,7 +26,7 @@
 - name: Publish message to Kafka bus...
   ansible.builtin.debug:
     msg: "TODO: Publish message to Kafka bus..."
-  when: kafka_bootstrap_servers is defined 
+  when: kafka_bootstrap_servers is defined
 
 # -------------------------------------------------------
   # install, uninstall, configure, update, setup
@@ -78,15 +78,15 @@
 # -------------------------------------------------------
   # Repositories
 - name: Start get_repository action...
-  ansible.builtin.include_tasks: repositories.yml
+  ansible.builtin.include_tasks: repositories/main.yml
   when: action == "get_repository"
 
 - name: Start create_repository action...
-  ansible.builtin.include_tasks: repositories.yml
+  ansible.builtin.include_tasks: repositories/main.yml
   when: action == "create_repository"
 
 - name: Start destroy_repository action...
-  ansible.builtin.include_tasks: repositories.yml
+  ansible.builtin.include_tasks: repositories/main.yml
   when: action == "destroy_repository"
 # -------------------------------------------------------
   # Artifacts

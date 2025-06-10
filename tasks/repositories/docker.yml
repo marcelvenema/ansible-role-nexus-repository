@@ -1,0 +1,63 @@
+---
+#########################################################
+## Create repository DOCKER                            ##
+#########################################################
+
+- name: Create repository
+  when:
+   - action == "create_repository"
+   - nexus_repository_type == "docker"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Sonatype Nexus repositories module.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+   # Create blob store in Nexus Repository Manager via API
+    - name: "Create blob store for repository '{{ nexus_repository_name }}'"
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file"
+        method: POST
+        status_code: 204
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          softquota: "{ type: 'spaceRemainingQuota', limit: 0 }"
+          path     : "blobs/{{ nexus_repository_name }}"
+          name     : "{{ nexus_repository_name }}"
+        headers:
+          accept: application/json
+          Content-Type: application/json
+
+    # Create repository in Nexus Repository Manager via API
+    - name: "Create repository '{{ nexus_repository_name }}'"
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/docker/hosted"
+        method: POST
+        status_code: 201
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          name      : "{{ nexus_repository_name }}"
+          online    : true
+          storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow_once" }
+          cleanup   : { policyNames: [ "string" ] }
+          component : { proprietaryComponents: true }
+          docker    : { v1Enabled: false, forceBasicAuth: true, subdomain: "docker-a" }
+        headers:
+          accept: application/json
+          Content-Type: application/json

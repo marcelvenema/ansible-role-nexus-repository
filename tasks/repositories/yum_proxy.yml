@@ -1,0 +1,165 @@
+---
+
+#########################################################
+## YUM_PROXY repository module                         ##
+#########################################################
+
+#########################################################
+## Get repository YUM_PROXY                            ##
+#########################################################
+
+- name: Get repository
+  when: action == "get_repository"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository get_repository action.
+      ansible.builtin.assert:
+        that: "varitem is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+#########################################################
+## Create repository YUM_PROXY                         ##
+#########################################################
+
+- name: Create repository
+  when:
+   - action == "create_repository"
+   - nexus_repository_type == "yum_proxy"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Sonatype Nexus repositories module.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+   # Check if blob store already exists
+    - name: Check if blob store '{{ nexus_repository_name }}' already exists
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file/{{ nexus_repository_name }}"
+        method: GET
+        status_code: 200, 404
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: blob_store_check
+      no_log: true
+
+   # Create blob store in Nexus Repository Manager via API
+    - name: "Create blob store for repository '{{ nexus_repository_name }}'"
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file"
+        method: POST
+        status_code: 204
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          softquota: "{ type: 'spaceRemainingQuota', limit: 0 }"
+          path     : "blobs/{{ nexus_repository_name }}"
+          name     : "{{ nexus_repository_name }}"
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      when: blob_store_check.status == 404
+
+    # Check if repository already exists
+    - name: Check if repository '{{ nexus_repository_name }}' already exists
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/yum/proxy/{{ nexus_repository_name }}"
+        method: GET
+        status_code: 200, 404
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: repository_check
+      no_log: true
+
+    # Create repository in Nexus Repository Manager via API
+    # TODO: Add more parameters to the repository creation.
+    # - name: "Create repository '{{ nexus_repository_name }}'"
+    #   ansible.builtin.uri:
+    #     url: "{{ nexus_repository_address }}/service/rest/v1/repositories/yum/proxy"
+    #     method: POST
+    #     status_code: 201
+    #     user: "{{ nexus_repository_username }}"
+    #     password: "{{ nexus_repository_password }}"
+    #     force_basic_auth: yes
+    #     body_format: json
+    #     body:
+    #       name      : "{{ nexus_repository_name }}"
+    #       online    : true
+    #       storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
+
+    #     headers:
+    #       accept: application/json
+    #       Content-Type: application/json
+    #   when: repository_check.status == 404
+
+#########################################################
+## Destroy repository                                  ##
+#########################################################
+
+- name: Destroy repository
+  when: action == "destroy_repository"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository destroy_repository action.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
