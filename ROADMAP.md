@@ -3,7 +3,7 @@
 
 ***
 
-# Roadmap R2
+## Roadmap R2
 
 - As an IaC developer, I want to be able to automatically create and configure a yum_proxy repository with an upstream source so that I have an operating system repository in the development/test environment.  
     **action**: create_repository  
@@ -20,14 +20,14 @@
     **action**: import_artifacts 
 
 
-# Roadmap R3
+## Roadmap R3
 
 - As an IaC developer, I want to automatically delete a repository for management purposes.  
     **action**: destroy_repository
 
 - As an IaC developer, I want to automatically export a repository based on a file list input. This way, I can specifically select files so that the total file size remains limited.
 
-- As an end-user, I want to automaticxally accept the end-user license agreement when I log in to Nexus Repository web console.
+- As an end-user, I want to automatically accept the end-user license agreement when I log in to Nexus Repository web console.
 
-# Roadmap R4
+## Roadmap R4
 t.b.d.

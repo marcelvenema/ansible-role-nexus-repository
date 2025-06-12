@@ -22,7 +22,7 @@
   loop_control:
     loop_var: varitem
   loop:
-        - nexus_repository_type
+    - nexus_repository_type
 
 #########################################################
 ## RAW repository actions                              ##

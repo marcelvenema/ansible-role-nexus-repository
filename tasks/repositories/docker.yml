@@ -1,12 +1,15 @@
 ---
+
+#########################################################
+## DOCKER repository module                            ##
+#########################################################
+
 #########################################################
 ## Create repository DOCKER                            ##
 #########################################################
 
 - name: Create repository
-  when:
-   - action == "create_repository"
-   - nexus_repository_type == "docker"
+  when: action == "create_repository"
   block:
 
     # Validate local variables

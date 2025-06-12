@@ -25,12 +25,11 @@
         - nexus_repository_username
         - nexus_repository_password
         - nexus_repository_name
-        - nexus_repository_type
 
     # Show information message
     - name: This part is not (yet) implemented.
       ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
+        msg: "{{ repository_check }}"
 
     # Stop playbook
     - name: Stop playbook
@@ -41,8 +40,7 @@
 #########################################################
 
 - name: Create repository
-  when:
-   - action == "create_repository"
+  when: action == "create_repository"
   block:
 
     # Validate local variables
