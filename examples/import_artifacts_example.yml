@@ -1,5 +1,7 @@
 ---
 
+# Ansible playbook to import artifacts into Nexus Repository
+
 - name: Import artifacts from Nexus Repository example
   hosts: localhost
   vars:
@@ -8,8 +10,6 @@
 
   roles:
 
-
-
   tasks:
     # Import repository
     - name: Import artifacts from Nexus Repository
@@ -17,7 +17,7 @@
         name: nexus-repository
       vars:
         action : import_artifacts
-        nexus_repository_id: "NXR-42M0002" # unique id to identify instance in Vault
+        nexus_repository_id: "192-168-29-23" # unique id to identify instance in Vault
         # nexus_repository_address : "" # Get from Vault
         # nexus_repository_username : "" # Get from Vault
         # nexus_repository_password : "" # Get from Vault

@@ -18,7 +18,13 @@
 
 # Set continuation token
 - name: Set continuation token for pagination
-  set_fact:
+  ansible.builtin.set_fact:
     continuation_token: "{{ search_result.json.continuationToken }}"
     file_urls: "{{ search_result.json['items'] | map(attribute='downloadUrl') | list }}"
   when: search_result.status == 200
+
+# Set output
+- name: Set output variable
+  ansible.builtin.set_fact:
+    nexus_repository_exported_assets: "{{ file_urls }}"
+  when: file_urls | length > 0

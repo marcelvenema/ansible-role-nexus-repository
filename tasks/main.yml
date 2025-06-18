@@ -91,14 +91,14 @@
 # -------------------------------------------------------
   # Artifacts
 - name: Start import_artifacts action...
-  ansible.builtin.include_tasks: "artifacts.yml"
+  ansible.builtin.include_tasks: artifacts/main.yml
   when: action == "import_artifacts"
 
 - name: Start export_artifacts action...
-  ansible.builtin.include_tasks: artifacts.yml
+  ansible.builtin.include_tasks: artifacts/main.yml
   when: action == "export_artifacts"
 
 - name: Start sync_artifacts action...
-  ansible.builtin.include_tasks: "artifacts.yml"
+  ansible.builtin.include_tasks: artifacts/main.yml
   when: action == "sync_artifacts"
 # -------------------------------------------------------

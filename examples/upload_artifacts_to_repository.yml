@@ -1,0 +1,41 @@
+---
+# Upload artifacts to repository
+# This playbook will upload files from a folder to the artifact repository.
+
+- name: Upload artifacts to repository
+  hosts: localhost
+  vars:
+    vault_address: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR', default=Undefined) }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN', default=Undefined) }}"
+
+  tasks:
+    # Information message
+    - name: Information message
+      ansible.builtin.debug:
+        msg:
+          - "#########################################################"
+          - "#########################################################"
+          - "Upload artifacts to repository"
+          - "#########################################################"
+          - "#########################################################"
+
+    # Download folder
+    - name: Upload artifacts to repository...
+      ansible.builtin.include_role:
+        name: nexus-repository
+      vars:
+        action: "import_artifacts"
+        # nexus_repository_address  : "" # Get from Vault
+        # nexus_repository_username : "" # Get from Vault
+        # nexus_repository_password : "" # Get from Vault
+        nexus_repository_vault_id   : "10-42-1-200" # unique id to identify instance in Vault      
+        nexus_repository_name       : "blauwe_disk"
+        nexus_repository_folder     : "containers"
+        source_folder               : "/tmp/exported_containers"
+
+    # Upload completed
+    - name: Show information message
+      ansible.builtin.debug:
+        msg:
+          - "Upload completed..."
+          

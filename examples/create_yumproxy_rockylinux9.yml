@@ -1,0 +1,67 @@
+---
+# Create yum_proxy for RockyLinux 9 OS files example
+
+- name: Create yum_proxy repository for RockyLinux 9 OS files...
+  hosts: localhost
+  vars:
+    vault_address: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR', default=Undefined) }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN', default=Undefined) }}"
+  tasks:
+    # Information message
+    - name: Information message
+      ansible.builtin.debug:
+        msg:
+          - "#########################################################"
+          - "#########################################################"
+          - "Create yum_proxy repository"
+          - "#########################################################"
+          - "#########################################################"
+
+    # Create yum_proxy repository
+    - name: Create Rocky Linux 9 BaseOS repository...
+      ansible.builtin.include_role:
+        name: nexus-repository
+      vars:
+        action: "create_repository"
+        # nexus_repository_address  : "" # Get from Vault
+        # nexus_repository_username : "" # Get from Vault
+        # nexus_repository_password : "" # Get from Vault
+        nexus_repository_vault_id   : "192-168-29-90" # unique id to identify instance in Vault      
+        nexus_repository_name       : "rockylinux9_baseos"
+        nexus_repository_type       : "yum_proxy"
+        nexus_repository_remote_url  : "https://dl.rockylinux.org/pub/rocky/9/BaseOS/x86_64/os/"
+
+    # Create yum_proxy repository
+    - name: Create Rocky Linux 9 AppStream repository...
+      ansible.builtin.include_role:
+        name: nexus-repository
+      vars:
+        action: "create_repository"
+        # nexus_repository_address  : "" # Get from Vault
+        # nexus_repository_username : "" # Get from Vault
+        # nexus_repository_password : "" # Get from Vault
+        nexus_repository_vault_id   : "192-168-29-90" # unique id to identify instance in Vault      
+        nexus_repository_name       : "rockylinux9_appstream"
+        nexus_repository_type       : "yum_proxy"
+        nexus_repository_remote_url  : "https://dl.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/"
+
+    # Create yum_proxy repository
+    - name: Create Rocky Linux 9 Extras repository...
+      ansible.builtin.include_role:
+        name: nexus-repository
+      vars:
+        action: "create_repository"
+        # nexus_repository_address  : "" # Get from Vault
+        # nexus_repository_username : "" # Get from Vault
+        # nexus_repository_password : "" # Get from Vault
+        nexus_repository_vault_id   : "192-168-29-90" # unique id to identify instance in Vault      
+        nexus_repository_name       : "rockylinux9_extras"
+        nexus_repository_type       : "yum_proxy"
+        nexus_repository_remote_url  : "https://dl.rockylinux.org/pub/rocky/9/Extras/x86_64/os/"
+
+    # Show information message
+    - name: Show information message
+      ansible.builtin.debug:
+        msg:
+          - "Playbook completed..."
+          

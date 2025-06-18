@@ -1,0 +1,24 @@
+---
+
+# Get assets from Nexus repository
+- name: "Retrieve assets from repository {{ nexus_repository_name }}..."
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_address }}/service/rest/v1/search/assets?repository={{ nexus_repository_name }}{{ search_query }}"
+    method: GET
+    user: "{{ nexus_repository_username }}"
+    password: "{{ nexus_repository_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    body_format: json
+    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
+    headers:
+      accept: application/json
+      Content-Type: application/json
+  register: search_result
+
+# Set continuation token
+- name: Set continuation token for pagination
+  ansible.builtin.set_fact:
+    continuation_token: "{{ search_result.json.continuationToken }}"
+    file_urls: "{{ search_result.json['items'] | map(attribute='downloadUrl') | list }}"
+  when: search_result.status == 200

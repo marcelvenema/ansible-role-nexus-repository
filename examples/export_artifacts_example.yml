@@ -1,5 +1,7 @@
 ---
 
+# Example playbook to export artifacts from a Nexus Repository using Ansible
+
 - name: Export artifacts from Nexus Repository example
   hosts: localhost
   vars:
@@ -11,7 +13,7 @@
     - role: nexus-repository
       vars:
         action : export_artifacts
-        nexus_repository_vault_id : "NXR-42M0002" # unique id to identify instance in Vault
+        nexus_repository_vault_id : "192-168-29-90" # unique id to identify instance in Vault
         # nexus_repository_address : "" # Get from Vault
         # nexus_repository_username : "" # Get from Vault
         # nexus_repository_password : "" # Get from Vault

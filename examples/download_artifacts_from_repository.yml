@@ -1,0 +1,48 @@
+---
+# Download artifacts from repository example
+# This playbook will download files from the artifact repository to a folder.
+
+- name: Download artifacts from repository
+  hosts: localhost
+  vars:
+    vault_address: "{{ lookup('ansible.builtin.env', 'VAULT_ADDR', default=Undefined) }}"
+    vault_token: "{{ lookup('ansible.builtin.env', 'VAULT_TOKEN', default=Undefined) }}"
+    download_folder: "/tmp/blue_disk"
+
+  tasks:
+    # Information message
+    - name: Information message
+      ansible.builtin.debug:
+        msg:
+          - "#########################################################"
+          - "#########################################################"
+          - "Download artifacts from repository"
+          - "#########################################################"
+          - "#########################################################"
+
+    # Create folder
+    - name: Create folder for downloaded artifacts...
+      ansible.builtin.file:
+        path: "{{ download_folder }}"
+        state: directory
+    
+    # Download folder
+    - name: Download artifacts from repository...
+      ansible.builtin.include_role:
+        name: nexus-repository
+      vars:
+        action: "export_artifacts"
+        # nexus_repository_address  : "" # Get from Vault
+        # nexus_repository_username : "" # Get from Vault
+        # nexus_repository_password : "" # Get from Vault
+        nexus_repository_vault_id   : "10-42-1-200" # unique id to identify instance in Vault      
+        nexus_repository_name       : "blauwe_disk_root"
+        nexus_repository_folder     : ""
+        destination_folder          : "{{ download_folder }}"
+
+    # Upload completed
+    - name: Show information message
+      ansible.builtin.debug:
+        msg:
+          - "Download completed..."
+          

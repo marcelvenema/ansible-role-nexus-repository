@@ -85,11 +85,12 @@ variables:<br>
 action: **create_repository**<br>
 Create a repository in Nexus.<br>
 variables:<br>
-<kbd>nexus_repository_address</kbd>  : FQDN or IP-address for repository access, for example `https://192.168.1.1:8081`.<br>
-<kbd>nexus_repository_username</kbd> : Username for repository access.<br>
-<kbd>nexus_repository_password</kbd> : Password of user for repository access.<br>
-<kbd>nexus_repository_name</kbd>     : Name of the repository.<br>
-<kbd>nexus_repository_type</kbd>     : Type of repository, for example `raw`.<br>
+<kbd>nexus_repository_address</kbd>    : FQDN or IP-address for repository access, for example `https://192.168.1.1:8081`.<br>
+<kbd>nexus_repository_username</kbd>   : Username for repository access.<br>
+<kbd>nexus_repository_password</kbd>   : Password of user for repository access.<br>
+<kbd>nexus_repository_name</kbd>       : Name of the repository.<br>
+<kbd>nexus_repository_type</kbd>       : Type of repository, for example `raw`. Supported types at this moment are `raw`, `yum`, `yum_proxy` and `docker`.<br>
+<kbd>nexus_repository_remote_url</kbd> : (required when nexus_repository_type is yum_proxy)
 
 Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
@@ -458,6 +459,7 @@ Example for installing Nexus Repository OSS:
 | nexus_repository_username            | Username for repository access.                                             |
 | nexus_repository_password            | Password for repository access.                                             |
 | nexus_repository_name                | Name of the repository.                                                     |
+| nexus_repository_remote_url          | Remote URL for yum_proxy.                                                   |
 | nexus_repository_type                | Type of repository, e.g., raw.                                              |
 | nexus_repository_user_username       | Username for the Nexus Repository user.                                     |
 | nexus_repository_user_firstname      | First name of the Nexus Repository user.                                    |

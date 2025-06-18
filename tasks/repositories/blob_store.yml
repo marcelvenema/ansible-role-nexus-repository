@@ -1,0 +1,61 @@
+---
+
+#########################################################
+## Blob_store repository module                        ##
+#########################################################
+
+# Create blopb store when 'create' in action variable
+- name: Create blob store repository
+  when: "'create' in action"
+  block: 
+
+    # Validate local variables
+    - name: Validate local variables for Sonatype Nexus blob store module.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+   # Check if blob store already exists
+    - name: Check if blob store '{{ nexus_repository_name }}' already exists
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file/{{ nexus_repository_name }}"
+        method: GET
+        status_code: 200, 404
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: blob_store_check
+      no_log: true
+
+   # Create blob store in Nexus Repository Manager via API
+    - name: "Create blob store for repository '{{ nexus_repository_name }}'"
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file"
+        method: POST
+        status_code: 204
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          softquota: "{ type: 'spaceRemainingQuota', limit: 0 }"
+          path     : "blobs/{{ nexus_repository_name }}"
+          name     : "{{ nexus_repository_name }}"
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      when: blob_store_check.status == 404
+

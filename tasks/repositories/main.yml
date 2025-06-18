@@ -10,8 +10,7 @@
   when:
     - vault_address is defined
     - vault_token is defined
-    - nexus_repository_vault_name is defined
-    - nexus_repository_server_name is defined
+    - nexus_repository_vault_id is defined
 
 # Validate local variables
 - name: Validate local variables for Nexus Repository get_repository action.
@@ -43,6 +42,16 @@
   ansible.builtin.include_tasks: yum.yml
   when:
     - nexus_repository_type == "yum"
+
+#########################################################
+## YUM_PROXY repository actions                        ##
+#########################################################
+
+# include task yum.yml for raw repository actions
+- name: Include yum repository actions...
+  ansible.builtin.include_tasks: yum_proxy.yml
+  when:
+    - nexus_repository_type == "yum_proxy"
 
 #########################################################
 ## Docker repository actions                           ##

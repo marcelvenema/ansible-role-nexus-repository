@@ -26,24 +26,10 @@
         - nexus_repository_password
         - nexus_repository_name
 
-   # Create blob store in Nexus Repository Manager via API
-    - name: "Create blob store for repository '{{ nexus_repository_name }}'"
-      ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file"
-        method: POST
-        status_code: 204
-        user: "{{ nexus_repository_username }}"
-        password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
-        body_format: json
-        body:
-          softquota: "{ type: 'spaceRemainingQuota', limit: 0 }"
-          path     : "blobs/{{ nexus_repository_name }}"
-          name     : "{{ nexus_repository_name }}"
-        headers:
-          accept: application/json
-          Content-Type: application/json
-
+    # include task to create blob store
+    - name: Create blob store for repository...
+      ansible.builtin.include_tasks: blob_store.yml
+  
     # Create repository in Nexus Repository Manager via API
     - name: "Create repository '{{ nexus_repository_name }}'"
       ansible.builtin.uri:

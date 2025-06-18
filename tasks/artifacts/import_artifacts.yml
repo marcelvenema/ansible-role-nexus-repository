@@ -1,0 +1,64 @@
+---
+
+#########################################################
+## Sonatype Nexus Repository artifacts import          ##
+#########################################################
+
+# Validate local variables
+- name: Validate variables for Nexus Repository import_artifacts action...
+  ansible.builtin.assert:
+    that: "{{ varitem }} is defined"
+    fail_msg: "Required variable '{{ varitem }}' has not been provided."
+  quiet: true
+  loop_control:
+    loop_var: varitem
+  loop:
+    - nexus_repository_address
+    - nexus_repository_username
+    - nexus_repository_password
+    - nexus_repository_name
+    - nexus_repository_folder
+    - source_folder
+
+# Test if repository name is valid.
+- name: Test if repository name is valid...
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_address }}/service/rest/v1/repositories/{{ nexus_repository_name }}"
+    method: GET
+    user: "{{ nexus_repository_username }}"
+    password: "{{ nexus_repository_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
+    body_format: json
+    headers:
+      accept: application/json
+      Content-Type: application/json
+  register: nexus_repository_status
+
+# Show custom error message if repository address is not valid.
+- name: Import artifacts - Information message.
+  ansible.builtin.fail:
+    msg: "Cannot find {{ nexus_repository_name }} on '{{ nexus_repository_address }}'..."
+  when: nexus_repository_status.status != 200
+
+# Find files in source folder
+- name: "Find files in source folder '{{ source_folder }}'..."
+  ansible.builtin.find:
+    paths: "{{ source_folder }}"
+    recurse: yes
+    file_type: file
+  register: source_files
+
+# Debug message
+- name: "Import artifacts - Information mesaage..."
+  ansible.builtin.debug:
+    msg: "Uploading {{ source_files.files | length }} file(s) to {{ nexus_repository_address }}..."
+
+# include task to upload each asset
+- name: "Start artifacts_import task..."
+  ansible.builtin.include_tasks: import_artifacts_item.yml
+  loop: "{{ source_files.files }}"
+  loop_control:
+    label: "{{ item }}"
+  no_log: true
