@@ -1,6 +1,9 @@
+---
+
 #########################################################
 ## Get Nexus Repository variables from Vault           ##
 #########################################################
+# Validate variables, get from Vault if not present
 
 - name: Gather Nexus Repository variables...
   when: nexus_repository_initialized is not defined or nexus_repository_initialized is not true
@@ -35,7 +38,7 @@
       no_log: true
 
     # Get secrets from HashiCorp Vault
-    - name: Get variable from Vault (nexus_repository_address)...
+    - name: Get secret from Vault (nexus_repository_address)...
       ansible.builtin.include_role:
         name: vault
       vars:
@@ -55,7 +58,7 @@
       no_log: true
 
     # Get secrets from HashiCorp Vault
-    - name: Get variable from Vault (nexus_repository_username)...
+    - name: Get secret from Vault (nexus_repository_username)...
       ansible.builtin.include_role:
         name: vault
       vars:
@@ -75,7 +78,7 @@
       no_log: true
 
     # Get secrets from HashiCorp Vault
-    - name: Get variable from Vault (nexus_repository_password)...
+    - name: Get secret from Vault (nexus_repository_password)...
       ansible.builtin.include_role:
         name: vault
       vars:
