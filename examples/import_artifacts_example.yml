@@ -17,16 +17,18 @@
         name: nexus-repository
       vars:
         action : import_artifacts
-        nexus_repository_id: "192-168-29-23" # unique id to identify instance in Vault
-        # nexus_repository_address : "" # Get from Vault
-        # nexus_repository_username : "" # Get from Vault
-        # nexus_repository_password : "" # Get from Vault
         nexus_repository_name : "files"
         nexus_repository_folder : ""
         source_folder : "/tmp/files"
+        nexus_repository: 
+          # address:  # Get from Vault
+          # username: # Get from Vault
+          # password: # Get from Vault
+          secrets:
+            vault_id: "192-168-29-90" # unique id to identify instance in Vault
 
     - name: Show information message
       debug:
         msg:
-          - "Import completed to '{{ nexus_repository_folder }}' of '{{ nexus_repoository_address }}'..."
+          - "Import completed to '{{ nexus_repository_folder }}' of '{{ nexus_repoository.address }}'..."
           - "Source folder: '{{ source_folder }}'"

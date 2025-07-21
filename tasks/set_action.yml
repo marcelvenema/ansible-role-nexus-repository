@@ -20,7 +20,7 @@
     # List containers with containers.podman collection
     - name: Gather containers from podman...
       community.general.containers_podman_container_info:
-        name: "{{ nexus_container_name }}"
+        name: "{{ nexus_repository_vars.container.name }}"
       register: podman_containers   
 
     # Set action variable to start if container is not running
@@ -33,4 +33,4 @@
     - name: Set variable (action)...
       set_fact:
         action: "install"
-      when: '" {{ nexus_container_name }} " not in podman_containers.stdout_lines'
+      when: '" {{ nexus_repository_vars.container.name }} " not in podman_containers.stdout_lines'

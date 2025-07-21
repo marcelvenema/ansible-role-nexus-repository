@@ -32,14 +32,16 @@
         name: nexus-repository
       vars:
         action: "export_artifacts"
-        # nexus_repository_address  : "" # Get from Vault
-        # nexus_repository_username : "" # Get from Vault
-        # nexus_repository_password : "" # Get from Vault
-        nexus_repository_vault_id   : "10-42-1-200" # unique id to identify instance in Vault      
         nexus_repository_name       : "blauwe_disk_root"
         nexus_repository_folder     : ""
-        destination_folder          : "{{ download_folder }}"
-
+        destination_folder          : "{{ download_folder }}"        
+        nexus_repository:
+          # address:  # Get from Vault
+          # username: # Get from Vault
+          # password: # Get from Vault
+          secrets:
+            vault_id: "10-42-1-200" # unique id to identify instance in Vault
+  
     # Upload completed
     - name: Show information message
       ansible.builtin.debug:

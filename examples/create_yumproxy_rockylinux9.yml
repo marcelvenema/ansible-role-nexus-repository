@@ -22,14 +22,16 @@
       ansible.builtin.include_role:
         name: nexus-repository
       vars:
-        action: "create_repository"
-        # nexus_repository_address  : "" # Get from Vault
-        # nexus_repository_username : "" # Get from Vault
-        # nexus_repository_password : "" # Get from Vault
-        nexus_repository_vault_id   : "192-168-29-90" # unique id to identify instance in Vault      
+        action: "create_repository"   
         nexus_repository_name       : "rockylinux9_baseos"
         nexus_repository_type       : "yum_proxy"
-        nexus_repository_remote_url  : "https://dl.rockylinux.org/pub/rocky/9/BaseOS/x86_64/os/"
+        nexus_repository_remote_url : "https://dl.rockylinux.org/pub/rocky/9/BaseOS/x86_64/os/"
+        nexus_repository:
+          # address:  # Get from Vault
+          # username: # Get from Vault
+          # password: # Get from Vault
+          secrets:
+            vault_id: "192-168-29-90" # unique id to identify instance in Vault
 
     # Create yum_proxy repository
     - name: Create Rocky Linux 9 AppStream repository...
@@ -37,13 +39,15 @@
         name: nexus-repository
       vars:
         action: "create_repository"
-        # nexus_repository_address  : "" # Get from Vault
-        # nexus_repository_username : "" # Get from Vault
-        # nexus_repository_password : "" # Get from Vault
-        nexus_repository_vault_id   : "192-168-29-90" # unique id to identify instance in Vault      
         nexus_repository_name       : "rockylinux9_appstream"
         nexus_repository_type       : "yum_proxy"
-        nexus_repository_remote_url  : "https://dl.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/"
+        nexus_repository_remote_url : "https://dl.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/"
+        nexus_repository:
+          # address:  # Get from Vault
+          # username: # Get from Vault
+          # password: # Get from Vault
+          secrets:
+            vault_id: "192-168-29-90" # unique id to identify instance in Vault
 
     # Create yum_proxy repository
     - name: Create Rocky Linux 9 Extras repository...
@@ -51,13 +55,15 @@
         name: nexus-repository
       vars:
         action: "create_repository"
-        # nexus_repository_address  : "" # Get from Vault
-        # nexus_repository_username : "" # Get from Vault
-        # nexus_repository_password : "" # Get from Vault
-        nexus_repository_vault_id   : "192-168-29-90" # unique id to identify instance in Vault      
         nexus_repository_name       : "rockylinux9_extras"
         nexus_repository_type       : "yum_proxy"
-        nexus_repository_remote_url  : "https://dl.rockylinux.org/pub/rocky/9/Extras/x86_64/os/"
+        nexus_repository_remote_url : "https://dl.rockylinux.org/pub/rocky/9/Extras/x86_64/os/"
+        nexus_repository:
+          # address:  # Get from Vault
+          # username: # Get from Vault
+          # password: # Get from Vault
+          secrets:
+            vault_id: "192-168-29-90" # unique id to identify instance in Vault
 
     # Show information message
     - name: Show information message

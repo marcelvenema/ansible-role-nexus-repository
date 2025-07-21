@@ -5,7 +5,7 @@
 #########################################################
 # secret engine name (vault_name): nexus-repository
 # secret engine type: kv
-# secret name: variable nexus_repository_vault_id, default '{{ ansible_fqdn | replace('.', '-') }}'
+# secret name: default '{{ ansible_fqdn | replace('.', '-') }}'
 
 # Validate variables
 - name: Validate required variables for action.
@@ -20,12 +20,12 @@
 # Register variable (_secret_engine_name)
 - name: Register variable (secret_engine_name)...
   ansible.builtin.set_fact:
-   _secret_engine_name: "{{ nexus_repository_secret_engine_name | default('nexus-repository') }}"
+   _secret_engine_name: "{{ nexus_repository_vars.secrets.secret_engine_name | default('nexus-repository') }}"
 
 # Register variable (_secret_name)
 - name: Register variable (secret_name)...
   ansible.builtin.set_fact:
-    _secret_name: "{{ nexus_repository_vault_id | default( ansible_fqdn | replace('.', '-') ) }}"
+    _secret_name: "{{ nexus_repository_vars.secrets.secret_name | default( ansible_fqdn | replace('.', '-') ) }}"
 
 #########################################################
 ## Secret Engine                                       ##

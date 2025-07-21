@@ -6,7 +6,7 @@
 
 # Show message
 - name: Show action message
-  debug:
+  ansible.builtin.debug:
     msg: "Starting role {{ role_name }}... action: {{ action }}."
 
 # If action variable is not defined, gather status of the service and set action variable
@@ -21,6 +21,18 @@
       - action in (actions | map('dict2items') | map('first') | map(attribute='key') | list)
     fail_msg: "The action '{{ action }}' is not in the list of valid actions..."
     quiet: true
+
+# Merge role defaults with vault, include nested variables
+# Nested merge does not work well, so use workaround to combine variables
+- name: Gather defaults (nexus_repository)...
+  ansible.builtin.include_vars:
+    file: "{{ role_path }}/defaults/main.yml"
+    name: nexus_repository_defaults
+
+# Merge role defaults, include nested variables
+- name: Merge role defaults with collected variables...
+  ansible.builtin.set_fact:
+    nexus_repository_vars: "{{ nexus_repository_defaults.nexus_repository | combine( nexus_repository | default({}), recursive=true ) }}"
 
 # TODO: Send message to Kafka bus
 - name: Publish message to Kafka bus...

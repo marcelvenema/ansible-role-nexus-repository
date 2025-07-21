@@ -10,8 +10,6 @@
   when:
     - vault_address is defined
     - vault_token is defined
-    - nexus_repository_vault_name is defined
-    - nexus_repository_server_name is defined
 
 #########################################################
 ## Get User                                            ##
@@ -30,10 +28,10 @@
       loop_control:
         loop_var: varitem
       loop:
-        - nexus_repository_address
+        - nexus_repository_vars.address
+        - nexus_repository_vars.username
+        - nexus_repository_vars.password
         - nexus_repository_username
-        - nexus_repository_password
-        - nexus_username
 
     # Register var_result variable
     - name: Register var_result variable

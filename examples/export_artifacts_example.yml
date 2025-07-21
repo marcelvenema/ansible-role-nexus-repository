@@ -13,18 +13,20 @@
     - role: nexus-repository
       vars:
         action : export_artifacts
-        nexus_repository_vault_id : "192-168-29-90" # unique id to identify instance in Vault
-        # nexus_repository_address : "" # Get from Vault
-        # nexus_repository_username : "" # Get from Vault
-        # nexus_repository_password : "" # Get from Vault
         nexus_repository_name : "files"
         nexus_repository_folder : "containers"
         destination_folder : "/tmp/demo"
+        nexus_repository:
+          # address:  # Get from Vault
+          # username: # Get from Vault
+          # password: # Get from Vault
+          secrets:
+            vault_id: "192-168-29-90" # unique id to identify instance in Vault
 
   tasks:
 
     - name: Show information message
       debug:
         msg:
-          - "Export completed from folder '{{ nexus_repository_folder }}' of '{{ nexus_repository_address }}'..."
+          - "Export completed from folder '{{ nexus_repository_folder }}' of '{{ nexus_repository.address }}'..."
           - "Destination folder: '{{ destination_folder }}'"

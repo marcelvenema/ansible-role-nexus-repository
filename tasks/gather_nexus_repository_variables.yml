@@ -18,23 +18,23 @@
       loop_control:
         loop_var: varitem
       loop:
-        - nexus_repository_secret_engine_name
-        - nexus_repository_vault_id
+        - nexus_repository_vars.secrets.secret_engine_name
+        - nexus_repository_vars.secrets.secret_name
 
     # NEXUS REPOSITORY
     # Set variable _secret_name to nexus_repository_name
     - name: Register variable (nexus_repository)...
       ansible.builtin.set_fact:
-        _secret_engine_name: "{{ nexus_repository_secret_engine_name }}"
-        _secret_name: "{{ nexus_repository_vault_id }}"
+        _secret_engine_name: "{{ nexus_repository_vars.secrets.secret_engine_name }}"
+        _secret_name: "{{ nexus_repository_vars.secrets.secret_name }}"
       no_log: true
 
     # NEXUS_REPOSITORY_ADDRESS
     # Set variable if not defined
     - name: "Register variable (nexus_repository_address)..."
       ansible.builtin.set_fact:
-        nexus_repository_address: ""
-      when: nexus_repository_address is not defined
+        nexus_repository_vars.address: ""
+      when: nexus_repository_vars.address is not defined
       no_log: true
 
     # Get secrets from HashiCorp Vault
@@ -46,8 +46,8 @@
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_address"
-        secret_result: "nexus_repository_address"
-      when: nexus_repository_address == ""
+        secret_result: "nexus_repository_vars.address"
+      when: nexus_repository_vars.address == ""
 
     # NEXUS_REPOSITORY_USERNAME
     # Set variable if not defined
@@ -66,14 +66,14 @@
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_username"
-        secret_result: "nexus_repository_username"
+        secret_result: "nexus_repository_vars.username"
       when: nexus_repository_username == ""
 
     # NEXUS_REPOSITORY_PASSWORD
     # Set variable if not defined
     - name: "Register variable (nexus_repository_password)..."
       ansible.builtin.set_fact:
-        nexus_repository_password: ""
+        nexus_repository_vars.password: ""
       when: nexus_repository_password is not defined
       no_log: true
 
