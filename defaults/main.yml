@@ -12,6 +12,9 @@ nexus_repository:
   username: ""
   # password is the password to connect to the Nexus Repository OSS server.
   password: ""
+  # token is the token used to authenticate to the Kafka server.
+  token: ""
+    
   # metadata contains information about the role.
   metadata:
     name: "nexus-repository"
@@ -19,10 +22,12 @@ nexus_repository:
     version: "1.0.0"
     maintainer: ""
     maintainer_email: ""
+
   # application is the Nexus Repository OSS application configuration.
   application:
-    # validate_certs configures if the certificate of the application server should be validated. example: true or false. 
+    # validate_certs configures if the certificate of the application server should be validated. example: true or false.
     validate_certs: false
+
   # users contains the configuration for the automation user used for the Nexus Repository OSS server.
   users:
     # automation_username is the username used for the automation user. example: "nexus-automation".
@@ -31,37 +36,47 @@ nexus_repository:
     automation_password: "nexus-automation-password"
     # automation_email is the email address used for the automation user. example: "nexus-automation@me.local".
     automation_email: "nexus-automation@me.local"
+
   # container contains the configuration for the Nexus Repository OSS container.
   container:
     # name is the name of the container used in podman or docker. example: "vault".
     name: "nexus3"
+    # platform is the platform used for the container. example: "podman" or "docker".
+    platform: "podman"    
     # uninstall indicates if the container should be uninstalled or not. example: true or false. Default is false.
     uninstall: false
-    # platform is the platform used for the container. example: "podman" or "docker".
-    platform: "podman"
+    # repository_url can be a URL to a docker image or a tar file. example: "https://docker.io/sonatype/nexus3" or "/tmp/nexus3.67.1.tar", "https://192.168.1.1/repo/nexus.tar".
+    repository_url: "docker.io/sonatype/nexus3"
+    # repository_tag can be a tag of the image or a version of the tar file. example: "3.67.1" or "latest" Default is "latest".
+    # repository_tag: "latest"   
+    # repository_checksum can be a checksum of the container file. example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".
+    # repository_checksum: ""
+    # repository_checksum_algorithm can be a checksum algorithm of the container file. example: "sha256", sha512", "md5".
+    # repository_checksum_algorithm: "sha256"
+   # ports is a list of ports used in the container. example: ["8081:8081"] or ["8081:8081", "8082:8082"].
+    ports:
+      - "8081:8081"
     # volumes is a list of volumes used in the container. example: ["vault/config:/vault/config:Z"] or ["vault/config:/vault/config:Z", "vault/file:/vault/file:Z"].
     volumes:
       - "nexus/nexus-data:/nexus-data:Z"
     # volume_mode is the mode of the volume used in the container. example: "0777" or "0755". Default is "0777".
     volume_mode: "0777"
-    # ports is a list of ports used in the container. example: ["8081:8081"] or ["8081:8081", "8082:8082"].
-    ports:
-      - "8081:8081"
-    #
-    container_healthcheck: "curl -X 'GET' http://{{ ansible_default_ipv4.address }}:8081/service/rest/v1/status/check -H 'accept: application/json' -H 'NX-ANTI-CSRF-TOKEN: 0.4986100467581339' -H 'X-Nexus-UI: true' || exit 1"
-    #
-    container_healthcheck_start: "30s"
-    # repository_url can be a URL to a docker image or a tar file. example: "https://docker.io/sonatype/nexus3" or "/tmp/nexus3.67.1.tar", "https://192.168.1.1/repo/nexus.tar".
-    repository_url: "docker.io/sonatype/nexus3"
-    # repository_checksum can be a checksum of the container file. example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".
-    # repository_checksum: "" TODO
-    # repository_checksum_algorithm can be a checksum algorithm of the container file. example: "sha256", sha512", "md5".
-    # repository_checksum_algorithm: "" TODO
-    # repository_tag can be a tag of the image or a version of the tar file. example: "3.67.1" or "latest" Default is "latest".
-    # repository_tag: "" TODO
+    # environment is a list of environment variables used in the container.
+    # environment:
+    # healthcheck is the command used to check if the container is healthy. example: "curl -f http://localhost:8080/health || exit 1".
+    healthcheck: "curl -X 'GET' http://localhost:8081/service/rest/v1/status/check -H 'accept: application/json' -H 'NX-ANTI-CSRF-TOKEN: 0.4986100467581339' -H 'X-Nexus-UI: true' || exit 1"
+    # healthcheck_start is the time to wait before starting the health check. example: "30s".
+    healthcheck_start: "30s"
+    # healthcheck_interval is the interval between health checks. example: "30s".
+    healthcheck_interval: "30s"
+    # healthcheck_timeout is the timeout for the health check. example: "30s".
+    healthcheck_timeout: "30s"
+    # healthcheck_retries is the number of retries for the health check. example: "3".
+    healthcheck_retries: 5
     # quadlet_options is a list of options used in the container. example: ["Environment=NODE_ENV=production", "HealthCmd='wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1 '"].
     # quadlet_options:
 
+  # secrets contains the configuration for the vault used for storing secrets and configuration data.
   secrets:
     # secret_name is the unique id of the vault used for storing secrets and configuration data. default is {{ansible_fqdn }}.
     secret_name: "{{ ansible_fqdn | replace('.', '-') }}"

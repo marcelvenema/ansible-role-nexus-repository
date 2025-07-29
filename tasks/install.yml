@@ -22,6 +22,11 @@
   when: nexus_repository_vars.container.platform == "podman"
   block:
 
+    # Gather installed packages
+    - name: Gather installed packages
+      ansible.builtin.package_facts:
+        manager: auto
+
     # Check if podman is detected
     - name: Check if podman is detected
       ansible.builtin.assert:
@@ -71,6 +76,13 @@
         container_name: "{{ nexus_repository_vars.container.name }}"
         container_ports: "{{ nexus_repository_vars.container.ports }}"
         container_volumes: "{{ nexus_repository_vars.container.volumes }}"
+        container_env: "{{ nexus_repository_vars.container.environment | default(omit) }}"
+        container_healthcheck: "{{ nexus_repository_vars.container.healthcheck | default(omit) }}"
+        container_healthcheck_fail: "{{ nexus_repository_vars.container.healthcheck_fail | default('none') }}"
+        container_healthcheck_retries: "{{ nexus_repository_vars.container.healthcheck_retries | default(omit) }}"
+        container_healthcheck_interval: "{{ nexus_repository_vars.container.healthcheck_interval | default(omit) }}"
+        container_healthcheck_timeout: "{{ nexus_repository_vars.container.healthcheck_timeout | default(omit) }}"
+        container_healthcheck_start: "{{ nexus_repository_vars.container.healthcheck_start | default(omit) }}"
 
 #########################################################
 ## Installation via kubernetes                         ##
