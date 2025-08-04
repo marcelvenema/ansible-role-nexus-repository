@@ -33,8 +33,8 @@
     # Set variable if not defined
     - name: "Register variable (nexus_repository_address)..."
       ansible.builtin.set_fact:
-        nexus_repository_vars.address: ""
-      when: nexus_repository_vars.address is not defined
+        nexus_repository_address: ""
+      when: nexus_repository_address is not defined
       no_log: true
 
     # Get secrets from HashiCorp Vault
@@ -46,8 +46,8 @@
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_address"
-        secret_result: "nexus_repository_vars.address"
-      when: nexus_repository_vars.address == ""
+        secret_result: "nexus_repository_address"
+      when: nexus_repository_address == ""
 
     # NEXUS_REPOSITORY_USERNAME
     # Set variable if not defined
@@ -66,14 +66,14 @@
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_username"
-        secret_result: "nexus_repository_vars.username"
+        secret_result: "nexus_repository_username"
       when: nexus_repository_username == ""
 
     # NEXUS_REPOSITORY_PASSWORD
     # Set variable if not defined
     - name: "Register variable (nexus_repository_password)..."
       ansible.builtin.set_fact:
-        nexus_repository_vars.password: ""
+        nexus_repository_password: ""
       when: nexus_repository_password is not defined
       no_log: true
 
