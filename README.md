@@ -6,37 +6,44 @@ Ansible role for installation, configuration, usage, and management of Sonatype 
 </td>
 </tr></table>
 
-Ansible role Nexus Repository : [Design](docs/DESIGN.md)  |  [Examples](examples)  |  [Test](molecule)  |  [Issues]()  |<br>
-Latest version:
+Ansible role Nexus Repository : [Design](docs/DESIGN.md)  |  [Administration](docs/ADMIN.md)  |  [Examples](examples)  | [Test](molecule)  |  [Issues]()  |<br><br>
+Latest release: <kbd>R1</kbd> - See [RELEASES](docs/RELEASES.md) for more information.<br>
 
-# Actions:
+## Actions summary:
 
 <table style="border:0px; width:100%">
-<tr><th>Deployment</th><th>Repositories</th><th>Users and groups</th><th>Artifacts</th><th>Administration</th></tr>
-<tr>
-<td valign=top>install<br>uninstall<br>update<br></td>
-<td valign=top>create_repository<br>destroy_repository<br></td>
-<td valign=top>create_user<br>destroy_user<br>set_password_user<br></td>
-<td valign=top>import_artifacts<br>export_artifacts<br>sync_artifacts<br></td>
-<td valign=top>configure<br>start<br>stop<br></td>
-</tr></table>
+  <tr><th><a href="#Deployment">Deployment</a></th><th><a href="#Repositories">Repositories</a></th><th><a href="#Users-and-groups">Users and groups</a></th><th><a href="Artifacts">Artifacts</a></th><th><a href="#Administration">Administration</a></th></tr>
+  <tr>
+    <td valign=top>install<br>uninstall<br>update<br></td>
+    <td valign=top>create_repository<br>destroy_repository<br></td>
+    <td valign=top>create_user<br>destroy_user<br>set_password_user<br></td>
+    <td valign=top>import_artifacts<br>export_artifacts<br>sync_artifacts<br></td>
+    <td valign=top>start<br>stop<br>restart<br></td>
+  </tr>
+</table>
 
-## Deployment
+## Default variables:
+This role uses the `nexus-repository` variable for configuration parameters. See [defaults/main.yml](defaults/main.yml) for a comprehensive list of available options and their descriptions.<br>
+
+## Actions
+
+### Deployment
 
 action: **install**<br>
 Installation of the latest version of Sonatype Nexus Repository OSS.<br>
 variables:<br>
-<kbd>nexus_repository_url</kbd> : URL with the location of the container repository. This can be an URL or path to a local or remote file, for example 'docker.io/sonatype/nexus3', '/tmp/nexus3.67.1.tar' or 'https://192.168.1.1/repo/nexus.tar'. By default, it points to docker.io/sonatype/nexus3 via defaults/main.yml.<br>
-<kbd>nexus_repository_tag (optional)</kbd> : release or version number of the container image. Default is 'latest'.<br>
-<kbd>nexus_repository_checksum (optional)</kbd> : checksum of the container image. Example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".<br>
-<kbd>nexus_repository_checksum_algorithm (optional)</kbd> : algorithm for the checksum, for example sha256, sha512, md5, etc.<br>
+<kbd>nexus_repository</kbd> (optional) : Override default variables.<br>
+<kbd>repository_url</kbd> : URL with the location of the container repository. This can be an URL or path to a local or remote file, for example 'docker.io/sonatype/nexus3', '/tmp/nexus3.67.1.tar' or 'https://192.168.1.1/repo/nexus.tar'. By default, it points to docker.io/sonatype/nexus3 via defaults/main.yml.<br>
+<kbd>repository_tag (optional)</kbd> : release or version number of the container image. Default is 'latest'.<br>
+<kbd>repository_checksum (optional)</kbd> : checksum of the container image. Example: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" or "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef".<br>
+<kbd>repository_checksum_algorithm (optional)</kbd> : algorithm for the checksum, for example sha256, sha512, md5, etc.<br>
 <kbd>platform (optional)</kbd>  : install on a specific platform, for example podman, kubernetes, host. Default is autodetect. (podman, kubernetes, host)<br>
 <kbd>uninstall (optional)</kbd> : true/false. When true, uninstall is started before installation.<br>
 <br>
 If the following variables are added, a key/value secret engine in the vault will be created with the Nexus Repository admin password during installation.<br>
 <kbd>vault_address</kbd>         : URL to the vault address for vault access, for example `http://localhost:8081`. <br>
 <kbd>vault_token</kbd>           : token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault .<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault .<br>
 
 ```
 - name: Install Sonatype Nexus Repository OSS
@@ -45,10 +52,13 @@ If the following variables are added, a key/value secret engine in the vault wil
    - role: nexus-repository
      vars:
        action : install
-       nexus_repository_url: docker.io/sonatype/nexus3
-       nexus_repository_tag: latest
+       nexus_repository:
+         container:
+           repository_url: docker.io/sonatype/nexus3
+           repository_tag: latest
+         secrets:
+           secret_name: "192-168-1-1"
 ```
-
 
 action: **uninstall**<br>
 Uninstallation of Nexus Repository OSS.<br>
@@ -62,8 +72,9 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : uninstall
-```
+       keep_data: true
 
+```
 
 action: **update**<br>
 Update to the latest Sonatype Nexus Repository OSS version. `ROADMAP`.<br>
@@ -77,10 +88,13 @@ variables:<br>
    - role: nexus-repository
      vars:
        action : update
+       nexus_repository:
+         secrets:
+           secret_name: "192-168-1-1"
 ```
 
 
-## Repositories
+### Repositories
 
 action: **create_repository**<br>
 Create a repository in Nexus.<br>
@@ -92,10 +106,10 @@ variables:<br>
 <kbd>nexus_repository_type</kbd>       : Type of repository, for example `raw`. Supported types at this moment are `raw`, `yum`, `yum_proxy` and `docker`.<br>
 <kbd>nexus_repository_remote_url</kbd> : (required when nexus_repository_type is yum_proxy)
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Create Nexus Repository
@@ -122,7 +136,11 @@ or, when Nexus Repository data is stored in Vault:
     - role: nexus_repository
       vars:
         action: create_repository
-        nexus_repository_vault_id: nexus-server
+        nexus_repository_name: my-repo
+        nexus_repository_type: raw
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
 
 action: **destroy_repository**<br>
@@ -133,10 +151,10 @@ variables:<br>
 <kbd>nexus_repository_password</kbd> : Password of user for repository access.<br>
 <kbd>nexus_repository_name</kbd>     : Name of the repository.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Destroy Nexus Repository
@@ -149,11 +167,14 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
     - role: nexus-repository
       vars:
         action: destroy_repository
-        nexus_repository_vault_id: nexus-server
+        nexus_repository_name: "windows"
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
 
 
-## Users and groups
+### Users and groups
 
 action: **create_user**<br>
 Create a local user in Nexus Repository.<br>
@@ -168,10 +189,10 @@ variables:<br>
 <kbd>nexus_repository_user_password</kbd>  : Password of the user.<br>
 <kbd>nexus_repository_user_role</kbd>      : Role, for example nx-admin.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Create user in Nexus Repository
@@ -184,15 +205,16 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
     - role: nexus-repository
       vars:
         action: create_user
-        nexus_repository_vault_id: nexus-server
         nexus_repository_user_username: newuser
         nexus_repository_user_firstname: New
         nexus_repository_user_lastname: User
         nexus_repository_user_email: newuser@example.com
         nexus_repository_user_password: password123
         nexus_repository_user_role: nx-admin
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
-
 
 action: **destroy_user**<br>
 Delete user in Nexus. (backlog).<br>
@@ -202,10 +224,10 @@ variables:<br>
 <kbd>nexus_repository_password</kbd> : Password for repository access.<br>
 <kbd>nexus_repository_user_username</kbd> : Username.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Destroy user in Nexus Repository
@@ -218,8 +240,10 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
     - role: nexus-repository
       vars:
         action: destroy_user
-        nexus_repository_vault_id: nexus-server
         nexus_repository_user_username: newuser
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
 
 action: **set_password_user**<br>
@@ -231,10 +255,10 @@ variables:<br>
 <kbd>nexus_repository_user_username</kbd> : Username.<br>
 <kbd>nexus_repository_user_password</kbd> : Password.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Set password for Nexus Repository user
@@ -250,8 +274,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
        nexus_repository_user_password: password123
 ```
 
-
-## Artifacts
+### Artifacts
 
 action: **import_artifacts**<br>
 Import artifacts in folder structure to Nexus repository.<br>
@@ -263,10 +286,10 @@ variables:<br>
 <kbd>nexus_repository_folder</kbd>   : Repository folder for import artifacts, for example '/Microsoft/Windows/Server/2025'.<br>
 <kbd>source_folder</kbd>               : Folder for import artifacts, for example '/tmp/'.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token en secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Import artifacts in Nexus Repository
@@ -279,12 +302,13 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
     - role: nexus-repository
       vars:
         action: import_artifacts
-        nexus_repository_vault_id: nexus-server
         nexus_repository_name: files
         nexus_repository_folder: "/Microsoft/Windows"
         source_folder: "/tmp/"
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
-
 
 action: **export_artifacts**<br>
 Export artifacts from repository to folder structure.<br>
@@ -296,11 +320,10 @@ variables:<br>
 <kbd>nexus_repository_folder (optional)</kbd> : Repository folder for export artifacts. If not filled in, the entire repository is exported.<br>
 <kbd>destination_folder</kbd>               : Folder for export artifacts, for example '/tmp/export/'.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
-
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Export artifacts in Nexus Repository
@@ -313,12 +336,13 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
     - role: nexus-repository
       vars:
         action: export_artifacts
-        nexus_repository_vault_id: nexus-server
         nexus_repository_name: files
         nexus_repository_folder: "/Microsoft/Windows"
-        desitination_folder: "/tmp/"
+        destination_folder: "/tmp/"
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
-
 
 action: **sync_artifacts**<br>
 Synchronize artifacts from external to repository via .json file. `ROADMAP`.<br>
@@ -328,10 +352,10 @@ variables:<br>
 <kbd>nexus_repository_password</kbd> : Password for repository access.<br>
 <kbd>config_file</kbd>               : Configuration file with synchronization items.<br>
 
-Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault address, vault token en nexus_repository_vault_id can also be used. This will connect to the Vault and gather the required variables.<br>
+Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_repository_password`, the variables vault_address, vault_token and secret_name can also be used. This will connect to the Vault and gather the required variables.<br>
 <kbd>vault_address</kbd>             : URL to the vault address for vault access, for example `http://localhost:8081`.<br>
 <kbd>vault_token</kbd>               : Token for vault access.<br>
-<kbd>nexus_repository_vault_id</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to store parameters in Vault.<br>
+<kbd>secret_name</kbd> : Unique identification of the Nexus Repository instance, for example server name/cluster name. Will be used to get/put parameters in Vault.<br>
 
 ```
 - name: Sync artifacts in Nexus Repository
@@ -344,13 +368,15 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
     - role: nexus-repository
       vars:
         action: sync_artifacts
-        nexus_repository_vault_id: nexus-server
         nexus_repository_name: files
         nexus_repository_folder: "/Microsoft/Windows"
-        config_file: "/tmp/sync_artifacts.yml"\
+        config_file: "/tmp/sync_artifacts.yml"
+        nexus_repository:
+          secrets:
+            secret_name: "192-168-1-1"
 ```
 
-## Administration
+### Administration
 
 action: **start**<br>
 Start of Nexus Repository OSS service. `ROADMAP`.<br>
@@ -366,7 +392,6 @@ variables:<br>
        action : start
 ```
 
-
 action: **stop**<br>
 Stop of Nexus Repository OSS service. `ROADMAP`.<br>
 variables:<br>
@@ -381,20 +406,20 @@ variables:<br>
        action : stop
 ```
 
-action: **configure**<br>
-Configure Nexus Repository OSS service. `ROADMAP`.<br>
+action: **restart**<br>
+Restart Nexus Repository OSS service. `ROADMAP`.<br>
 variables:<br>
 <kbd>(none)</kbd> : No variables required.<br>
 
 ```
-- name: Configure Sonatype Nexus Repository OSS service
+- name: Restart Sonatype Nexus Repository OSS service
   hosts: nexus-server
   roles:
    - role: nexus-repository
      vars:
-       action: configure
+       action : restart
 ```
-    
+
 
 ***
 
@@ -438,40 +463,6 @@ Example for installing Nexus Repository OSS:
 
 
 ## Other information
-
-**Global variables**
-
-# Create list of all variables used in /vars/main.yml
-
-| Variable                             | Description                                                                 |
-|--------------------------------------|-----------------------------------------------------------------------------|
-| nexus_repository_url                 | URL with the location of the container repository.                          |
-| nexus_repository_tag                 | Release or version number of the container image.                           |
-| nexus_repository_checksum            | Checksum of the container image.                                            |
-| nexus_repository_checksum_algorithm  | Algorithm for the checksum, e.g., sha256, sha512, md5.                      |
-| platform                             | Install on a specific platform, e.g., podman, kubernetes, host.             |
-| uninstall                            | When true, uninstall is started before installation.                        |
-| vault_address                        | URL to the vault address for vault access.                                  |
-| vault_token                          | Token for vault access.                                                     |
-| nexus_repository_vault_id            | Unique identification of the Nexus Repository instance.                     |
-| keep_data                            | When true, data folders are kept during uninstall.                          |
-| nexus_repository_address             | FQDN or IP-address for repository access.                                   |
-| nexus_repository_username            | Username for repository access.                                             |
-| nexus_repository_password            | Password for repository access.                                             |
-| nexus_repository_name                | Name of the repository.                                                     |
-| nexus_repository_remote_url          | Remote URL for yum_proxy.                                                   |
-| nexus_repository_type                | Type of repository, e.g., raw.                                              |
-| nexus_repository_user_username       | Username for the Nexus Repository user.                                     |
-| nexus_repository_user_firstname      | First name of the Nexus Repository user.                                    |
-| nexus_repository_user_lastname       | Last name of the Nexus Repository user.                                     |
-| nexus_repository_user_email          | Email address of the Nexus Repository user.                                 |
-| nexus_repository_user_password       | Password of the Nexus Repository user.                                      |
-| nexus_repository_user_role           | Role of the Nexus Repository user, e.g., nx-admin.                          |
-| nexus_repository_folder              | Repository folder for import/export artifacts.                              |
-| source_folder                        | Folder for import artifacts.                                                |
-| destination_folder                   | Folder for export artifacts.                                                |
-| config_file                          | Configuration file with synchronization items.                              |
-|--------------------------------------|-----------------------------------------------------------------------------|
 
 
 ## License
