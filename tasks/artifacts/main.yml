@@ -10,7 +10,7 @@
   when:
     - vault_address is defined
     - vault_token is defined
-    - nexus_repository_vars.get('secret_name') | default('') | length > 0
+
 
 #########################################################
 ## Import artifacts                                    ##
