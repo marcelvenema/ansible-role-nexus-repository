@@ -94,11 +94,11 @@
     #########################################################
 
     # Test if repository address is valid.
-    - name: Test if repository address is valid...
+    - name: "Test if repository address is valid ({{ nexus_repository_address }})..."
       ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/status/check"
+        url: "{{ nexus_repository_address }}/service/rest/v1/status"
         method: GET
-        status_code: 200, 401
+        status_code: 200, 503
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
         force_basic_auth: true

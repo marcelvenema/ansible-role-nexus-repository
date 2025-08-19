@@ -60,6 +60,70 @@
   retries: 10
   delay: 10
 
+# Change admin password to hide manual first login screen
+- name: Change admin password for Nexus Repository...
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_vars.address }}/service/rest/v1/security/users/admin/change-password"
+    method: PUT
+    user: "admin"
+    password: "{{ admin_password_result.stdout }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: "text/plain"
+    body: "{{ admin_password_result.stdout }}"
+    return_content: false
+    status_code: 200,204,400,403,404   # API typically returns 204 No Content on success
+
+# Get license agreement
+- name: Get license agreement for Nexus Repository OSS...
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_vars.address }}/service/rest/v1/system/eula"
+    method: GET
+    user: "admin"
+    password: "{{ admin_password_result.stdout }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: "application/json"
+    return_content: true
+  register: eula_response
+
+# Accept license agreement
+- name: Accept license agreement for Nexus Repository OSS...
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_vars.address }}/service/rest/v1/system/eula"
+    method: POST
+    user: "admin"
+    password: "{{ admin_password_result.stdout }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: "application/json"
+    body:
+      accepted: true
+      disclaimer: "{{ eula_response.json.disclaimer | string }}"
+    body_format: json
+    return_content: false
+    status_code: 204,500
+  register: eula_accept_response
+
+# Enable anonymous access to Nexus Repository via api
+- name: Enable anonymous access for Nexus Repository...
+  ansible.builtin.uri:
+    url: "{{ nexus_repository_vars.address }}/service/rest/v1/security/anonymous"
+    method: PUT
+    user: "admin"
+    password: "{{ admin_password_result.stdout }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: "application/json"
+    body:
+      enabled: true
+      userID: "anonymous"
+      realmName: "NexusAuthorizingRealm"
+    body_format: json
+    return_content: false
+    status_code: 200,403
+  register: anonymous_access_response
+
 #########################################################
 ## Automation user and password                        ##
 #########################################################

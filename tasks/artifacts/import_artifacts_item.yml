@@ -8,18 +8,14 @@
 - name: "Import artifacts - Information message"
   ansible.builtin.debug:
     msg:
-      - "Import artifact {{ item.path | basename }} ({{ (item.size | int / 1024 / 1024) | round(0) }}MB) to repository {{ nexus_repository_name }}. This may take a while..."
-
-# Check if last character of nexus_repository_folder is a slash. If not, add it. nexus_repository_folder can also be empty.
-- name: "Test if last character of nexus_repository_folder is a slash..."
-  ansible.builtin.set_fact:
-    nexus_repository_folder: "{{ nexus_repository_folder }}/"
-  when: nexus_repository_folder | regex_search('/$') is not match and nexus_repository_folder != ""
+      - "Import artifact {{ item.path | basename }} ({{ (item.size | int / 1024 / 1024) | round(0) }}MB) to repository {{ nexus_repository_name }}."
+      - "Folder: {{ nexus_repository_folder }} - {{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
+      - "This may take a while..."
 
 # upload files to Nexus repository
 - name: "Import artifacts to Nexus repository ({{ nexus_repository_address }})..."
   ansible.builtin.uri:
-    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}/{{ nexus_repository_folder }}{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
+    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}{{ nexus_repository_folder }}{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
     method: PUT
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
