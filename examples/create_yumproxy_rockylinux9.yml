@@ -31,7 +31,7 @@
           # username: # Get from Vault
           # password: # Get from Vault
           secrets:
-            vault_id: "192-168-29-90" # unique id to identify instance in Vault
+            secret_name: "192-168-29-90" # unique id to identify instance in Vault
 
     # Create yum_proxy repository
     - name: Create Rocky Linux 9 AppStream repository...
@@ -47,7 +47,7 @@
           # username: # Get from Vault
           # password: # Get from Vault
           secrets:
-            vault_id: "192-168-29-90" # unique id to identify instance in Vault
+            secret_name: "192-168-29-90" # unique id to identify instance in Vault
 
     # Create yum_proxy repository
     - name: Create Rocky Linux 9 Extras repository...
@@ -63,7 +63,7 @@
           # username: # Get from Vault
           # password: # Get from Vault
           secrets:
-            vault_id: "192-168-29-90" # unique id to identify instance in Vault
+            secret_name: "192-168-29-90" # unique id to identify instance in Vault
 
     # Show information message
     - name: Show information message

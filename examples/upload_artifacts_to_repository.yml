@@ -28,12 +28,12 @@
         nexus_repository_name       : "blauwe_disk"
         nexus_repository_folder     : "containers"
         source_folder               : "/tmp/exported_containers"
-        nexus_repoository:
+        nexus_repository:
           # address:  # Get from Vault
           # username: # Get from Vault
           # password: # Get from Vault
           secrets:
-            vault_id: "10-42-1-200" # unique id to identify instance in Vault
+            secret_name: "10-42-1-200" # unique id to identify instance in Vault
 
     # Upload completed
     - name: Show information message

@@ -7,7 +7,7 @@
 # Validate local variables
 - name: Validate local variables for Nexus Repository export_artifacts action.
   ansible.builtin.assert:
-    that: "{{ varitem }} is defined"
+    that: "vars[varitem] is defined"
     fail_msg: "Required variable '{{ varitem }}' has not been provided."
     quiet: true
   loop_control:
@@ -30,7 +30,6 @@
     force_basic_auth: yes
     return_content: yes
     validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
-    body_format: json
     headers:
       accept: application/json
       Content-Type: application/json
@@ -49,31 +48,17 @@
     state: directory
     mode: "0755"
 
-# Set continuation_token
-- name: Set variables (search_list)...
+# Set search query based on repository name and folder. Replace special chars
+- name: Register variables...
   ansible.builtin.set_fact:
-    continuation_token: "firstPage"
+    search_query: "&q={{ nexus_repository_folder | trim | urlencode }}"
     file_urls: [] # result of search query will be stored here
-    search_list: [] # list of artifacts to search for
+    search_list: [] # list of artifacts to search for   
+    continuation_token: "firstPage"
 
-# Set search list if list of artifacts is provided
-- name: Gather artifacts from list...
-  ansible.builtin.set_fact:
-    search_list: "{{ nexus_repository_artifacts | default([]) }}"
-  when: nexus_repository_artifacts is defined and nexus_repository_artifacts | length > 0
-
-# Set search query based on repository name and folder
-- name: Export artifacts - Create search query
-  ansible.builtin.set_fact:
-    search_query: "&q={{ nexus_repository_folder | regex_replace('/', '%2F') }}"
-  when:
-    - nexus_repository_name is defined
-    - nexus_repository_artifacts is not defined
-
-# include task to get assets from Nexus repository
-- name: "Get assets from Nexus repository ({{ nexus_repository_address }})..."
-  ansible.builtin.import_tasks: export_artifacts_get_assets.yml
-  until: continuation_token == "" or continuation_token is not defined
+# Get assets list from Nexus Repository
+- name: Get assets list from Nexus Repository...
+  ansible.builtin.include_tasks: export_artifacts_get_assets_list.yml
 
 # Show information message
 - name: Export artifacts - information message

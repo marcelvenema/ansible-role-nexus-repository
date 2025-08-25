@@ -25,7 +25,7 @@
           # username: # Get from Vault
           # password: # Get from Vault
           secrets:
-            vault_id: "192-168-29-90" # unique id to identify instance in Vault
+            secret_name: "192-168-29-90" # unique id to identify instance in Vault
 
     - name: Show information message
       debug:

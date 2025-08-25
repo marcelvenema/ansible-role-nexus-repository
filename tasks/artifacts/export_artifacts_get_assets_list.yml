@@ -1,9 +1,16 @@
 ---
 
+# Register token
+# for first run, do not include continuation_token when value is 'firstPage'
+- name: "Register variable..."
+  ansible.builtin.set_fact:
+    page_url: >-
+      {{ nexus_repository_address }}/service/rest/v1/search/assets?repository={{ nexus_repository_name }}{{ search_query }}{% if continuation_token != '' and continuation_token != 'firstPage' %}&continuationToken={{ continuation_token }}{% endif %}
+
 # Get assets from Nexus repository
 - name: "Retrieve assets from repository {{ nexus_repository_name }}..."
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.application.address }}/service/rest/v1/search/assets?repository={{ nexus_repository_name }}{{ search_query }}"
+    url: "{{ page_url }}"
     method: GET
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
@@ -16,15 +23,19 @@
       Content-Type: application/json
   register: search_result
 
+# Set retrieved file URLs
+- name: Set retrieved file URLs
+  ansible.builtin.set_fact:
+    file_urls: "{{ ( file_urls | default([]) + search_result.json['items'] | map(attribute='downloadUrl') | list ) }}"
+  when: search_result.status == 200 and search_result.json['items'] is defined
+
 # Set continuation token
 - name: Set continuation token for pagination
   ansible.builtin.set_fact:
     continuation_token: "{{ search_result.json.continuationToken }}"
-    file_urls: "{{ search_result.json['items'] | map(attribute='downloadUrl') | list }}"
   when: search_result.status == 200
 
-# Set output
-- name: Set output variable
-  ansible.builtin.set_fact:
-    nexus_repository_exported_assets: "{{ file_urls }}"
-  when: file_urls | length > 0
+# Rerun myself if continuation_token not empty
+- name: "Rerun task to get next page of assets if continuation token is present..."
+  ansible.builtin.include_tasks: export_artifacts_get_assets_list.yml
+  when: continuation_token != ''

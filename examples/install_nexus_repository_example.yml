@@ -40,7 +40,7 @@
           # repository_checksum_algorithm can be a checksum algorithm of the container file. example: "sha256", sha512", "md5". Default is "sha256".
           # repository_checksum_algorithm: "sha256"
         secrets:
-          vault_id: "NXR-42M003" # unique id to identify instance in Vault
+          secret_name: "NXR-42M003" # unique id to identify instance in Vault
 
   # Show information message
   - name: Show information message
