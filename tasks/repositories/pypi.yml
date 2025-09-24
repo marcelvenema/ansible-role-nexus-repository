@@ -1,0 +1,133 @@
+---
+
+#########################################################
+## Pypi repository module                              ##
+#########################################################
+
+#########################################################
+## Get repository Pypi                                 ##
+#########################################################
+
+- name: Get repository
+  when: action == "get_repository"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository get_repository action.
+      ansible.builtin.assert:
+        that: "varitem is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "{{ repository_check }}"
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play
+
+#########################################################
+## Create repository RAW                               ##
+#########################################################
+
+- name: Create repository
+  when: action == "create_repository"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Sonatype Nexus repositories module.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+
+    # include task to create blob store
+    - name: Create blob store for repository...
+      ansible.builtin.include_tasks: blob_store.yml
+
+    # Check if repository already exists
+    - name: Check if repository '{{ nexus_repository_name }}' already exists
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/pypi/hosted/{{ nexus_repository_name }}"
+        method: GET
+        status_code: 200, 404
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        return_content: yes
+        body_format: json
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      register: repository_check
+      no_log: true
+
+    # Create repository in Nexus Repository Manager via API
+    - name: "Create repository '{{ nexus_repository_name }}'"
+      ansible.builtin.uri:
+        url: "{{ nexus_repository_address }}/service/rest/v1/repositories/pypi/hosted"
+        method: POST
+        status_code: 201
+        user: "{{ nexus_repository_username }}"
+        password: "{{ nexus_repository_password }}"
+        force_basic_auth: yes
+        body_format: json
+        body:
+          name      : "{{ nexus_repository_name }}"
+          online    : true
+          storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
+          cleanup   : { policyNames: [ "string" ] }
+          component : { proprietaryComponents: true }
+          raw       : { contentDisposition: "attachment"}
+        headers:
+          accept: application/json
+          Content-Type: application/json
+      when: repository_check.status == 404
+
+#########################################################
+## Destroy repository                                  ##
+#########################################################
+
+- name: Destroy repository
+  when: action == "destroy_repository"
+  block:
+
+    # Validate local variables
+    - name: Validate local variables for Nexus Repository destroy_repository action.
+      ansible.builtin.assert:
+        that: "{{ varitem }} is defined"
+        fail_msg: "Required variable '{{ varitem }}' has not been provided."
+        quiet: true
+      loop_control:
+        loop_var: varitem
+      loop:
+        - nexus_repository_address
+        - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_name
+        - nexus_repository_type
+
+    # Show information message
+    - name: This part is not (yet) implemented.
+      ansible.builtin.debug:
+        msg: "This part is not (yet) implemented."
+
+    # Stop playbook
+    - name: Stop playbook
+      ansible.builtin.meta: end_play

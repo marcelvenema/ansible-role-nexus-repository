@@ -29,6 +29,10 @@
   retries: 20
   delay: 10
 
+
+
+
+
 # Get podman service user from podman role
 # TODO: create function in podman role to get podman service user
 - name: Get Podman service user...
@@ -133,7 +137,7 @@
   ansible.builtin.set_fact:
     automation_password: "{{ lookup('password', '/dev/null length=12 chars=ascii_letters,digits') }}"
   when: automation_password is not defined
- 
+
 # Create automation user in Nexus repository
 # Use variables automation_username, automation_password and automation_e-mail if provided, else use default
 - name: Create automation user for Nexus Repository...

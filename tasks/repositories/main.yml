@@ -62,3 +62,13 @@
   ansible.builtin.include_tasks: docker.yml
   when:
     - nexus_repository_type == "docker"
+
+#########################################################
+## Pypi repository actions                             ##
+#########################################################
+
+# include task pypi.yml for pypi repository actions
+- name: Include pypi repository actions...
+  ansible.builtin.include_tasks: pypi.yml
+  when:
+    - nexus_repository_type == "pypi"

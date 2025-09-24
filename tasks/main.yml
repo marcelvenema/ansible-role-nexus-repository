@@ -34,6 +34,11 @@
   ansible.builtin.set_fact:
     nexus_repository_vars: "{{ nexus_repository_defaults.nexus_repository | combine( nexus_repository | default({}), recursive=true ) }}"
 
+# Gather vault variables when vault_address and vault_token are defined
+- name: Gather vault variables (nexus_repository)...
+  ansible.builtin.include_tasks: gather_nexus_repository_variables.yml
+  when: vault_address is defined and vault_token is defined
+
 # TODO: Send message to Kafka bus
 - name: Publish message to Kafka bus...
   ansible.builtin.debug:

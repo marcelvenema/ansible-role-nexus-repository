@@ -89,32 +89,6 @@
         secret_result: "nexus_repository_password"
       when: nexus_repository_password == ""
 
-    #########################################################
-    ## Test connection to Nexus Repository                 ##
-    #########################################################
-
-    # Test if repository address is valid.
-    - name: "Test if repository address is valid ({{ nexus_repository_address }})..."
-      ansible.builtin.uri:
-        url: "{{ nexus_repository_address }}/service/rest/v1/status"
-        method: GET
-        status_code: 200, 503
-        user: "{{ nexus_repository_username }}"
-        password: "{{ nexus_repository_password }}"
-        force_basic_auth: true
-        return_content: true
-        body_format: json
-        headers:
-          accept: application/json
-          Content-Type: application/json
-      register: nexus_repository_status
-
-    # Show custom error message if repository address is not valid.
-    - name: Show information message
-      ansible.builtin.fail:
-        msg: "Repository address '{{ nexus_repository_address }}' or username/password is not valid..."
-      when: nexus_repository_status.status != 200
-
     # Set variable nexus_repository_initialized to true
     # If true, gather_nexus_repository_variables.yml will not be executed again
     - name: Register variable (nexus_repository_initialized)...
