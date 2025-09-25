@@ -54,7 +54,7 @@
       nexus_repository_username: '{{ nexus_repository_username | default('change_me') }}'
       nexus_repository_password: '{{ nexus_repository_password | default('change_me') }}'
       nexus_repository_address: '{{ nexus_repository_address | default('change_me') }}'
-      automation_username: '{{ automation_username | default('change_me') }}'
+      automation_username: '{{ automation_username | default('automation') }}'
       automation_password: '{{ automation_password | default('change_me') }}'
       automation_email: '{{ automation_email | default('ansible@{{ ansible_fqdn }}') }}'
 
