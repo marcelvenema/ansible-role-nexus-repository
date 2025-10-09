@@ -19,7 +19,7 @@
     method: PUT
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
-    force_basic_auth: yes
+    force_basic_auth: true
     src: "{{ item.path }}"
     remote_src: true # use managed (remote) node
     status_code: 200, 201 # 201 Created, 200 OK

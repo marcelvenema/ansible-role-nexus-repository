@@ -64,11 +64,31 @@
     - nexus_repository_type == "docker"
 
 #########################################################
-## Pypi repository actions                             ##
+## PyPI repository actions                             ##
 #########################################################
 
 # include task pypi.yml for pypi repository actions
-- name: Include pypi repository actions...
+- name: Include PyPI repository actions...
   ansible.builtin.include_tasks: pypi.yml
   when:
     - nexus_repository_type == "pypi"
+
+#########################################################
+## PyPI_proxy repository actions                       ##
+#########################################################
+
+# include task pypi.yml for pypi repository actions
+- name: Include PyPI repository actions...
+  ansible.builtin.include_tasks: pypi_proxy.yml
+  when:
+    - nexus_repository_type == "pypi_proxy"
+
+#########################################################
+## npm_proxy repository actions                        ##
+#########################################################
+
+# include task pypi.yml for pypi repository actions
+- name: Include PyPI repository actions...
+  ansible.builtin.include_tasks: npm_proxy.yml
+  when:
+    - nexus_repository_type == "npm_proxy"

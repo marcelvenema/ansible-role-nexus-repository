@@ -37,10 +37,10 @@
       when: nexus_repository_address is not defined
       no_log: true
 
-    # Get secrets from HashiCorp Vault
+    # Get secrets from OpenBao Vault
     - name: Get secret from Vault (nexus_repository_address)...
       ansible.builtin.include_role:
-        name: vault
+        name: openbao
       vars:
         action: get_secret
         secret_engine_name: "{{ _secret_engine_name }}"
@@ -57,10 +57,10 @@
       when: nexus_repository_username is not defined
       no_log: true
 
-    # Get secrets from HashiCorp Vault
+    # Get secrets from OpenBao Vault
     - name: Get secret from Vault (nexus_repository_username)...
       ansible.builtin.include_role:
-        name: vault
+        name: openbao
       vars:
         action: get_secret
         secret_engine_name: "{{ _secret_engine_name }}"
@@ -77,10 +77,10 @@
       when: nexus_repository_password is not defined
       no_log: true
 
-    # Get secrets from HashiCorp Vault
+    # Get secrets from OpenBao Vault
     - name: Get secret from Vault (nexus_repository_password)...
       ansible.builtin.include_role:
-        name: vault
+        name: openbao
       vars:
         action: get_secret
         secret_engine_name: "{{ _secret_engine_name }}"

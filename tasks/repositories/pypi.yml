@@ -62,15 +62,15 @@
       ansible.builtin.include_tasks: blob_store.yml
 
     # Check if repository already exists
-    - name: Check if repository '{{ nexus_repository_name }}' already exists
+    - name: Check if repository already exists ({{ nexus_repository_name }})
       ansible.builtin.uri:
         url: "{{ nexus_repository_address }}/service/rest/v1/repositories/pypi/hosted/{{ nexus_repository_name }}"
         method: GET
         status_code: 200, 404
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
-        return_content: yes
+        force_basic_auth: true
+        return_content: true
         body_format: json
         headers:
           accept: application/json
@@ -86,15 +86,15 @@
         status_code: 201
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
+        force_basic_auth: true
         body_format: json
         body:
-          name      : "{{ nexus_repository_name }}"
-          online    : true
-          storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
-          cleanup   : { policyNames: [ "string" ] }
-          component : { proprietaryComponents: true }
-          raw       : { contentDisposition: "attachment"}
+          name: "{{ nexus_repository_name }}"
+          online: true
+          storage: { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
+          cleanup: { policyNames: [ "string" ] }
+          component: { proprietaryComponents: true }
+          raw: { contentDisposition: "attachment"}
         headers:
           accept: application/json
           Content-Type: application/json

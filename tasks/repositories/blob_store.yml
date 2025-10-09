@@ -24,15 +24,15 @@
         - nexus_repository_name
 
    # Check if blob store already exists
-    - name: Check if blob store '{{ nexus_repository_name }}' already exists
+    - name: Check if blob store already exists ({{ nexus_repository_name }})
       ansible.builtin.uri:
         url: "{{ nexus_repository_address }}/service/rest/v1/blobstores/file/{{ nexus_repository_name }}"
         method: GET
         status_code: 200, 404
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
-        return_content: yes
+        force_basic_auth: true
+        return_content: true
         body_format: json
         headers:
           accept: application/json
@@ -48,14 +48,13 @@
         status_code: 204
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
+        force_basic_auth: true
         body_format: json
         body:
           softquota: "{ type: 'spaceRemainingQuota', limit: 0 }"
-          path     : "blobs/{{ nexus_repository_name }}"
-          name     : "{{ nexus_repository_name }}"
+          path: "blobs/{{ nexus_repository_name }}"
+          name: "{{ nexus_repository_name }}"
         headers:
           accept: application/json
           Content-Type: application/json
       when: blob_store_check.status == 404
-

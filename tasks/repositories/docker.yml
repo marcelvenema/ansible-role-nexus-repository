@@ -38,15 +38,15 @@
         status_code: 201
         user: "{{ nexus_repository_username }}"
         password: "{{ nexus_repository_password }}"
-        force_basic_auth: yes
+        force_basic_auth: true
         body_format: json
         body:
-          name      : "{{ nexus_repository_name }}"
-          online    : true
-          storage   : { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow_once" }
-          cleanup   : { policyNames: [ "string" ] }
-          component : { proprietaryComponents: true }
-          docker    : { v1Enabled: false, forceBasicAuth: true, subdomain: "docker-a" }
+          name: "{{ nexus_repository_name }}"
+          online: true
+          storage: { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow_once" }
+          cleanup: { policyNames: [ "string" ] }
+          component: { proprietaryComponents: true }
+          docker: { v1Enabled: false, forceBasicAuth: true, subdomain: "docker-a" }
         headers:
           accept: application/json
           Content-Type: application/json

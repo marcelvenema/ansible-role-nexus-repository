@@ -3,54 +3,54 @@
 actions:
     # Deployment actions
     - install:
-            description: "Installation and configuration of the latest version of Sonatype Nexus Repository."
-            icon: "media/icon_nexus_repository.png"
-            parameters:
-                - nexus_repository_name:
+          description: "Installation and configuration of the latest version of Sonatype Nexus Repository."
+          icon: "media/icon_nexus_repository.png"
+          parameters:
+              - nexus_repository_name:
                         description: "Unique name (identifier) of Nexus Repository instance, for example server name/cluster name. Used in combination with Vault parameters."
                         required: true
                         value: ""
-                - nexus_repository_url:
+              - nexus_repository_url:
                         description: "URL/file to Nexus Repository container or installation file."
                         required: true
                         value: ""
-                - nexus_repository_tag:
+              - nexus_repository_tag:
                         description: "Tag of Nexus Repository container."
                         required: false
                         value: ""
-                - nexus_repository_checksum:
+              - nexus_repository_checksum:
                         description: "Checksum of Nexus Repository container."
                         required: false
                         value: ""
-                - nexus_repository_checksum_algorithm:
+              - nexus_repository_checksum_algorithm:
                         description: "Checksum algorithm of Nexus Repository container."
                         required: false
                         value: ""
-                - nexus_repository_name:
+              - nexus_repository_name:
                         description: "Name of Nexus Repository container."
                         required: true
                         value: ""
-                - nexus_container_name:
+              - nexus_container_name:
                         description: "Name of Nexus Repository container."
                         required: false
                         value: "nexus3"
-                - nexus_container_ports:
+              - nexus_container_ports:
                         description: "Ports of Nexus Repository container."
                         required: false
                         value: [""]
-                - nexus_container_volumes:
+              - nexus_container_volumes:
                         description: "Volumes of Nexus Repository container."
                         required: false
                         value: [""]
-                - nexus_data_dir:
+              - nexus_data_dir:
                         description: "Data directory for Nexus Repository."
                         required: false
                         value: "/data/nexus"
-                - platform:
+              - platform:
                         description: "Platform on which Nexus Repository is installed."
                         required: false
                         value: ""
-                - uninstall:
+              - uninstall:
                         description: "Uninstallation of Sonatype Nexus Repository. Removes the container, files, users, and groups."
                         required: false
                         value: false

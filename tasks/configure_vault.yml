@@ -34,7 +34,7 @@
 # Create secret_engine if it does not exist
 - name: "Create Vault secret engine for {{ _secret_engine_name }}..."
   ansible.builtin.include_role:
-    name: vault
+    name: openbao
   vars:
     action: create_secret_engine
     secret_engine_name: "{{ _secret_engine_name }}"
@@ -58,10 +58,10 @@
       automation_password: '{{ automation_password | default('change_me') }}'
       automation_email: '{{ automation_email | default('ansible@{{ ansible_fqdn }}') }}'
 
-# Store usernames and passwords in Hashicorp Vault.
-- name: Store secrets and configuration data in Vault...
+# Store usernames and passwords in OpenBao Vault.
+- name: Store secrets and configuration data in OpenBao Vault...
   ansible.builtin.include_role:
-    name: vault
+    name: openbao
   vars:
     action: create_secret
     secret_engine_name: "{{ _secret_engine_name }}"
