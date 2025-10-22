@@ -95,8 +95,7 @@
         body:
           name: "{{ nexus_repository_name }}"
           online: true
-          storage: { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
-          cleanup: { policyNames: [ "string"] }
+          storage: { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "ALLOW" }
           proxy: { remoteUrl: "{{ nexus_repository_remote_url }}", contentMaxAge: 1440, metadataMaxAge: 1440 }
           negativeCache: { enabled: true, timeToLive: 1440 }
           httpClient: { blocked: false, autoBlock: false, connectionTimeout: 60000, socketTimeout: 60000, connectionRequestTimeout: 60000 }

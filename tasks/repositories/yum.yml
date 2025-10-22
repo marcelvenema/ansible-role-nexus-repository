@@ -93,8 +93,7 @@
         body:
           name: "{{ nexus_repository_name }}"
           online: true
-          storage: { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "allow" }
-          cleanup: { policyNames: [ "string" ] }
+          storage: { blobStoreName: "{{ nexus_repository_name }}", strictContentTypeValidation: true, writePolicy: "ALLOW" }
           component: { proprietaryComponents: true }
           yum: { repodataDepth: 5, deployPolicy: "STRICT" }
         headers:
