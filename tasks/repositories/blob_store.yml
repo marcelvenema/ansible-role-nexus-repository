@@ -6,7 +6,7 @@
 
 # Create blopb store when 'create' in action variable
 - name: Create blob store repository
-  when: "'create' in action"
+  when: "'create' in action_type"
   block: 
 
     # Validate local variables

@@ -29,7 +29,7 @@ This role uses the `nexus-repository` variable for configuration parameters. See
 
 ### Deployment
 
-action: **install**<br>
+action_type: **install**<br>
 Installation of the latest version of Sonatype Nexus Repository OSS.<br>
 variables:<br>
 <kbd>nexus_repository</kbd> (optional) : Override default variables.<br>
@@ -51,7 +51,7 @@ If the following variables are added, a key/value secret engine in the vault wil
   roles:
    - role: nexus-repository
      vars:
-       action : install
+       action_type : install
        nexus_repository:
          container:
            repository_url: docker.io/sonatype/nexus3
@@ -60,7 +60,7 @@ If the following variables are added, a key/value secret engine in the vault wil
            secret_name: "192-168-1-1"
 ```
 
-action: **uninstall**<br>
+action_type: **uninstall**<br>
 Uninstallation of Nexus Repository OSS.<br>
 variables:<br>
 <kbd>keep_data (optional)</kbd> : true/false. When true, data folders are kept during uninstall. Default is false.<br>
@@ -71,12 +71,12 @@ variables:<br>
   roles:
    - role: nexus-repository
      vars:
-       action : uninstall
+       action_type : uninstall
        keep_data: true
 
 ```
 
-action: **update**<br>
+action_type: **update**<br>
 Update to the latest Sonatype Nexus Repository OSS version. `ROADMAP`.<br>
 variables:<br>
 <kbd>(none)</kbd> : No variables required.<br>
@@ -87,7 +87,7 @@ variables:<br>
   roles:
    - role: nexus-repository
      vars:
-       action : update
+       action_type : update
        nexus_repository:
          secrets:
            secret_name: "192-168-1-1"
@@ -96,7 +96,7 @@ variables:<br>
 
 ### Repositories
 
-action: **create_repository**<br>
+action_type: **create_repository**<br>
 Create a repository in Nexus.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd>    : FQDN or IP-address for repository access, for example `https://192.168.1.1:8081`.<br>
@@ -117,7 +117,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
    - role: nexus-repository
      vars:
-       action: create_repository
+       action_type: create_repository
        nexus_repository_address: https://192.168.1.1:8081
        nexus_repository_username: admin
        nexus_repository_password: admin123
@@ -135,7 +135,7 @@ or, when Nexus Repository data is stored in Vault:
   roles:
     - role: nexus_repository
       vars:
-        action: create_repository
+        action_type: create_repository
         nexus_repository_name: my-repo
         nexus_repository_type: raw
         nexus_repository:
@@ -143,7 +143,7 @@ or, when Nexus Repository data is stored in Vault:
             secret_name: "192-168-1-1"
 ```
 
-action: **destroy_repository**<br>
+action_type: **destroy_repository**<br>
 Delete a repository in Nexus.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd>  : FQDN or IP-address for repository access, for example `https://192.168.1.1:8081`.<br>
@@ -166,7 +166,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
     - role: nexus-repository
       vars:
-        action: destroy_repository
+        action_type: destroy_repository
         nexus_repository_name: "windows"
         nexus_repository:
           secrets:
@@ -176,7 +176,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
 
 ### Users and groups
 
-action: **create_user**<br>
+action_type: **create_user**<br>
 Create a local user in Nexus Repository.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
@@ -204,7 +204,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
     - role: nexus-repository
       vars:
-        action: create_user
+        action_type: create_user
         nexus_repository_user_username: newuser
         nexus_repository_user_firstname: New
         nexus_repository_user_lastname: User
@@ -216,7 +216,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
             secret_name: "192-168-1-1"
 ```
 
-action: **destroy_user**<br>
+action_type: **destroy_user**<br>
 Delete user in Nexus. (backlog).<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
@@ -239,14 +239,14 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
     - role: nexus-repository
       vars:
-        action: destroy_user
+        action_type: destroy_user
         nexus_repository_user_username: newuser
         nexus_repository:
           secrets:
             secret_name: "192-168-1-1"
 ```
 
-action: **set_password_user**<br>
+action_type: **set_password_user**<br>
 Change the password of a user in Nexus. `ROADMAP`.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
@@ -266,7 +266,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
    - role: nexus-repository
      vars:
-       action: set_password_user
+       action_type: set_password_user
        nexus_repository_address: https://192.168.1.1:8081
        nexus_repository_username: admin
        nexus_repository_password: admin123
@@ -276,7 +276,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
 
 ### Artifacts
 
-action: **import_artifacts**<br>
+action_type: **import_artifacts**<br>
 Import artifacts in folder structure to Nexus repository.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd>  : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
@@ -301,7 +301,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
     - role: nexus-repository
       vars:
-        action: import_artifacts
+        action_type: import_artifacts
         nexus_repository_name: files
         nexus_repository_folder: "/Microsoft/Windows"
         source_folder: "/tmp/"
@@ -310,7 +310,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
             secret_name: "192-168-1-1"
 ```
 
-action: **export_artifacts**<br>
+action_type: **export_artifacts**<br>
 Export artifacts from repository to folder structure.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd> : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
@@ -335,7 +335,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
     - role: nexus-repository
       vars:
-        action: export_artifacts
+        action_type: export_artifacts
         nexus_repository_name: files
         nexus_repository_folder: "/Microsoft/Windows"
         destination_folder: "/tmp/"
@@ -344,7 +344,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
             secret_name: "192-168-1-1"
 ```
 
-action: **sync_artifacts**<br>
+action_type: **sync_artifacts**<br>
 Synchronize artifacts from external to repository via .json file. `ROADMAP`.<br>
 variables:<br>
 <kbd>nexus_repository_address</kbd> : URL to the address for repository access, for example https://192.168.1.1:8081.<br>
@@ -367,7 +367,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
   roles:
     - role: nexus-repository
       vars:
-        action: sync_artifacts
+        action_type: sync_artifacts
         nexus_repository_name: files
         nexus_repository_folder: "/Microsoft/Windows"
         config_file: "/tmp/sync_artifacts.yml"
@@ -378,7 +378,7 @@ Instead of `nexus_repository_address`, `nexus_repository_username` and `nexus_re
 
 ### Administration
 
-action: **start**<br>
+action_type: **start**<br>
 Start of Nexus Repository OSS service. `ROADMAP`.<br>
 variables:<br>
 <kbd>(none)</kbd> : No variables required.<br>
@@ -392,7 +392,7 @@ variables:<br>
        action : start
 ```
 
-action: **stop**<br>
+action_type: **stop**<br>
 Stop of Nexus Repository OSS service. `ROADMAP`.<br>
 variables:<br>
 <kbd>(none)</kbd> : No variables required.<br>
@@ -406,7 +406,7 @@ variables:<br>
        action : stop
 ```
 
-action: **restart**<br>
+action_type: **restart**<br>
 Restart Nexus Repository OSS service. `ROADMAP`.<br>
 variables:<br>
 <kbd>(none)</kbd> : No variables required.<br>

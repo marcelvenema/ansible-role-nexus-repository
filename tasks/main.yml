@@ -1,38 +1,25 @@
 ---
-
 ############################################################
 ## Main module for Sonatype Nexus Repository Ansible role ##
 ############################################################
 
+# If action variable is not defined, gather status of the service and set action variable
+- name: Gather action variable status...
+  ansible.builtin.include_tasks: set_action_type.yml
+  when: action_type is not defined
+
 # Show message
 - name: Show action message
   ansible.builtin.debug:
-    msg: "Starting role {{ role_name }}... action: {{ action }}."
-
-# If action variable is not defined, gather status of the service and set action variable
-- name: Gather action variable status...
-  ansible.builtin.include_tasks: set_action.yml
-  when: action is not defined
+    msg: "Starting role {{ role_name }}... action: {{ action_type }}."
 
 # Assert that action is in actions
-- name: "Verify valid action ({{ action }})..."
+- name: "Verify valid action ({{ action_type }})..."
   ansible.builtin.assert:
     that:
-      - action in (actions | map('dict2items') | map('first') | map(attribute='key') | list)
-    fail_msg: "The action '{{ action }}' is not in the list of valid actions..."
+      - action_type in (actions | map('dict2items') | map('first') | map(attribute='key') | list)
+    fail_msg: "The action '{{ action_type }}' is not in the list of valid actions..."
     quiet: true
-
-# Merge role defaults with vault, include nested variables
-# Nested merge does not work well, so use workaround to combine variables
-- name: Gather defaults (nexus_repository)...
-  ansible.builtin.include_vars:
-    file: "{{ role_path }}/defaults/main.yml"
-    name: nexus_repository_defaults
-
-# Merge role defaults, include nested variables
-- name: Merge role defaults with collected variables...
-  ansible.builtin.set_fact:
-    nexus_repository_vars: "{{ nexus_repository_defaults.nexus_repository | combine( nexus_repository | default({}), recursive=true ) }}"
 
 # Gather vault variables when vault_address and vault_token are defined
 - name: Gather vault variables (nexus_repository)...
@@ -49,73 +36,73 @@
   # install, uninstall, configure, update, setup
 - name: Start install action...
   ansible.builtin.include_tasks: install.yml
-  when: action == "install"
+  when: action_type == "install"
 
 - name: Start uninstall action...
   ansible.builtin.include_tasks: uninstall.yml
-  when: action == "uninstall"
+  when: action_type == "uninstall"
 
 - name: Start configure action...
   ansible.builtin.include_tasks: configure.yml
-  when: action == "configure"
+  when: action_type == "configure"
 
 - name: Start configure_vault action...
   ansible.builtin.include_tasks: configure_vault.yml
-  when: action == "configure_vault"
+  when: action_type == "configure_vault"
 
 - name: Start update action...
   ansible.builtin.include_tasks: update.yml
-  when: action == "update"
+  when: action_type == "update"
 
 - name: Start setup action...
   ansible.builtin.include_tasks: setup.yml
-  when: action == "setup"
+  when: action_type == "setup"
 # -------------------------------------------------------
  # Start, stop
 - name: Start start action...
   ansible.builtin.include_tasks: administration.yml
-  when: action == "start"
+  when: action_type == "start"
 
 - name: Start stop action...
   ansible.builtin.include_tasks: administration.yml
-  when: action == "stop"
+  when: action_type == "stop"
 # -------------------------------------------------------
   # Users
 - name: Start get_user action...
   ansible.builtin.include_tasks: users.yml
-  when: action == "get_user"
+  when: action_type == "get_user"
 
 - name: Start create_user action...
   ansible.builtin.include_tasks: users.yml
-  when: action == "create_user"
+  when: action_type == "create_user"
 
 - name: Start destroy_user action...
   ansible.builtin.include_tasks: users.yml
-  when: action == "destroy_user"
+  when: action_type == "destroy_user"
 # -------------------------------------------------------
   # Repositories
 - name: Start get_repository action...
   ansible.builtin.include_tasks: repositories/main.yml
-  when: action == "get_repository"
+  when: action_type == "get_repository"
 
 - name: Start create_repository action...
   ansible.builtin.include_tasks: repositories/main.yml
-  when: action == "create_repository"
+  when: action_type == "create_repository"
 
 - name: Start destroy_repository action...
   ansible.builtin.include_tasks: repositories/main.yml
-  when: action == "destroy_repository"
+  when: action_type == "destroy_repository"
 # -------------------------------------------------------
   # Artifacts
 - name: Start import_artifacts action...
   ansible.builtin.include_tasks: artifacts/main.yml
-  when: action == "import_artifacts"
+  when: action_type == "import_artifacts"
 
 - name: Start export_artifacts action...
   ansible.builtin.include_tasks: artifacts/main.yml
-  when: action == "export_artifacts"
+  when: action_type == "export_artifacts"
 
 - name: Start sync_artifacts action...
   ansible.builtin.include_tasks: artifacts/main.yml
-  when: action == "sync_artifacts"
+  when: action_type == "sync_artifacts"
 # -------------------------------------------------------

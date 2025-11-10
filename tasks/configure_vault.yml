@@ -20,12 +20,12 @@
 # Register variable (_secret_engine_name)
 - name: Register variable (secret_engine_name)...
   ansible.builtin.set_fact:
-   _secret_engine_name: "{{ nexus_repository_vars.secrets.secret_engine_name | default('nexus-repository') }}"
+   _secret_engine_name: "{{ nexus_repository_secrets.secret_engine_name | default('nexus-repository') }}"
 
 # Register variable (_secret_name)
 - name: Register variable (secret_name)...
   ansible.builtin.set_fact:
-    _secret_name: "{{ nexus_repository_vars.secrets.secret_name | default( ansible_fqdn | replace('.', '-') ) }}"
+    _secret_name: "{{ nexus_repository_secrets.secret_name | default( ansible_fqdn | replace('.', '-') ) }}"
 
 #########################################################
 ## Secret Engine                                       ##
@@ -36,7 +36,7 @@
   ansible.builtin.include_role:
     name: openbao
   vars:
-    action: create_secret_engine
+    action_type: create_secret_engine
     secret_engine_name: "{{ _secret_engine_name }}"
     secret_engine_description: "{{ nexus_secret_engine_description | default('Secrets for Sonatype Nexus Repository.') }}"
     secret_engine_type: "kv"
@@ -63,7 +63,7 @@
   ansible.builtin.include_role:
     name: openbao
   vars:
-    action: create_secret
+    action_type: create_secret
     secret_engine_name: "{{ _secret_engine_name }}"
     secret_name: "{{ _secret_name }}"
     secret_keyvalue: "{{ _secret_keyvalue | from_yaml }}"

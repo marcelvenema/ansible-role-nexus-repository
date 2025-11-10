@@ -31,5 +31,5 @@
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
     force_basic_auth: yes
-    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
+    validate_certs: "{{ nexus_repository_application_validate_certs | default(true) }}"
     dest: "{{ destination_folder }}/{{ subfolder }}/{{ item | basename }}"

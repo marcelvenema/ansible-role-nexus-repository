@@ -19,7 +19,7 @@
 # include task import artifacts when action is import_artifacts
 - name: Import artifacts
   ansible.builtin.include_tasks: import_artifacts.yml
-  when: action == "import_artifacts"
+  when: action_type == "import_artifacts"
 
 #########################################################
 ## Export artifacts                                    ##
@@ -28,7 +28,7 @@
 # include task when action is export_artifacts
 - name: Export artifacts
   ansible.builtin.include_tasks: export_artifacts.yml
-  when: action == "export_artifacts"
+  when: action_type == "export_artifacts"
 
 #########################################################
 ## Sync artifacts                                      ##
@@ -37,5 +37,5 @@
 # include task when action is sync_artifacts
 - name: Sync artifacts
   ansible.builtin.include_tasks: sync_artifacts.yml
-  when: action == "sync_artifacts"
+  when: action_type == "sync_artifacts"
   

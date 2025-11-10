@@ -18,7 +18,7 @@
 #########################################################
 
 - name: Update Nexus repository
-  when: action == "update"
+  when: action_type == "update"
   block:
 
     # Show information message

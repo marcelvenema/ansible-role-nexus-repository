@@ -9,7 +9,7 @@
 #########################################################
 
 - name: Get repository
-  when: action == "get_repository"
+  when: action_type == "get_repository"
   block:
 
     # Validate local variables
@@ -40,7 +40,7 @@
 #########################################################
 
 - name: Create repository
-  when: action == "create_repository"
+  when: action_type == "create_repository"
   block:
 
     # Validate local variables
@@ -104,7 +104,7 @@
 #########################################################
 
 - name: Destroy repository
-  when: action == "destroy_repository"
+  when: action_type == "destroy_repository"
   block:
 
     # Validate local variables

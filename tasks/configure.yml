@@ -7,31 +7,23 @@
 # Get port of nexus from role_container_ports
 - name: Retrieve container port...
   ansible.builtin.set_fact:
-    nexus_port: "{{ nexus_repository_vars.container.ports[0].split(':')[0] }}"
+    nexus_port: "{{ nexus_repository_container_ports[0].split(':')[0] }}"
 
 # Get IP address of Nexus Repository
 - name: Register variable (nexus_repository_address)...
   ansible.builtin.set_fact:
     nexus_repository_address: "http://{{ ansible_default_ipv4.address }}:{{ nexus_port }}"
 
-- name: Register variable (nexus_repository_vars.address)...
-  ansible.builtin.set_fact:
-    nexus_repository_vars: "{{ nexus_repository_vars | combine({'address': nexus_repository_address}, recursive=True) }}"
-
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.address }}"
+    url: "{{ nexus_repository_address }}"
     method: GET
     return_content: yes
   register: nexus_website
   until: nexus_website.status == 200
   retries: 20
   delay: 10
-
-
-
-
 
 # Get podman service user from podman role
 # TODO: create function in podman role to get podman service user
@@ -44,7 +36,7 @@
   become: true
   become_user: "{{ retrieved_podman_service_user }}"
   ansible.builtin.command:
-    cmd: "podman exec -it {{ nexus_repository_vars.container.name }} cat /nexus-data/admin.password"
+    cmd: "podman exec -it {{ nexus_repository_container_name }} cat /nexus-data/admin.password"
   register: admin_password_result
 
 # Set Nexus admin password
@@ -56,7 +48,7 @@
 # Wait for Nexus website is available
 - name: Wait for Nexus Repository website is available...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.address }}"
+    url: "{{ nexus_repository_address }}"
     method: GET
     return_content: yes
   register: nexus_website
@@ -67,7 +59,7 @@
 # Change admin password to hide manual first login screen
 - name: Change admin password for Nexus Repository...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.address }}/service/rest/v1/security/users/admin/change-password"
+    url: "{{ nexus_repository_address }}/service/rest/v1/security/users/admin/change-password"
     method: PUT
     user: "admin"
     password: "{{ admin_password_result.stdout }}"
@@ -81,7 +73,7 @@
 # Get license agreement
 - name: Get license agreement for Nexus Repository OSS...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.address }}/service/rest/v1/system/eula"
+    url: "{{ nexus_repository_address }}/service/rest/v1/system/eula"
     method: GET
     user: "admin"
     password: "{{ admin_password_result.stdout }}"
@@ -94,7 +86,7 @@
 # Accept license agreement
 - name: Accept license agreement for Nexus Repository OSS...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.address }}/service/rest/v1/system/eula"
+    url: "{{ nexus_repository_address }}/service/rest/v1/system/eula"
     method: POST
     user: "admin"
     password: "{{ admin_password_result.stdout }}"
@@ -112,7 +104,7 @@
 # Enable anonymous access to Nexus Repository via api
 - name: Enable anonymous access for Nexus Repository...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_vars.address }}/service/rest/v1/security/anonymous"
+    url: "{{ nexus_repository_address }}/service/rest/v1/security/anonymous"
     method: PUT
     user: "admin"
     password: "{{ admin_password_result.stdout }}"
@@ -143,7 +135,7 @@
 - name: Create automation user for Nexus Repository...
   ansible.builtin.include_tasks: users.yml
   vars:
-    action : create_user
+    action_type : create_user
     nexus_repository_user_username :  "{{automation_username | default('automation') }}"
     nexus_repository_user_password : "{{ automation_password }}"
     nexus_repository_user_firstname: "{{ automation_username | default('automation') }}"

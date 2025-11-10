@@ -9,7 +9,7 @@
 #########################################################
 
 - name: Create repository
-  when: action == "create_repository"
+  when: action_type == "create_repository"
   block:
 
     # Validate local variables

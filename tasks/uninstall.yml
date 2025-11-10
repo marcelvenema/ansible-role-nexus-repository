@@ -42,40 +42,6 @@
       when: pod_info is defined
 
 #########################################################
-## Uninstall via kubernetes                            ##
-#########################################################
-
-- name: "Uninstall {{ nexus_container_name }} on kubernetes"
-  when: platform == "kubernetes"
-  block:
-
-    # show debug message
-    - name: Information message
-      ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
-
-    # Stop playbook
-    - name: Stop playbook
-      ansible.builtin.meta: end_play
-
-#########################################################
-## Uninstall via host                                  ##
-#########################################################
-
-- name: "Uninstall application on host"
-  when: platform == "host"
-  block:
-
-    # Show information message
-    - name: Information message
-      ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
-
-    # Stop playbook
-    - name: Stop playbook
-      ansible.builtin.meta: end_play
-
-#########################################################
 ## Uninstall data                                      ##
 #########################################################
 
@@ -84,7 +50,7 @@
   ansible.builtin.include_role:
     name: podman
   vars:
-    action: destroy_volumes
+    action_type: destroy_volumes
     container_volumes: "{{ nexus_container_volumes }}"
   when:
     - platform == "podman"

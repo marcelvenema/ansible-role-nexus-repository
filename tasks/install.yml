@@ -12,14 +12,25 @@
 - name: Run uninstall playbook if set
   ansible.builtin.include_tasks: uninstall.yml
   ignore_errors: true
-  when: nexus_repository_vars.container.uninstall == true
+  when: nexus_repository_container_uninstall == true
+
+#########################################################
+## Pre-installation requirements                       ##
+#########################################################
+
+# Install required packages
+- name: Install required packages...
+  become: true
+  ansible.builtin.package:
+    name: "{{ nexus_repository_rpm_packages }}"
+    state: present
 
 #########################################################
 ## Installation on podman                              ##
 #########################################################
 
 - name: Install container on Podman...
-  when: nexus_repository_vars.container.platform == "podman"
+  when: nexus_repository_container_platform == "podman"
   block:
 
     # Gather installed packages
@@ -42,8 +53,8 @@
       ansible.builtin.include_role:
         name: podman
       vars:
-        action: create_volumes
-        container_volumes: "{{ nexus_repository_vars.container.volumes }}"
+        action_type: create_volumes
+        container_volumes: "{{ nexus_repository_container_volumes }}"
         volume_mode: "0777"
 
     #####################################################
@@ -54,7 +65,7 @@
     - name: Open firewall ports...
       become: true
       ansible.builtin.firewalld:
-        port: "{{ nexus_repository_vars.container.ports[0].split(':')[0] }}/tcp"
+        port: "{{ nexus_repository_container_ports[0].split(':')[0] }}/tcp"
         permanent: true
         state: enabled
         immediate: true
@@ -64,69 +75,25 @@
     #####################################################
 
     # Import container
-    - name: "Install {{ nexus_repository_vars.container.name }} container on podman"
+    - name: "Install {{ nexus_repository_container_name }} container on podman"
       ansible.builtin.include_role:
         name: podman
       vars:
-        action: import_container
-        container_repository_url: "{{ nexus_repository_vars.container.repository_url }}"
-        container_repository_tag: "{{ nexus_repository_vars.container.repository_tag | default('latest') }}"
-        container_repository_checksum: "{{ nexus_repository_vars.container.repository_checksum | default(omit) }}"
-        container_repository_checksum_algorithm: "{{ nexus_repository_vars.container.repository_checksum_algorithm | default(omit) }}"
-        container_name: "{{ nexus_repository_vars.container.name }}"
-        container_ports: "{{ nexus_repository_vars.container.ports }}"
-        container_volumes: "{{ nexus_repository_vars.container.volumes }}"
-        container_env: "{{ nexus_repository_vars.container.environment | default(omit) }}"
-        container_healthcheck: "{{ nexus_repository_vars.container.healthcheck | default(omit) }}"
-        container_healthcheck_fail: "{{ nexus_repository_vars.container.healthcheck_fail | default('none') }}"
-        container_healthcheck_retries: "{{ nexus_repository_vars.container.healthcheck_retries | default(omit) }}"
-        container_healthcheck_interval: "{{ nexus_repository_vars.container.healthcheck_interval | default(omit) }}"
-        container_healthcheck_timeout: "{{ nexus_repository_vars.container.healthcheck_timeout | default(omit) }}"
-        container_healthcheck_start: "{{ nexus_repository_vars.container.healthcheck_start | default(omit) }}"
-
-#########################################################
-## Installation via kubernetes                         ##
-#########################################################
-
-- name: Install container on Kubernetes...
-  when: nexus_repository_vars.container.platform == "kubernetes"
-  block:
-
-    # Debug message
-    - name: Debug message
-      ansible.builtin.debug:
-        msg: "Install Sonatype Nexus via kubernetes"
-
-    # Show information message
-    - name: This part is not (yet) implemented.
-      ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
-
-    # Stop playbook
-    - name: Stop playbook
-      ansible.builtin.meta: end_play
-
-#########################################################
-## Installation on host                                ##
-#########################################################
-
-- name: Install application on host...
-  when: nexus_repository_vars.container.platform == "host"
-  block:
-
-    # Debug message
-    - name: Debug message
-      ansible.builtin.debug:
-        msg: "Install application on host"
-
-    # Show information message
-    - name: This part is not (yet) implemented.
-      ansible.builtin.debug:
-        msg: "This part is not (yet) implemented."
-
-    # Stop playbook
-    - name: Stop playbook
-      ansible.builtin.meta: end_play
+        action_type: import_container
+        container_repository_url: "{{ nexus_repository_container_repository_url }}"
+        container_repository_tag: "{{ nexus_repository_container_repository_tag | default('latest') }}"
+        container_repository_checksum: "{{ nexus_repository_container_repository_checksum | default(omit) }}"
+        container_repository_checksum_algorithm: "{{ nexus_repository_container_repository_checksum_algorithm | default(omit) }}"
+        container_name: "{{ nexus_repository_container_name }}"
+        container_ports: "{{ nexus_repository_container_ports }}"
+        container_volumes: "{{ nexus_repository_container_volumes }}"
+        container_env: "{{ nexus_repository_container_environment | default(omit) }}"
+        container_healthcheck: "{{ nexus_repository_container_healthcheck | default(omit) }}"
+        container_healthcheck_fail: "{{ nexus_repository_container_healthcheck_fail | default('none') }}"
+        container_healthcheck_retries: "{{ nexus_repository_container_healthcheck_retries | default(omit) }}"
+        container_healthcheck_interval: "{{ nexus_repository_container_healthcheck_interval | default(omit) }}"
+        container_healthcheck_timeout: "{{ nexus_repository_container_healthcheck_timeout | default(omit) }}"
+        container_healthcheck_start: "{{ nexus_repository_container_healthcheck_start | default(omit) }}"
 
 #########################################################
 ## Configuration                                       ##

@@ -29,7 +29,7 @@
     password: "{{ nexus_repository_password }}"
     force_basic_auth: yes
     return_content: yes
-    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
+    validate_certs: "{{ nexus_repository_application_validate_certs | default(true) }}"
     headers:
       accept: application/json
       Content-Type: application/json

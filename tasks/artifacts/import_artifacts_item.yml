@@ -1,21 +1,26 @@
 ---
-
 #########################################################
 ## Artifacts import module                             ##
 #########################################################
+
+# Get mime type from file
+- name: "Get mime-type from {{ item.path | basename }}..."
+  ansible.builtin.command:
+    cmd: "file --mime-type -b {{ item.path }}"
+  register: file_mime_type
 
 # Show information
 - name: "Import artifacts - Information message"
   ansible.builtin.debug:
     msg:
       - "Import artifact {{ item.path | basename }} ({{ (item.size | int / 1024 / 1024) | round(0) }}MB) to repository {{ nexus_repository_name }}."
-      - "Folder: {{ nexus_repository_folder }} - {{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
+      - "Folder: {{ nexus_repository_folder }} - Type: {{ file_mime_type.stdout }}"
       - "This may take a while..."
 
 # upload files to Nexus repository
 - name: "Import artifacts to Nexus repository ({{ nexus_repository_address }})..."
   ansible.builtin.uri:
-    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}{{ nexus_repository_folder }}{{ item.path | regex_replace('^' + source_folder | regex_escape, '') }}"
+    url: "{{ nexus_repository_address }}/repository/{{ nexus_repository_name }}{{ nexus_repository_folder }}{{ item.path  }}"
     method: PUT
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
@@ -23,7 +28,8 @@
     src: "{{ item.path }}"
     remote_src: true # use managed (remote) node
     status_code: 200, 201 # 201 Created, 200 OK
-    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
+    body_format: json
+    validate_certs: "{{ nexus_repository_application_validate_certs | default(true) }}"
     headers:
       Content-Type: "application/octet-stream"
   register: upload_result

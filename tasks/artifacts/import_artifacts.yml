@@ -22,18 +22,25 @@
 # Test if repository name is valid.
 - name: Test if repository name is valid...
   ansible.builtin.uri:
-    url: "{{ nexus_repository_address }}/service/rest/v1/repositories/{{ nexus_repository_name }}"
+    url: "{{ nexus_repository_address }}/service/rest/v1/repositories/{{ nexus_repository_name.split('/')[0] }}"
     method: GET
     user: "{{ nexus_repository_username }}"
     password: "{{ nexus_repository_password }}"
     force_basic_auth: yes
     return_content: yes
-    validate_certs: "{{ nexus_repository_validate_certs | default(true) }}"
+    validate_certs: "{{ nexus_repository_application_validate_certs | default(true) }}"
     body_format: json
+    status_code: 200, 404
     headers:
       accept: application/json
       Content-Type: application/json
   register: nexus_repository_status
+
+# Set nexus_repository_type variable
+- name: Set nexus_repository_type variable...
+  ansible.builtin.set_fact:
+    nexus_repository_type: "{{ nexus_repository_status.json.format }}"
+  when: nexus_repository_status.status == 200
 
 # Show custom error message if repository address is not valid.
 - name: Import artifacts - Information message.

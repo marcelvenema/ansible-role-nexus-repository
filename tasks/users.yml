@@ -16,7 +16,7 @@
 #########################################################
 
 - name: Get user
-  when: action == "get_user"
+  when: action_type == "get_user"
   block:
 
     # Validate local variables
@@ -28,10 +28,10 @@
       loop_control:
         loop_var: varitem
       loop:
-        - nexus_repository_vars.address
-        - nexus_repository_vars.username
-        - nexus_repository_vars.password
+        - nexus_repository_address
         - nexus_repository_username
+        - nexus_repository_password
+        - nexus_repository_user_username
 
     # Register var_result variable
     - name: Register var_result variable
@@ -54,7 +54,7 @@
 #########################################################
 
 - name: Create user
-  when: action == "create_user"
+  when: action_type == "create_user"
   block:
 
     # Validate local variables
@@ -102,7 +102,7 @@
 #########################################################
 
 - name: Destroy user on Nexus repository
-  when: action == "destroy_user"
+  when: action_type == "destroy_user"
   block:
 
     # Validate local variables
@@ -133,7 +133,7 @@
 #########################################################
 
 - name: Destroy user on Nexus repository
-  when: action == "set_password_user"
+  when: action_type == "set_password_user"
   block:
 
     # Validate local variables

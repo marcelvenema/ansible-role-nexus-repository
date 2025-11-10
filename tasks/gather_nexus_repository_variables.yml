@@ -18,15 +18,15 @@
       loop_control:
         loop_var: varitem
       loop:
-        - nexus_repository_vars.secrets.secret_engine_name
-        - nexus_repository_vars.secrets.secret_name
+        - nexus_repository_secrets_secret_engine_name
+        - nexus_repository_secrets_secret_name
 
     # NEXUS REPOSITORY
     # Set variable _secret_name to nexus_repository_name
     - name: Register variable (nexus_repository)...
       ansible.builtin.set_fact:
-        _secret_engine_name: "{{ nexus_repository_vars.secrets.secret_engine_name }}"
-        _secret_name: "{{ nexus_repository_vars.secrets.secret_name }}"
+        _secret_engine_name: "{{ nexus_repository_secrets_secret_engine_name }}"
+        _secret_name: "{{ nexus_repository_secrets_secret_name }}"
       no_log: true
 
     # NEXUS_REPOSITORY_ADDRESS
@@ -42,7 +42,7 @@
       ansible.builtin.include_role:
         name: openbao
       vars:
-        action: get_secret
+        action_type: get_secret
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_address"
@@ -62,7 +62,7 @@
       ansible.builtin.include_role:
         name: openbao
       vars:
-        action: get_secret
+        action_type: get_secret
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_username"
@@ -82,7 +82,7 @@
       ansible.builtin.include_role:
         name: openbao
       vars:
-        action: get_secret
+        action_type: get_secret
         secret_engine_name: "{{ _secret_engine_name }}"
         secret_name: "{{ _secret_name }}"
         secret_key: "nexus_repository_password"
